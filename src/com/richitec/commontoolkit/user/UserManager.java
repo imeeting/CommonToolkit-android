@@ -8,11 +8,11 @@ public class UserManager {
 	private static volatile UserManager _singletonInstance;
 
 	// user bean
-	private UserBean _mUserBean;
+	private UserBean userBean;
 
 	private UserManager() {
 		// init user bean
-		_mUserBean = new UserBean();
+		userBean = new UserBean();
 	}
 
 	// get userManager singleton instance
@@ -30,20 +30,36 @@ public class UserManager {
 
 	// set user with user name and password
 	public void setUser(String pName, String pPassword) {
-		// generator user digit key
-		StringBuilder _digitKeyString = new StringBuilder(pName);
-		_digitKeyString.append(pPassword);
-		String _digitKey = StringUtils.md5(_digitKeyString.toString());
-
 		// set user bean
-		_mUserBean.setName(pName);
-		_mUserBean.setPassword(StringUtils.md5(pPassword));
-		_mUserBean.setUserKey(_digitKey);
+		userBean.setName(pName);
+		userBean.setPassword(StringUtils.md5(pPassword));
+	}
+
+	public void setUserKey(String userKey) {
+		userBean.setUserkey(userKey);
+	}
+
+	/**
+	 * set user
+	 * 
+	 * @param user
+	 */
+	public void setUser(UserBean user) {
+		this.userBean = user;
+	}
+
+	/**
+	 * get user
+	 * 
+	 * @return user bean or null
+	 */
+	public UserBean getUser() {
+		return userBean;
 	}
 
 	// remove an user
 	public void removeUser() {
-		_mUserBean = null;
+		userBean = null;
 	}
 
 }
