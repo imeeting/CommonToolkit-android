@@ -27,10 +27,10 @@ import android.util.Log;
 
 import com.richitec.commontoolkit.user.User;
 import com.richitec.commontoolkit.user.UserManager;
-import com.richitec.commontoolkit.utils.HttpUtils.HeadResponseListener;
-import com.richitec.commontoolkit.utils.HttpUtils.ResponseListener;
+import com.richitec.commontoolkit.utils.HttpUtil.HeadResponseListener;
+import com.richitec.commontoolkit.utils.HttpUtil.ResponseListener;
 
-public class HttpUtils {
+public class HttpUtil {
 
 	private DefaultHttpClient httpClient;
 	int timeoutConnection = 10000;
@@ -203,13 +203,13 @@ public class HttpUtils {
 	}
 
 	@Deprecated
-	public static HttpUtils startHttpHead(String url,
-			HeadResponseListener listener, HttpUtils httpUtil) {
+	public static HttpUtil startHttpHead(String url,
+			HeadResponseListener listener, HttpUtil httpUtil) {
 		HttpHeadRunThread httpThread = new HttpHeadRunThread();
 		httpThread.url = url;
 		httpThread.responseListener = listener;
 		if (httpUtil == null) {
-			httpUtil = new HttpUtils();
+			httpUtil = new HttpUtil();
 			httpUtil.initHttpClient();
 		}
 		httpThread.httpUtils = httpUtil;
@@ -217,15 +217,15 @@ public class HttpUtils {
 		return httpUtil;
 	}
 
-	public static HttpUtils startHttpPostRequest(String url,
+	public static HttpUtil startHttpPostRequest(String url,
 			HashMap<String, String> params, ResponseListener listener,
-			HttpUtils httpUtil) {
+			HttpUtil httpUtil) {
 		HttpRunThread httpThread = new HttpRunThread();
 		httpThread.url = url;
 		httpThread.paramMap = params;
 		httpThread.responseListener = listener;
 		if (httpUtil == null) {
-			httpUtil = new HttpUtils();
+			httpUtil = new HttpUtil();
 			httpUtil.initHttpClient();
 		}
 		httpThread.httpUtils = httpUtil;
@@ -251,9 +251,9 @@ public class HttpUtils {
 		return params;
 	}
 
-	public static HttpUtils startHttpPostRequestWithSignature(String url,
+	public static HttpUtil startHttpPostRequestWithSignature(String url,
 			HashMap<String, String> params, ResponseListener listener,
-			HttpUtils httpUtil) {
+			HttpUtil httpUtil) {
 		Log.d("CommonToolkit", "startHttpPostRequestWithSignature - url: " + url);
 		if (params == null) {
 			params = new HashMap<String, String>();
@@ -298,7 +298,7 @@ class HttpRunThread extends Thread {
 	public String url;
 	public HashMap<String, String> paramMap;
 	public ResponseListener responseListener;
-	public HttpUtils httpUtils;
+	public HttpUtil httpUtils;
 
 	public void run() {
 		if (httpUtils != null)
@@ -310,7 +310,7 @@ class HttpRunThread extends Thread {
 class HttpHeadRunThread extends Thread {
 	public String url;
 	public HeadResponseListener responseListener;
-	public HttpUtils httpUtils;
+	public HttpUtil httpUtils;
 
 	public void run() {
 		if (httpUtils != null)
