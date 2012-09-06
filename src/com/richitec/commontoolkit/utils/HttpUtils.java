@@ -319,32 +319,36 @@ public class HttpUtils {
 		private void bindReqRespCallBackFunction(HttpRequest request,
 				HttpResponse response) {
 			// check response status code
-			switch (response.getStatusLine().getStatusCode()) {
-			case HttpStatus.SC_ACCEPTED:
-			case HttpStatus.SC_CREATED:
-			case HttpStatus.SC_OK:
-				onFinished(request, response);
-				break;
+			if (response != null && response.getStatusLine() != null) {
+				switch (response.getStatusLine().getStatusCode()) {
+				case HttpStatus.SC_ACCEPTED:
+				case HttpStatus.SC_CREATED:
+				case HttpStatus.SC_OK:
+					onFinished(request, response);
+					break;
 
-			case HttpStatus.SC_BAD_REQUEST:
-				onBadRequest(request, response);
-				break;
+				case HttpStatus.SC_BAD_REQUEST:
+					onBadRequest(request, response);
+					break;
 
-			case HttpStatus.SC_FORBIDDEN:
-				onForbidden(request, response);
-				break;
+				case HttpStatus.SC_FORBIDDEN:
+					onForbidden(request, response);
+					break;
 
-			case HttpStatus.SC_NOT_FOUND:
-				onNotFound(request, response);
-				break;
+				case HttpStatus.SC_NOT_FOUND:
+					onNotFound(request, response);
+					break;
 
-			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				onInternalServerError(request, response);
-				break;
+				case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+					onInternalServerError(request, response);
+					break;
 
-			default:
+				default:
+					onFailed(request, response);
+					break;
+				}
+			} else {
 				onFailed(request, response);
-				break;
 			}
 		}
 
@@ -443,12 +447,16 @@ public class HttpUtils {
 			// check result
 			switch (result) {
 			case TIMEOUT:
-				_mHttpRequestListener.onTimeout(_mHttpRequest);
+				if (_mHttpRequestListener != null) {
+					_mHttpRequestListener.onTimeout(_mHttpRequest);
+				}
 				break;
 
 			default:
-				_mHttpRequestListener.bindReqRespCallBackFunction(
-						_mHttpRequest, _mHttpResponse);
+				if (_mHttpRequestListener != null) {
+					_mHttpRequestListener.bindReqRespCallBackFunction(
+							_mHttpRequest, _mHttpResponse);
+				}
 				break;
 			}
 		}
