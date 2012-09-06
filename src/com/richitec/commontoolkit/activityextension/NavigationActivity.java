@@ -52,14 +52,20 @@ public class NavigationActivity extends Activity {
 		// set content view
 		super.setContentView(R.layout.activity_navigation);
 
+		LinearLayout body = (LinearLayout) findViewById(R.id.navContent_relativeLayout);
+		body.removeAllViews();
 		// set parameter view to navigation content linearLayout
-		getLayoutInflater().inflate(layoutResID,
-				(LinearLayout) findViewById(R.id.navContent_relativeLayout));
+		getLayoutInflater().inflate(layoutResID, body);
 
 		// set nav bar back button item, if not null
 		if (null != _mBackBarBtnItem) {
 			setLeftBarButtonItem(_mBackBarBtnItem);
 		}
+	}
+
+	public View getBody() {
+		View body = findViewById(R.id.navContent_relativeLayout);
+		return body;
 	}
 
 	@Override
@@ -76,9 +82,10 @@ public class NavigationActivity extends Activity {
 		// set content view
 		super.setContentView(view);
 
+		LinearLayout body = (LinearLayout) findViewById(R.id.navContent_relativeLayout);
+		body.removeAllViews();
 		// set parameter view to navigation content linearLayout
-		((LinearLayout) findViewById(R.id.navContent_relativeLayout))
-				.addView(view);
+		body.addView(view);
 
 		// set nav bar back button item, if not null
 		if (null != _mBackBarBtnItem) {

@@ -320,6 +320,8 @@ public class HttpUtils {
 				HttpResponse response) {
 			// check response status code
 			switch (response.getStatusLine().getStatusCode()) {
+			case HttpStatus.SC_ACCEPTED:
+			case HttpStatus.SC_CREATED:
 			case HttpStatus.SC_OK:
 				onFinished(request, response);
 				break;
