@@ -28,6 +28,11 @@ public class UserManager {
 		return _singletonInstance;
 	}
 
+	// get user
+	public UserBean getUser() {
+		return _mUserBean;
+	}
+
 	// set user with user name and password
 	public void setUser(String pName, String pPassword) {
 		// set user bean
@@ -57,7 +62,7 @@ public class UserManager {
 		return userBean;
 	}
 
-	// remove an user
+	// remove the user
 	public void removeUser() {
 		userBean = null;
 	}

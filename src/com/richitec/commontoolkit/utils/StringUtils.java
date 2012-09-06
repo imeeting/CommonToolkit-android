@@ -120,6 +120,23 @@ public class StringUtils {
 		}
 	}
 
+	// perfect http request url
+	public static String perfectHttpRequestUrl(String string) {
+		String _ret = string;
+
+		// check url is nil and has prefix "http://" or "https://"
+		if (null != string && !string.equalsIgnoreCase("")
+				&& !string.startsWith("http://")
+				&& !string.startsWith("https://")) {
+			StringBuilder _tmpStringBuilder = new StringBuilder("http://");
+			_tmpStringBuilder.append(_ret);
+
+			_ret = _tmpStringBuilder.toString();
+		}
+
+		return _ret;
+	}
+
 	// phone number from string
 	public static String phoneNumberFromString(String string) {
 		StringBuffer _ret = new StringBuffer();

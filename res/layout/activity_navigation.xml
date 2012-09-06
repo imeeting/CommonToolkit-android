@@ -61,7 +61,7 @@
                 android:ellipsize="middle"
                 android:hint="@string/title_textView_hint"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/white" />
+                android:textColor="@android:color/white" />
         </FrameLayout>
     </RelativeLayout>
 

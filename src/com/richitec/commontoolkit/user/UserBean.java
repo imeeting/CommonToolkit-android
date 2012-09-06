@@ -51,7 +51,6 @@ public class UserBean {
 		sb.append("userkey: ").append(userkey).append('\n');
 		sb.append("rememberPwd: ").append(rememberPwd).append('\n');
 		return sb.toString();
-
 	}
 
 }
