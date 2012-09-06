@@ -9,7 +9,7 @@ package com.richitec.commontoolkit.user;
 public class UserBean {
 	private String name = "";
 	private String password = "";
-	private String userkey = "";
+	private String userKey = "";
 	private boolean rememberPwd;
 
 	public String getName() {
@@ -28,12 +28,12 @@ public class UserBean {
 		this.password = password;
 	}
 
-	public String getUserkey() {
-		return userkey;
+	public String getUserKey() {
+		return userKey;
 	}
 
-	public void setUserkey(String userkey) {
-		this.userkey = userkey;
+	public void setUserKey(String userkey) {
+		this.userKey = userkey;
 	}
 
 	public boolean isRememberPwd() {
@@ -48,7 +48,7 @@ public class UserBean {
 		StringBuffer sb = new StringBuffer();
 		sb.append("username: ").append(name).append('\n');
 		sb.append("password: ").append(password).append('\n');
-		sb.append("userkey: ").append(userkey).append('\n');
+		sb.append("userkey: ").append(userKey).append('\n');
 		sb.append("rememberPwd: ").append(rememberPwd).append('\n');
 		return sb.toString();
 	}

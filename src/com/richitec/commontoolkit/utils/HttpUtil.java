@@ -30,6 +30,7 @@ import com.richitec.commontoolkit.user.UserManager;
 import com.richitec.commontoolkit.utils.HttpUtil.HeadResponseListener;
 import com.richitec.commontoolkit.utils.HttpUtil.ResponseListener;
 
+@Deprecated
 public class HttpUtil {
 
 	private DefaultHttpClient httpClient;
@@ -278,7 +279,7 @@ public class HttpUtil {
 		for (int i = 0; i < paramList.size(); i++) {
 			sb2.append(paramList.get(i));
 		}
-		sb2.append(UserManager.getInstance().getUser().getUserkey());
+		sb2.append(UserManager.getInstance().getUser().getUserKey());
 
 		String signature = CommonUtil.md5(sb2.toString());
 		params.put("sig", signature);

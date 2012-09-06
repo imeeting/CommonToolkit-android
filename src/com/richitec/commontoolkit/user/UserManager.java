@@ -28,20 +28,23 @@ public class UserManager {
 		return _singletonInstance;
 	}
 
-	// get user
-	public UserBean getUser() {
-		return _mUserBean;
-	}
-
 	// set user with user name and password
-	public void setUser(String pName, String pPassword) {
+	public UserBean setUser(String pName, String pPassword) {
+		if (userBean == null) {
+			userBean = new UserBean();
+		}
 		// set user bean
 		userBean.setName(pName);
 		userBean.setPassword(StringUtils.md5(pPassword));
+		return userBean;
 	}
 
-	public void setUserKey(String userKey) {
-		userBean.setUserkey(userKey);
+	public UserBean setUserKey(String userKey) {
+		if (userBean == null) {
+			userBean = new UserBean();
+		}
+		userBean.setUserKey(userKey);
+		return userBean;
 	}
 
 	/**
