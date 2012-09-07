@@ -3,7 +3,14 @@ package com.richitec.commontoolkit.utils;
 import java.security.MessageDigest;
 import java.util.Vector;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.util.Log;
+
 public class StringUtils {
+
+	private static final String LOG_TAG = "StringUtils";
 
 	// split the string with given split word
 	public static String[] split(String string, String splitWord) {
@@ -135,6 +142,28 @@ public class StringUtils {
 		}
 
 		return _ret;
+	}
+
+	// convert string to json object
+	public static JSONObject convert2Json(String string) {
+		JSONObject _stringJson = null;
+
+		// check string
+		if (null != string) {
+			// convert
+			try {
+				_stringJson = new JSONObject(string);
+			} catch (JSONException e) {
+				e.printStackTrace();
+
+				Log.e(LOG_TAG, "Convert string = " + string
+						+ " to json object exception: " + e.getMessage());
+			}
+		} else {
+			Log.e(LOG_TAG, "Convert to json object string is null");
+		}
+
+		return _stringJson;
 	}
 
 	// phone number from string

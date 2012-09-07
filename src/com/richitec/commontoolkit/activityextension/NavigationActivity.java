@@ -2,6 +2,7 @@ package com.richitec.commontoolkit.activityextension;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.richitec.commontoolkit.customui.BarButtonItem;
@@ -32,18 +34,21 @@ public class NavigationActivity extends Activity {
 		// check the data bundle
 		if (null != _data) {
 			// init default nav bar back button item
-			_mBackBarBtnItem = new BarButtonItem(this);
+			_mBackBarBtnItem = new BarButtonItem(this,
+					_data.getString(NAV_ACTIVITY_PARAM_KEY), getResources()
+							.getDrawable(
+									R.drawable.img_leftbarbtnitem_normal_bg),
+					getResources().getDrawable(
+							R.drawable.img_leftbarbtnitem_touchdown_bg),
+					new OnClickListener() {
 
-			// set back bar button item attributes
-			_mBackBarBtnItem.setText(_data.getString(NAV_ACTIVITY_PARAM_KEY));
-			_mBackBarBtnItem.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							// finish self activity
+							finish();
 
-				@Override
-				public void onClick(View v) {
-					// finish self activity
-					finish();
-				}
-			});
+						}
+					});
 		}
 	}
 
@@ -90,6 +95,55 @@ public class NavigationActivity extends Activity {
 		// set nav bar back button item, if not null
 		if (null != _mBackBarBtnItem) {
 			setLeftBarButtonItem(_mBackBarBtnItem);
+		}
+	}
+
+	// set navBar background color
+	public void setNavBarBackgroundColor(int navBarBackgroundColor) {
+		((RelativeLayout) findViewById(R.id.navBar_relativeLayout))
+				.setBackgroundColor(navBarBackgroundColor);
+	}
+
+	// set navBar background resource
+	public void setNavBarBackgroundResource(int navBarBackgroundResId) {
+		((RelativeLayout) findViewById(R.id.navBar_relativeLayout))
+				.setBackgroundResource(navBarBackgroundResId);
+	}
+
+	// set navBar background drawable
+	public void setNavBarBackgroundDrawable(Drawable navBarBackgroundDrawable) {
+		((RelativeLayout) findViewById(R.id.navBar_relativeLayout))
+				.setBackgroundDrawable(navBarBackgroundDrawable);
+	}
+
+	// update nav back bar button item resource
+	public void updateNavBackBarBtnItemResource(
+			int navBackBarBtnItemNormalResId, int navBackBarBtnItemPressedResId) {
+		if (null != _mBackBarBtnItem) {
+			// set nav back bar button item normal and pressed drawable
+			_mBackBarBtnItem.setNormalBackgroundDrawable(getResources()
+					.getDrawable(navBackBarBtnItemNormalResId));
+			_mBackBarBtnItem.setPressedBackgroundDrawable(getResources()
+					.getDrawable(navBackBarBtnItemPressedResId));
+
+			// invalidate
+			_mBackBarBtnItem.invalidate();
+		}
+	}
+
+	// update nav back bar button item drawable
+	public void updateNavBackBarBtnItemDrawable(
+			Drawable navBackBarBtnItemNormalDrawable,
+			Drawable navBackBarBtnItemPressedDrawable) {
+		if (null != _mBackBarBtnItem) {
+			// set nav back bar button item normal and pressed drawable
+			_mBackBarBtnItem
+					.setNormalBackgroundDrawable(navBackBarBtnItemNormalDrawable);
+			_mBackBarBtnItem
+					.setPressedBackgroundDrawable(navBackBarBtnItemPressedDrawable);
+
+			// invalidate
+			_mBackBarBtnItem.invalidate();
 		}
 	}
 

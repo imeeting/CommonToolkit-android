@@ -26,6 +26,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -301,6 +302,27 @@ public class HttpUtils {
 				pRequestType, httpRequestListener);
 	}
 
+	// get http response entity string
+	public static String getHttpResponseEntityString(HttpResponse response) {
+		String _respEntityString = null;
+
+		// check response
+		if (null != response) {
+			try {
+				_respEntityString = EntityUtils.toString(response.getEntity());
+			} catch (Exception e) {
+				e.printStackTrace();
+
+				Log.e(LOG_TAG,
+						"Get http response entity excetion: " + e.getMessage());
+			}
+		} else {
+			Log.e(LOG_TAG, "Get http response entity, response is null");
+		}
+
+		return _respEntityString;
+	}
+
 	// inner class
 	// http request type
 	public static enum HttpRequestType {
@@ -444,20 +466,20 @@ public class HttpUtils {
 		protected void onPostExecute(RequestExecuteResult result) {
 			super.onPostExecute(result);
 
-			// check result
-			switch (result) {
-			case TIMEOUT:
-				if (_mHttpRequestListener != null) {
+			// check http request listener and bind request response
+			// callback function
+			if (null != _mHttpRequestListener) {
+				// check result
+				switch (result) {
+				case TIMEOUT:
 					_mHttpRequestListener.onTimeout(_mHttpRequest);
-				}
-				break;
+					break;
 
-			default:
-				if (_mHttpRequestListener != null) {
+				default:
 					_mHttpRequestListener.bindReqRespCallBackFunction(
 							_mHttpRequest, _mHttpResponse);
+					break;
 				}
-				break;
 			}
 		}
 

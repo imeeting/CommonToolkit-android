@@ -7,8 +7,8 @@
     <RelativeLayout
         android:id="@+id/navBar_relativeLayout"
         android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:background="@color/dark_dim_gray"
+        android:layout_height="46dp"
+        android:background="@drawable/img_navbar_bg"
         android:orientation="horizontal" >
 
         <FrameLayout
@@ -16,7 +16,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true" >
+            android:layout_centerVertical="true"
+            android:paddingBottom="4dp"
+            android:paddingRight="2dp"
+            android:paddingTop="4dp" >
 
             <Button
                 android:layout_width="wrap_content"
@@ -30,7 +33,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" >
+            android:layout_centerVertical="true"
+            android:paddingBottom="4dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="4dp" >
 
             <Button
                 android:layout_width="wrap_content"
@@ -43,6 +49,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
             android:layout_toLeftOf="@id/right_btn_frameLayout"
             android:layout_toRightOf="@id/left_btn_frameLayout"
             android:gravity="center" >

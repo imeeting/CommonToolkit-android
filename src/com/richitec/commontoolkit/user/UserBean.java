@@ -12,6 +12,15 @@ public class UserBean {
 	private String userKey = "";
 	private boolean rememberPwd;
 
+	public UserBean() {
+	}
+
+	public UserBean(String name, String password, String userKey) {
+		this.name = name;
+		this.password = password;
+		this.userKey = userKey;
+	}
+
 	public String getName() {
 		return name;
 	}
