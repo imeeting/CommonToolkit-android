@@ -96,7 +96,7 @@ public class StringUtils {
 			// get message digest instance and update message
 			MessageDigest _MessageDigestInstance = MessageDigest
 					.getInstance("MD5");
-			_MessageDigestInstance.update(string.getBytes());
+			_MessageDigestInstance.update(string.getBytes("UTF-8"));
 
 			// get digest array and length
 			byte[] _digests = _MessageDigestInstance.digest();
