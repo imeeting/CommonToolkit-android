@@ -1,7 +1,7 @@
 package com.richitec.commontoolkit.addressbook;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 public class ContactBean implements Serializable {
 
@@ -13,15 +13,15 @@ public class ContactBean implements Serializable {
 	// id
 	private Integer id;
 	// groups
-	private ArrayList<String> groups;
+	private List<String> groups;
 	// display name
 	private String displayName;
 	// full names
-	private ArrayList<String> fullNames;
+	private List<String> fullNames;
 	// name phonetics
-	private ArrayList<String[]> namePhonetics;
+	private List<List<String>> namePhonetics;
 	// phone numbers
-	private ArrayList<String> phoneNumbers;
+	private List<String> phoneNumbers;
 	// photo
 	private Byte[] photo;
 
@@ -33,11 +33,11 @@ public class ContactBean implements Serializable {
 		this.id = id;
 	}
 
-	public ArrayList<String> getGroups() {
+	public List<String> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(ArrayList<String> groups) {
+	public void setGroups(List<String> groups) {
 		this.groups = groups;
 	}
 
@@ -49,27 +49,27 @@ public class ContactBean implements Serializable {
 		this.displayName = displayName;
 	}
 
-	public ArrayList<String> getFullNames() {
+	public List<String> getFullNames() {
 		return fullNames;
 	}
 
-	public void setFullNames(ArrayList<String> fullNames) {
+	public void setFullNames(List<String> fullNames) {
 		this.fullNames = fullNames;
 	}
 
-	public ArrayList<String[]> getNamePhonetics() {
+	public List<List<String>> getNamePhonetics() {
 		return namePhonetics;
 	}
 
-	public void setNamePhonetics(ArrayList<String[]> namePhonetics) {
+	public void setNamePhonetics(List<List<String>> namePhonetics) {
 		this.namePhonetics = namePhonetics;
 	}
 
-	public ArrayList<String> getPhoneNumbers() {
+	public List<String> getPhoneNumbers() {
 		return phoneNumbers;
 	}
 
-	public void setPhoneNumbers(ArrayList<String> phoneNumbers) {
+	public void setPhoneNumbers(List<String> phoneNumbers) {
 		this.phoneNumbers = phoneNumbers;
 	}
 
@@ -79,6 +79,29 @@ public class ContactBean implements Serializable {
 
 	public void setPhoto(Byte[] photo) {
 		this.photo = photo;
+	}
+
+	@Override
+	public String toString() {
+		// init contact description
+		StringBuilder _contactDescription = new StringBuilder();
+
+		// append contact id, display name, groups, fullNames, name phonetics,
+		// phone numbers and photo
+		_contactDescription.append("contact id: ").append(id).append(", ");
+		_contactDescription.append("display name: ").append(displayName)
+				.append(", ");
+		_contactDescription.append("groups: ").append(groups.toString())
+				.append(", ");
+		_contactDescription.append("fullNames: ").append(fullNames.toString())
+				.append(", ");
+		_contactDescription.append("name phonetics: ")
+				.append(namePhonetics.toString()).append(", ");
+		_contactDescription.append("phone numbers: ")
+				.append(phoneNumbers.toString()).append(", ");
+		_contactDescription.append("photo: ").append(photo).append("\n");
+
+		return _contactDescription.toString();
 	}
 
 }

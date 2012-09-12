@@ -3,6 +3,10 @@
     <!-- CommonToolkit lib -->
     <string name="app_name">CommonToolkit</string>
 
+    <!-- application launch activity -->
+    <string name="title_activity_app_launch">AppLaunchActivity</string>
+    <string name="splash_content_description">Application splash image</string>
+
     <!-- navigation activity -->
     <string name="title_activity_navigation">NavigationActivity</string>
     <string name="title_textView_hint">No Title</string>

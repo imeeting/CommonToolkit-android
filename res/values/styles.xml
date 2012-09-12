@@ -1,5 +1,9 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Light" />
+    <!-- application default theme -->
+    <style name="AppTheme" parent="android:Theme.Light.NoTitleBar" />
+
+    <!-- application launch activity theme -->
+    <style name="AppLaunchActivityTheme" parent="android:Theme.Black.NoTitleBar.Fullscreen" />
 
 </resources>

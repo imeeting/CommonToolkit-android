@@ -1,5 +1,7 @@
 package com.richitec.commontoolkit.activityextension;
 
+import java.util.Map;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -13,12 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.richitec.commontoolkit.customui.BarButtonItem;
+import com.richitec.commontoolkit.customcomponent.BarButtonItem;
+import com.richitec.commontoolkit.customcomponent.BarButtonItem.BarButtonItemStyle;
+import com.richitec.commontoolkit.customcomponent.IBackBarButtonItemDrawable;
 
-public class NavigationActivity extends Activity {
+public class NavigationActivity extends Activity implements
+		IBackBarButtonItemDrawable {
 
-	private static final String LOG_TAG = "CommonToolkit - NavigationActivity";
+	private static final String LOG_TAG = "NavigationActivity";
 
+	// commonToolkit navigation activity onCreate param key
 	private static final String NAV_ACTIVITY_PARAM_KEY = "nav_back_btn_default_title";
 
 	// nav bar back button item
@@ -32,15 +38,13 @@ public class NavigationActivity extends Activity {
 		Bundle _data = getIntent().getExtras();
 
 		// check the data bundle
-		if (null != _data) {
+		if (null != _data && null != _data.getString(NAV_ACTIVITY_PARAM_KEY)) {
 			// init default nav bar back button item
 			_mBackBarBtnItem = new BarButtonItem(this,
-					_data.getString(NAV_ACTIVITY_PARAM_KEY), getResources()
-							.getDrawable(
-									R.drawable.img_leftbarbtnitem_normal_bg),
-					getResources().getDrawable(
-							R.drawable.img_leftbarbtnitem_touchdown_bg),
-					new OnClickListener() {
+					_data.getString(NAV_ACTIVITY_PARAM_KEY),
+					BarButtonItemStyle.LEFT_BACK,
+					backBarBtnItemNormalDrawable(),
+					backBarBtnItemPressedDrawable(), new OnClickListener() {
 
 						@Override
 						public void onClick(View v) {
@@ -116,37 +120,6 @@ public class NavigationActivity extends Activity {
 				.setBackgroundDrawable(navBarBackgroundDrawable);
 	}
 
-	// update nav back bar button item resource
-	public void updateNavBackBarBtnItemResource(
-			int navBackBarBtnItemNormalResId, int navBackBarBtnItemPressedResId) {
-		if (null != _mBackBarBtnItem) {
-			// set nav back bar button item normal and pressed drawable
-			_mBackBarBtnItem.setNormalBackgroundDrawable(getResources()
-					.getDrawable(navBackBarBtnItemNormalResId));
-			_mBackBarBtnItem.setPressedBackgroundDrawable(getResources()
-					.getDrawable(navBackBarBtnItemPressedResId));
-
-			// invalidate
-			_mBackBarBtnItem.invalidate();
-		}
-	}
-
-	// update nav back bar button item drawable
-	public void updateNavBackBarBtnItemDrawable(
-			Drawable navBackBarBtnItemNormalDrawable,
-			Drawable navBackBarBtnItemPressedDrawable) {
-		if (null != _mBackBarBtnItem) {
-			// set nav back bar button item normal and pressed drawable
-			_mBackBarBtnItem
-					.setNormalBackgroundDrawable(navBackBarBtnItemNormalDrawable);
-			_mBackBarBtnItem
-					.setPressedBackgroundDrawable(navBackBarBtnItemPressedDrawable);
-
-			// invalidate
-			_mBackBarBtnItem.invalidate();
-		}
-	}
-
 	// set left bar button item
 	public void setLeftBarButtonItem(BarButtonItem barButtonItem) {
 		// remove default navigation bar left button item and add the new one
@@ -193,22 +166,54 @@ public class NavigationActivity extends Activity {
 		((TextView) findViewById(R.id.title_textView)).setTextSize(textSize);
 	}
 
-	// push activity to navigation activity stack
-	public void pushActivity(Class<? extends Activity> activityClass) {
+	// push activity with extra data to navigation activity stack
+	public void pushActivity(Class<? extends Activity> activityClass,
+			Map<String, ?> extraData) {
 		// define the intent
 		Intent _intent = new Intent(this, activityClass);
 
 		// set intent extra parameter data
 		_intent.putExtra(NAV_ACTIVITY_PARAM_KEY, (String) this.getTitle());
 
+		if (null != extraData) {
+			for (String extraDataKey : extraData.keySet()) {
+				// String
+				if (extraData.get(extraDataKey) instanceof String) {
+					_intent.putExtra(extraDataKey,
+							(String) extraData.get(extraDataKey));
+				}
+				// others, not implementation
+				else {
+					Log.d(LOG_TAG, "Type except of String not implementation");
+				}
+			}
+		}
+
 		// go to the activity
 		startActivity(_intent);
+	}
+
+	// push activity to navigation activity stack
+	public void pushActivity(Class<? extends Activity> activityClass) {
+		this.pushActivity(activityClass, null);
 	}
 
 	// pop this activity from activity stack
 	public void popActivity() {
 		// finish self activity
 		finish();
+	}
+
+	@Override
+	public Drawable backBarBtnItemNormalDrawable() {
+		return getResources().getDrawable(
+				R.drawable.img_leftbarbtnitem_normal_bg);
+	}
+
+	@Override
+	public Drawable backBarBtnItemPressedDrawable() {
+		return getResources().getDrawable(
+				R.drawable.img_leftbarbtnitem_touchdown_bg);
 	}
 
 }

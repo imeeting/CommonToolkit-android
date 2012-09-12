@@ -1,6 +1,7 @@
 package com.richitec.commontoolkit.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -126,15 +127,20 @@ public class HttpUtils {
 								+ e.getMessage());
 				e.printStackTrace();
 
-				// check http request listener
+				// process needed exception and check http request listener
 				if (ConnectTimeoutException.class == e.getClass()
 						&& null != httpRequestListener) {
 					httpRequestListener.onTimeout(_getHttpRequest);
+				} else if (UnknownHostException.class == e.getClass()
+						&& null != httpRequestListener) {
+					httpRequestListener.onUnknownHost(_getHttpRequest);
 				}
 			}
 			break;
 
 		case ASYNCHRONOUS:
+			// new asynchronous http request task to do get request in
+			// background
 			new AsyncHttpRequestTask().execute(_getHttpRequest,
 					httpRequestListener);
 			break;
@@ -217,15 +223,20 @@ public class HttpUtils {
 								+ e.getMessage());
 				e.printStackTrace();
 
-				// check http request listener
+				// process needed exception and check http request listener
 				if (ConnectTimeoutException.class == e.getClass()
 						&& null != httpRequestListener) {
 					httpRequestListener.onTimeout(_postHttpRequest);
+				} else if (UnknownHostException.class == e.getClass()
+						&& null != httpRequestListener) {
+					httpRequestListener.onUnknownHost(_postHttpRequest);
 				}
 			}
 			break;
 
 		case ASYNCHRONOUS:
+			// new asynchronous http request task to do post request in
+			// background
 			new AsyncHttpRequestTask().execute(_postHttpRequest,
 					httpRequestListener);
 			break;
@@ -412,11 +423,17 @@ public class HttpUtils {
 			onFailed(request, null);
 		}
 
+		// on unknown host
+		public void onUnknownHost(HttpRequest request) {
+			// call onFailed callback function
+			onFailed(request, null);
+		}
+
 	}
 
 	// request execute result
 	enum RequestExecuteResult {
-		NORMAL, TIMEOUT
+		NORMAL, TIMEOUT, UNKNOWN_HOST
 	}
 
 	// asynchronous http request task
@@ -436,12 +453,13 @@ public class HttpUtils {
 			// init return result
 			RequestExecuteResult _ret = RequestExecuteResult.NORMAL;
 
-			// set http request and request listener
+			// save http request and request listener
 			_mHttpRequest = (HttpUriRequest) getSuitableParam(
 					HttpUriRequest.class, params);
 			_mHttpRequestListener = (OnHttpRequestListener) getSuitableParam(
 					OnHttpRequestListener.class, params);
 
+			// save http response
 			try {
 				_mHttpResponse = getHttpClient().execute(_mHttpRequest);
 			} catch (Exception e) {
@@ -450,12 +468,15 @@ public class HttpUtils {
 								+ e.getMessage());
 				e.printStackTrace();
 
-				// check http request listener
+				// process needed exception and check http request listener
 				if (ConnectTimeoutException.class == e.getClass()
-						&& null != getSuitableParam(
-								OnHttpRequestListener.class, params)) {
+						&& null != _mHttpRequestListener) {
 					// update request execute result
 					_ret = RequestExecuteResult.TIMEOUT;
+				} else if (UnknownHostException.class == e.getClass()
+						&& null != _mHttpRequestListener) {
+					// update request execute result
+					_ret = RequestExecuteResult.UNKNOWN_HOST;
 				}
 			}
 
@@ -475,6 +496,11 @@ public class HttpUtils {
 					_mHttpRequestListener.onTimeout(_mHttpRequest);
 					break;
 
+				case UNKNOWN_HOST:
+					_mHttpRequestListener.onUnknownHost(_mHttpRequest);
+					break;
+
+				case NORMAL:
 				default:
 					_mHttpRequestListener.bindReqRespCallBackFunction(
 							_mHttpRequest, _mHttpResponse);
