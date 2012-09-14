@@ -84,9 +84,15 @@ public abstract class AppLaunchActivity extends Activity {
 
 			// check result
 			if (0 == result) {
-				// go to intent activity and finish application launch activity
-				startActivity(_mIntent);
+				// check intent activity
+				if (null != _mIntent) {
+					// go to intent activity
+					startActivity(_mIntent);
+				} else {
+					Log.e(LOG_TAG, "intent activity is null");
+				}
 
+				// finish application launch activity
 				finish();
 			}
 		}

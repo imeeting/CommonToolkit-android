@@ -1,6 +1,8 @@
 package com.richitec.commontoolkit.utils;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.json.JSONException;
@@ -145,7 +147,7 @@ public class StringUtils {
 	}
 
 	// convert string to json object
-	public static JSONObject convert2Json(String string) {
+	public static JSONObject toJsonObject(String string) {
 		JSONObject _stringJson = null;
 
 		// check string
@@ -164,6 +166,44 @@ public class StringUtils {
 		}
 
 		return _stringJson;
+	}
+
+	// convert string to string array, according to Chinese character
+	public static List<String> toStringList(String string) {
+		List<String> _stringList = new ArrayList<String>();
+
+		// define not Chinese character string builder
+		StringBuilder _notCCSB = new StringBuilder();
+
+		// get each char to process
+		for (int i = 0; i < string.length(); i++) {
+			// get char index string
+			String _charIndexString = String.valueOf(string.charAt(i));
+
+			// check the each char index string
+			if (_charIndexString.matches("[\u4e00-\u9fa5]")) {
+				// add not Chinese character string builder to string list and
+				// clear it
+				if (0 != _notCCSB.length()) {
+					_stringList.add(_notCCSB.toString());
+					_notCCSB.setLength(0);
+				}
+
+				// add character to string list
+				_stringList.add(_charIndexString);
+			} else {
+				// append to not Chinese character string builder
+				_notCCSB.append(_charIndexString);
+			}
+
+			// add not Chinese character string builder to string list in the
+			// end
+			if (string.length() - 1 == i && 0 != _notCCSB.length()) {
+				_stringList.add(_notCCSB.toString());
+			}
+		}
+
+		return _stringList;
 	}
 
 	// phone number from string
