@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -147,14 +148,14 @@ public class StringUtils {
 	}
 
 	// convert string to json object
-	public static JSONObject toJsonObject(String string) {
-		JSONObject _stringJson = null;
+	public static JSONObject toJSONObject(String string) {
+		JSONObject _stringJsonObject = null;
 
 		// check string
 		if (null != string) {
 			// convert
 			try {
-				_stringJson = new JSONObject(string);
+				_stringJsonObject = new JSONObject(string);
 			} catch (JSONException e) {
 				e.printStackTrace();
 
@@ -165,7 +166,29 @@ public class StringUtils {
 			Log.e(LOG_TAG, "Convert to json object string is null");
 		}
 
-		return _stringJson;
+		return _stringJsonObject;
+	}
+
+	// convert string to json array
+	public static JSONArray toJSONArray(String string) {
+		JSONArray _stringJsonArray = null;
+
+		// check string
+		if (null != string) {
+			// convert
+			try {
+				_stringJsonArray = new JSONArray(string);
+			} catch (JSONException e) {
+				e.printStackTrace();
+
+				Log.e(LOG_TAG, "Convert string = " + string
+						+ " to json array exception: " + e.getMessage());
+			}
+		} else {
+			Log.e(LOG_TAG, "Convert to json array string is null");
+		}
+
+		return _stringJsonArray;
 	}
 
 	// convert string to string array, according to Chinese character
@@ -204,6 +227,26 @@ public class StringUtils {
 		}
 
 		return _stringList;
+	}
+
+	// get sub string positions list in string
+	public static List<Integer> subStringPositions(String string,
+			String subString) {
+		List<Integer> _positions = new ArrayList<Integer>();
+
+		while (string.contains(subString)) {
+			// get the first appearance position
+			int _position = string.indexOf(subString);
+
+			// add position to return position list
+			_positions.add(0 == _positions.size() ? _position : _position
+					+ _positions.get(_positions.size() - 1) + 1);
+
+			// reset string
+			string = string.substring(_position + 1);
+		}
+
+		return _positions;
 	}
 
 	// phone number from string

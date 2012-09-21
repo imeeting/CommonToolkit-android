@@ -6,11 +6,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.Handler;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
@@ -23,6 +26,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
+import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
 
@@ -58,6 +62,11 @@ public class AddressBookManager {
 	private final String MATCHING_RESULT_CONTACT = "matchingResultContact";
 	private final String MATCHING_RESULT_INDEXES = "matchingResultIndexs";
 
+	// rawIds value map keys string
+	private final String RAWCONTACT_ACCOUNTNAME = "rawContact_accountName";
+	private final String RAWCONTACT_VERSION = "rawContact_version";
+	private final String RAWCONTACT_DIRTYTYPE = "rawContact_dirtyType";
+
 	// contact name phonetic comparator
 	public static final Comparator<ContactBean> CONTACTNAMEPHONETIC_COMPARATOR = new Comparator<ContactBean>() {
 
@@ -75,8 +84,8 @@ public class AddressBookManager {
 			if (null == _leftContactNamePhoneticsString
 					&& null == _rightContactNamePhoneticsString) {
 				_ret = (int) (lhs.getId() - rhs.getId());
-			} else if (null != _leftContactNamePhoneticsString
-					&& null == _rightContactNamePhoneticsString) {
+			} else if (null == _leftContactNamePhoneticsString
+					&& null != _rightContactNamePhoneticsString) {
 				_ret = 1;
 			} else if (null != _leftContactNamePhoneticsString
 					&& null != _rightContactNamePhoneticsString) {
@@ -131,8 +140,18 @@ public class AddressBookManager {
 	}
 
 	// get original all contacts detail info array
-	public List<ContactBean> allContactsInfoArray() {
+	public List<ContactBean> getAllContactsInfoArray() {
 		return _mAllContactsInfoArray;
+	}
+
+	// get all name phonetic sorted contacts detail info array
+	public List<ContactBean> getAllNamePhoneticSortedContactsInfoArray() {
+		List<ContactBean> _allNamePhoneticSortedContactsInfoArray = new ArrayList<ContactBean>();
+		_allNamePhoneticSortedContactsInfoArray.addAll(_mAllContactsInfoArray);
+		Collections.sort(_allNamePhoneticSortedContactsInfoArray,
+				CONTACTNAMEPHONETIC_COMPARATOR);
+
+		return _allNamePhoneticSortedContactsInfoArray;
 	}
 
 	// traversal addressBook, important, do it first
@@ -143,10 +162,10 @@ public class AddressBookManager {
 		Log.d(LOG_TAG, "getAllContactsDetailInfo - begin");
 		getAllContactsDetailInfo();
 
-		// sorted all contacts detail info array
-		List<ContactBean> _newCopyArray = new ArrayList<ContactBean>();
-		_newCopyArray.addAll(_mAllContactsInfoArray);
-		Collections.sort(_newCopyArray, CONTACTNAMEPHONETIC_COMPARATOR);
+		// // add contacts changed ContentObserver
+		// _mContentResolver.registerContentObserver(Contacts.CONTENT_URI,
+		// false,
+		// new ContactsContentObserver());
 
 		Log.d(LOG_TAG, "getAllContactsDetailInfo - end");
 	}
@@ -213,7 +232,8 @@ public class AddressBookManager {
 	private void getAllContactsRawIds() {
 		// define constant
 		final String[] _projection = new String[] { RawContacts._ID,
-				RawContacts.CONTACT_ID, RawContacts.ACCOUNT_NAME };
+				RawContacts.CONTACT_ID, RawContacts.ACCOUNT_NAME,
+				RawContacts.VERSION };
 
 		// use contentResolver to query raw_contacts table
 		Cursor _rawIdsCursor = _mContentResolver.query(RawContacts.CONTENT_URI,
@@ -222,12 +242,14 @@ public class AddressBookManager {
 		// check rawId cursor and traverse result
 		if (null != _rawIdsCursor) {
 			while (_rawIdsCursor.moveToNext()) {
-				// get aggregated id, raw id and raw contact ownership account
-				// name
+				// get aggregated id, raw id, raw contact ownership account name
+				// and version
 				Long _aggregatedId = _rawIdsCursor.getLong(_rawIdsCursor
 						.getColumnIndex(RawContacts.CONTACT_ID));
 				Long _rawId = _rawIdsCursor.getLong(_rawIdsCursor
 						.getColumnIndex(RawContacts._ID));
+				Integer _version = _rawIdsCursor.getInt(_rawIdsCursor
+						.getColumnIndex(RawContacts.VERSION));
 				String _ownershipAccountName = _rawIdsCursor
 						.getString(_rawIdsCursor
 								.getColumnIndex(RawContacts.ACCOUNT_NAME));
@@ -244,18 +266,27 @@ public class AddressBookManager {
 					ContactBean _contact = _mAllContactsInfoMap
 							.get(_aggregatedId);
 
+					// generate rawIds value map and add ownership account name,
+					// version and dirty type to it
+					Map<String, Object> _rawIdsValueMap = new HashMap<String, Object>();
+					_rawIdsValueMap.put(RAWCONTACT_ACCOUNTNAME,
+							_ownershipAccountName);
+					_rawIdsValueMap.put(RAWCONTACT_VERSION, _version);
+					_rawIdsValueMap.put(RAWCONTACT_DIRTYTYPE,
+							ContactDirtyType.NORMAL);
+
 					// check contact raw ids map
 					if (null == _contact.getRawIds()) {
-						// generate rawIds map and put rawId and ownership
-						// account name to it
-						Map<Long, String> _rawIdsMap = new HashMap<Long, String>();
-						_rawIdsMap.put(_rawId, _ownershipAccountName);
+						// generate rawIds map and put rawId and rawIds value
+						// map to it
+						Map<Long, Map<String, Object>> _rawIdsMap = new HashMap<Long, Map<String, Object>>();
+						_rawIdsMap.put(_rawId, _rawIdsValueMap);
 
 						// set contact rawIds map
 						_contact.setRawIds(_rawIdsMap);
 					} else {
-						// put rawId and ownership account name to rawIds map
-						_contact.getRawIds().put(_rawId, _ownershipAccountName);
+						// put rawId and rawIds value list to rawIds map
+						_contact.getRawIds().put(_rawId, _rawIdsValueMap);
 					}
 				}
 			}
@@ -306,28 +337,70 @@ public class AddressBookManager {
 						// name to it and generate name phonetics
 						List<String> _fullNamesList = new ArrayList<String>();
 						List<List<String>> _namePhoneticsList = new ArrayList<List<String>>();
-						if (null != _familyName) {
-							_fullNamesList.addAll(StringUtils
-									.toStringList(_familyName));
 
-							_namePhoneticsList.addAll(PinyinUtils
-									.pinyins4String(_familyName));
-						}
-						if (null != _givenName) {
-							_fullNamesList.addAll(StringUtils
-									.toStringList(_givenName));
+						// check locale language
+						if (Locale.CHINESE
+								.getLanguage()
+								.equals(AppLaunchActivity.getAppContext()
+										.getResources().getConfiguration().locale
+										.getLanguage())) {
+							// display name
+							StringBuilder _displayName = new StringBuilder();
 
-							_namePhoneticsList.addAll(PinyinUtils
-									.pinyins4String(_givenName));
+							if (null != _familyName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_familyName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_familyName));
+
+								_displayName.append(_familyName);
+							}
+							if (null != _givenName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_givenName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_givenName));
+
+								if (0 != _displayName.length()) {
+									_displayName.append(' ');
+								}
+								_displayName.append(_givenName);
+							}
+
+							// update contact display name
+							if (0 != _fullNamesList.size()
+									&& (null == _familyName || !_familyName
+											.matches("[\u4e00-\u9fa5]"))
+									&& (null == _givenName || !_givenName
+											.matches("[\u4e00-\u9fa5]"))) {
+								_contact.setDisplayName(_displayName.toString());
+							}
+						} else {
+							if (null != _givenName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_givenName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_givenName));
+							}
+							if (null != _familyName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_familyName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_familyName));
+							}
 						}
 
 						// set contact full names list and name phonetics if
 						// have
 						if (0 != _fullNamesList.size()) {
-							_contact.setFullNames(_fullNamesList);
+							_contact.setFullNames(trimContactFullNames(_fullNamesList));
 						}
 						if (0 != _namePhoneticsList.size()) {
-							_contact.setNamePhonetics(_namePhoneticsList);
+							_contact.setNamePhonetics(trimContactNamePhonetics(_namePhoneticsList));
 						}
 					}
 				}
@@ -530,6 +603,50 @@ public class AddressBookManager {
 		}
 	}
 
+	// trim contact full names list empty string
+	private List<String> trimContactFullNames(List<String> origFullNames) {
+		for (int i = 0; i < origFullNames.size(); i++) {
+			if (origFullNames.get(i).equalsIgnoreCase(" ")) {
+				origFullNames.remove(i);
+			}
+		}
+
+		return origFullNames;
+	}
+
+	// trim contact name phonetics list empty phonetic
+	private List<List<String>> trimContactNamePhonetics(
+			List<List<String>> origNamePhonetics) {
+		for (int i = 0; i < origNamePhonetics.size(); i++) {
+			if (1 == origNamePhonetics.get(i).size()
+					&& origNamePhonetics.get(i).get(0).equalsIgnoreCase(" ")) {
+				origNamePhonetics.remove(i);
+			}
+		}
+
+		return origNamePhonetics;
+	}
+
+	// get contacts list by given phone number: full matching
+	private List<ContactBean> getContactsListByPhone(String phoneNumber) {
+		List<ContactBean> _contacts = new ArrayList<ContactBean>();
+
+		// traversal all contacts detail info array
+		for (ContactBean _contact : _mAllContactsInfoArray) {
+			// get contact phone numbers list
+			List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
+
+			// check the contact phone numbers
+			if (null != _contactPhoneNumbers
+					&& 0 != _contactPhoneNumbers.size()
+					&& _contactPhoneNumbers.contains(phoneNumber)) {
+				_contacts.add(_contact);
+			}
+		}
+
+		return _contacts;
+	}
+
 	// get contact bean object by aggregated id
 	public ContactBean getContactByAggregatedId(Long aggregatedId) {
 		ContactBean _contact = null;
@@ -545,17 +662,22 @@ public class AddressBookManager {
 	public List<String> getContactsDisplayNamesByPhone(String phoneNumber) {
 		List<String> _displayNames = new ArrayList<String>();
 
-		// traversal all contacts detail info array
-		for (ContactBean _contact : _mAllContactsInfoArray) {
-			// get contact phone numbers list
-			List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
+		// // traversal all contacts detail info array
+		// for (ContactBean _contact : _mAllContactsInfoArray) {
+		// // get contact phone numbers list
+		// List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
+		//
+		// // check the contact phone numbers
+		// if (null != _contactPhoneNumbers
+		// && 0 != _contactPhoneNumbers.size()
+		// && _contactPhoneNumbers.contains(phoneNumber)) {
+		// _displayNames.add(_contact.getDisplayName());
+		// }
+		// }
 
-			// check the contact phone numbers
-			if (null != _contactPhoneNumbers
-					&& 0 != _contactPhoneNumbers.size()
-					&& _contactPhoneNumbers.contains(phoneNumber)) {
-				_displayNames.add(_contact.getDisplayName());
-			}
+		// traversal all matched contacts detail info array
+		for (ContactBean _contact : getContactsListByPhone(phoneNumber)) {
+			_displayNames.add(_contact.getDisplayName());
 		}
 
 		// check return display names list
@@ -564,6 +686,29 @@ public class AddressBookManager {
 		}
 
 		return _displayNames;
+	}
+
+	// get contacts photo list by given phone number
+	public List<byte[]> getContactsPhotosByPhone(String phoneNumber) {
+		List<byte[]> _photos = new ArrayList<byte[]>();
+
+		// traversal all matched contacts detail info array
+		for (ContactBean _contact : getContactsListByPhone(phoneNumber)) {
+			// get contact photo
+			byte[] _photo = _contact.getPhoto();
+
+			// check contact photo
+			if (null != _photo) {
+				_photos.add(_photo);
+			}
+		}
+
+		// check return photos list
+		if (0 == _photos.size()) {
+			_photos.add(null);
+		}
+
+		return _photos;
 	}
 
 	// get contacts list by phone number with sorted type
@@ -1102,7 +1247,7 @@ public class AddressBookManager {
 					List<String> _leftSplitObjects = splitObjects.subList(1,
 							splitObjects.size());
 					List<List<String>> _contactLeftNamePhonetics = contactNamePhonetics
-							.subList(i + 1, contactNamePhonetics.size() - i);
+							.subList(i + 1, contactNamePhonetics.size());
 
 					// left matched
 					if (matchSplitNameListWithContactNamePhonetics(
@@ -1127,6 +1272,327 @@ public class AddressBookManager {
 	// contact searched name matching type
 	public static enum ContactNameMatchingType {
 		FUZZY, ORDER
+	}
+
+	// contacts db changed observer
+	class ContactsContentObserver extends ContentObserver {
+
+		public ContactsContentObserver() {
+			super(new Handler());
+		}
+
+		@Override
+		public void onChange(boolean selfChange) {
+			super.onChange(selfChange);
+
+			// contacts db changed
+			Log.d(LOG_TAG, "contacts database changed");
+
+			// reset all aggregated contacts raw contacts dirty type, deleted
+			// first
+			for (ContactBean _contact : _mAllContactsInfoArray) {
+				for (Map<String, Object> _rawIdValueMap : _contact.getRawIds()
+						.values()) {
+					_rawIdValueMap.put(RAWCONTACT_DIRTYTYPE,
+							ContactDirtyType.DELETEED);
+				}
+			}
+
+			// all dirty contact aggregated ids list
+			List<Long> _allDirtyContactsIdsList = new ArrayList<Long>();
+
+			// traversal raw_contacts table to get contact dirty flag
+			// define constant
+			final String[] _projection = new String[] { RawContacts.CONTACT_ID,
+					RawContacts.VERSION, RawContacts.DELETED };
+
+			// use contentResolver to query raw_contacts table
+			Cursor _versionCursor = _mContentResolver.query(
+					RawContacts.CONTENT_URI, _projection, null, null, null);
+
+			// check version cursor and traverse result
+			if (null != _versionCursor) {
+				while (_versionCursor.moveToNext()) {
+					// get aggregated id, version and deleted flag
+					Long _aggregatedId = _versionCursor.getLong(_versionCursor
+							.getColumnIndex(RawContacts.CONTACT_ID));
+					Integer _version = _versionCursor.getInt(_versionCursor
+							.getColumnIndex(RawContacts.VERSION));
+					Integer _deleted = _versionCursor.getInt(_versionCursor
+							.getColumnIndex(RawContacts.DELETED));
+
+					// Log.d(LOG_TAG,
+					// "ContactsContentObserver - onChange - aggregated id = "
+					// + _aggregatedId + " and deleted flag = "
+					// + _deleted);
+
+					// skip synchronous deleted
+					if (1 == _deleted) {
+						continue;
+					}
+
+					// check contact has been existed in all contacts detail
+					// info map
+					if (_mAllContactsInfoMap.containsKey(_aggregatedId)) {
+						// one version matched flag
+						boolean _oneVersionMatched = false;
+
+						// process the contact rawIds each value list
+						for (Map<String, Object> _rawIdValueMap : _mAllContactsInfoMap
+								.get(_aggregatedId).getRawIds().values()) {
+							// version not equal
+							if (_rawIdValueMap.get(RAWCONTACT_VERSION).equals(
+									_version)) {
+								_oneVersionMatched = true;
+
+								// update the contact's raw contact dirty flag,
+								// normal
+								_rawIdValueMap.put(RAWCONTACT_DIRTYTYPE,
+										ContactDirtyType.NORMAL);
+
+								break;
+							}
+						}
+
+						// if none version matched, mark as dirty data
+						if (!_oneVersionMatched) {
+							Log.d(LOG_TAG, "the contact aggregated id = "
+									+ _aggregatedId + " changed");
+
+							// update the contact dirty flag, modified
+							_mAllContactsInfoMap.get(_aggregatedId).setDirty(
+									ContactDirtyType.MODIFIED);
+						}
+					} else {
+						Log.d(LOG_TAG, "the contact aggregated id = "
+								+ _aggregatedId + " new added");
+
+						// add to all dirty contacts aggregated ids list
+						_allDirtyContactsIdsList.add(_aggregatedId);
+					}
+				}
+
+				// close version cursor
+				_versionCursor.close();
+			}
+
+			// check contact and its raw contact dirty type and get all dirty
+			// contact ids
+			for (ContactBean _contact : _mAllContactsInfoArray) {
+				// normal and deleted contact
+				if (ContactDirtyType.NORMAL == _contact.getDirty()) {
+					// deleted flag
+					boolean _deletedContact = true;
+
+					for (Map<String, Object> _rawIdValueMap : _contact
+							.getRawIds().values()) {
+						if (ContactDirtyType.NORMAL == _rawIdValueMap
+								.get(RAWCONTACT_DIRTYTYPE)) {
+							_deletedContact = false;
+
+							break;
+						}
+					}
+
+					if (_deletedContact) {
+						Log.d(LOG_TAG, "the contact aggregated id = "
+								+ _contact.getId() + " deleted");
+
+						// add to all dirty contacts aggregated ids list
+						_allDirtyContactsIdsList.add(_contact.getId());
+					}
+				} else {
+					// add to all dirty contacts aggregated ids list
+					_allDirtyContactsIdsList.add(_contact.getId());
+				}
+			}
+
+			// recover all aggregated contacts raw contacts dirty type
+			for (ContactBean _contact : _mAllContactsInfoArray) {
+				_contact.setDirty(ContactDirtyType.NORMAL);
+
+				for (Map<String, Object> _rawIdValueMap : _contact.getRawIds()
+						.values()) {
+					_rawIdValueMap.put(RAWCONTACT_DIRTYTYPE,
+							ContactDirtyType.NORMAL);
+				}
+			}
+
+			Log.d(LOG_TAG, "all dirty contacts ids list = "
+					+ _allDirtyContactsIdsList);
+
+			// update dirty contact data
+			for (Long _dirtyContactId : _allDirtyContactsIdsList) {
+				// define the updating contact
+				ContactBean _contact = null;
+				// contact new phone numbers list
+				List<String> _newPhoneNumbers = new ArrayList<String>();
+
+				// define constant
+				final String[] _dataProjection = new String[] { Data.MIMETYPE,
+						Data.DISPLAY_NAME, Data.RAW_CONTACT_ID,
+						RawContacts.ACCOUNT_NAME, RawContacts.VERSION,
+						StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME,
+						Phone.NUMBER, Photo.PHOTO };
+				final String _dataSelection = RawContacts.CONTACT_ID + "=?";
+				final String[] _dataSelectionArgs = new String[] { _dirtyContactId
+						.toString() };
+
+				// use contentResolver to query data table
+				Cursor _dataCursor = _mContentResolver.query(Data.CONTENT_URI,
+						_dataProjection, _dataSelection, _dataSelectionArgs,
+						null);
+
+				// check version cursor and traverse result
+				if (null != _dataCursor) {
+					while (_dataCursor.moveToNext()) {
+						// get mime type
+						String _mimeType = _dataCursor.getString(_dataCursor
+								.getColumnIndex(Data.MIMETYPE));
+						String _displayName = _dataCursor.getString(_dataCursor
+								.getColumnIndex(Data.DISPLAY_NAME));
+						Long _rawId = _dataCursor.getLong(_dataCursor
+								.getColumnIndex(Data.RAW_CONTACT_ID));
+						Integer _version = _dataCursor.getInt(_dataCursor
+								.getColumnIndex(RawContacts.VERSION));
+						String _ownershipAccountName = _dataCursor
+								.getString(_dataCursor
+										.getColumnIndex(RawContacts.ACCOUNT_NAME));
+						String _givenName = _dataCursor.getString(_dataCursor
+								.getColumnIndex(StructuredName.GIVEN_NAME));
+						String _familyName = _dataCursor.getString(_dataCursor
+								.getColumnIndex(StructuredName.FAMILY_NAME));
+						String _phoneNumber = _dataCursor.getString(_dataCursor
+								.getColumnIndex(Phone.NUMBER));
+						byte[] _photoData = _dataCursor.getBlob(_dataCursor
+								.getColumnIndex(Photo.PHOTO));
+
+						// Log.d(LOG_TAG, "contact mime type = " + _mimeType
+						// + " , display name =" + _displayName
+						// + " , raw id = " + _rawId + " , version = "
+						// + _version + " , account name = "
+						// + _ownershipAccountName + " , given name = "
+						// + _givenName + " , family name = "
+						// + _familyName + " , number = " + _phoneNumber
+						// + " and photo = " + _photoData);
+
+						// check contact has been existed in all contacts detail
+						// info
+						// map
+						if (_mAllContactsInfoMap.containsKey(_dirtyContactId)) {
+							// get the contact
+							_contact = _mAllContactsInfoMap
+									.get(_dirtyContactId);
+						} else {
+							// generate new contact
+							_contact = new ContactBean();
+							_contact.setId(_dirtyContactId);
+							// generate rawIds value map and add ownership
+							// account name, version and dirty type to it
+							Map<String, Object> _rawIdsValueMap = new HashMap<String, Object>();
+							_rawIdsValueMap.put(RAWCONTACT_ACCOUNTNAME,
+									_ownershipAccountName);
+							_rawIdsValueMap.put(RAWCONTACT_VERSION, _version);
+							_rawIdsValueMap.put(RAWCONTACT_DIRTYTYPE,
+									ContactDirtyType.NORMAL);
+							// generate rawIds map and put rawId and rawIds
+							// value map to it
+							Map<Long, Map<String, Object>> _rawIdsMap = new HashMap<Long, Map<String, Object>>();
+							_rawIdsMap.put(_rawId, _rawIdsValueMap);
+							// set contact rawIds map
+							_contact.setRawIds(_rawIdsMap);
+
+							// add the new contact to all contacts detail info
+							// map and list
+							_mAllContactsInfoMap.put(_dirtyContactId, _contact);
+							for (int i = 0; i < _mAllContactsInfoArray.size(); i++) {
+								// get the contact in all contacts detail info
+								// list
+								ContactBean _contactInList = _mAllContactsInfoArray
+										.get(i);
+
+								// replace
+								if (_dirtyContactId == _contactInList.getId()) {
+									_contactInList = _contact;
+								} else if (_dirtyContactId < _contactInList
+										.getId()) {
+									_mAllContactsInfoArray.add(i, _contact);
+								}
+							}
+						}
+
+						// set attributes
+						// set display name
+						_contact.setDisplayName(_displayName);
+
+						// set contact rawIds map
+						if (!_contact.getRawIds().containsKey(_rawId)) {
+							// generate rawIds value map and add ownership
+							// account name, version and dirty type to it
+							Map<String, Object> _rawIdsValueMap = new HashMap<String, Object>();
+							_rawIdsValueMap.put(RAWCONTACT_ACCOUNTNAME,
+									_ownershipAccountName);
+							_rawIdsValueMap.put(RAWCONTACT_VERSION, _version);
+							_rawIdsValueMap.put(RAWCONTACT_DIRTYTYPE,
+									ContactDirtyType.NORMAL);
+
+							_contact.getRawIds().put(_rawId, _rawIdsValueMap);
+						}
+
+						// set full names and name phonetics
+						if (StructuredName.CONTENT_ITEM_TYPE.equals(_mimeType)) {
+							// generate full name list, put given name and
+							// family name to it and generate name phonetics
+							List<String> _fullNamesList = new ArrayList<String>();
+							List<List<String>> _namePhoneticsList = new ArrayList<List<String>>();
+							if (null != _familyName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_familyName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_familyName));
+							}
+							if (null != _givenName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_givenName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_givenName));
+							}
+							// set contact full names list and name phonetics if
+							// have
+							if (0 != _fullNamesList.size()) {
+								_contact.setFullNames(_fullNamesList);
+							}
+							if (0 != _namePhoneticsList.size()) {
+								_contact.setNamePhonetics(_namePhoneticsList);
+							}
+						}
+
+						// set phone numbers
+						if (Phone.CONTENT_ITEM_TYPE.equals(_mimeType)) {
+							// add to contact new phone numbers list
+							_newPhoneNumbers.add(_phoneNumber);
+						}
+
+						// set photo
+						if (Photo.CONTENT_ITEM_TYPE.equals(_mimeType)) {
+							_contact.setPhoto(_photoData);
+						}
+
+						// set dirty type
+						_contact.setDirty(ContactDirtyType.NORMAL);
+					}
+
+					// close data cursor
+					_dataCursor.close();
+				}
+
+				// set the contact phone numbers list
+				_contact.setPhoneNumbers(_newPhoneNumbers);
+			}
+		}
+
 	}
 
 }
