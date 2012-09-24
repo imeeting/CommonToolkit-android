@@ -662,19 +662,6 @@ public class AddressBookManager {
 	public List<String> getContactsDisplayNamesByPhone(String phoneNumber) {
 		List<String> _displayNames = new ArrayList<String>();
 
-		// // traversal all contacts detail info array
-		// for (ContactBean _contact : _mAllContactsInfoArray) {
-		// // get contact phone numbers list
-		// List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
-		//
-		// // check the contact phone numbers
-		// if (null != _contactPhoneNumbers
-		// && 0 != _contactPhoneNumbers.size()
-		// && _contactPhoneNumbers.contains(phoneNumber)) {
-		// _displayNames.add(_contact.getDisplayName());
-		// }
-		// }
-
 		// traversal all matched contacts detail info array
 		for (ContactBean _contact : getContactsListByPhone(phoneNumber)) {
 			_displayNames.add(_contact.getDisplayName());
@@ -709,6 +696,29 @@ public class AddressBookManager {
 		}
 
 		return _photos;
+	}
+
+	// is contact with the given phone number in address book, return the
+	// contact aggregated id if true else return null
+	public Long isContactWithPhoneInAddressBook(String phoneNumber) {
+		Long _ret = null;
+
+		// traversal all contacts detail info array
+		for (ContactBean _contact : _mAllContactsInfoArray) {
+			// get contact phone numbers list
+			List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
+
+			// check the contact phone numbers
+			if (null != _contactPhoneNumbers
+					&& 0 != _contactPhoneNumbers.size()
+					&& _contactPhoneNumbers.contains(phoneNumber)) {
+				_ret = _contact.getId();
+
+				break;
+			}
+		}
+
+		return _ret;
 	}
 
 	// get contacts list by phone number with sorted type
