@@ -1,5 +1,6 @@
 package com.richitec.commontoolkit.activityextension;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import android.app.Activity;
@@ -17,10 +18,8 @@ import android.widget.TextView;
 
 import com.richitec.commontoolkit.customcomponent.BarButtonItem;
 import com.richitec.commontoolkit.customcomponent.BarButtonItem.BarButtonItemStyle;
-import com.richitec.commontoolkit.customcomponent.IBackBarButtonItemDrawable;
 
-public class NavigationActivity extends Activity implements
-		IBackBarButtonItemDrawable {
+public class NavigationActivity extends Activity {
 
 	private static final String LOG_TAG = "NavigationActivity";
 
@@ -56,6 +55,11 @@ public class NavigationActivity extends Activity implements
 		}
 	}
 
+	// hide navigation bar when navigation activity on created
+	protected boolean hideNavigationBarWhenOnCreated() {
+		return false;
+	}
+
 	@Override
 	public void setContentView(int layoutResID) {
 		// set content view
@@ -63,13 +67,22 @@ public class NavigationActivity extends Activity implements
 
 		LinearLayout body = (LinearLayout) findViewById(R.id.navContent_relativeLayout);
 		body.removeAllViews();
-		// set parameter view to navigation content linearLayout
-		getLayoutInflater().inflate(layoutResID, body);
 
-		// set nav bar back button item, if not null
-		if (null != _mBackBarBtnItem) {
-			setLeftBarButtonItem(_mBackBarBtnItem);
+		// check is hide navigation bar on navigation activity created
+		if (!hideNavigationBarWhenOnCreated()) {
+			// show navigation bar
+			((RelativeLayout) findViewById(R.id.navBar_relativeLayout))
+					.setVisibility(View.VISIBLE);
+
+			// set nav bar back button item, if not null
+			if (null != _mBackBarBtnItem) {
+				setLeftBarButtonItem(_mBackBarBtnItem);
+			}
 		}
+
+		// set parameter view to navigation content linearLayout
+		getLayoutInflater().inflate(layoutResID,
+				(LinearLayout) findViewById(R.id.navContent_relativeLayout));
 	}
 
 	public View getBody() {
@@ -93,13 +106,22 @@ public class NavigationActivity extends Activity implements
 
 		LinearLayout body = (LinearLayout) findViewById(R.id.navContent_relativeLayout);
 		body.removeAllViews();
-		// set parameter view to navigation content linearLayout
-		body.addView(view);
 
-		// set nav bar back button item, if not null
-		if (null != _mBackBarBtnItem) {
-			setLeftBarButtonItem(_mBackBarBtnItem);
+		// check is hide navigation bar on navigation activity created
+		if (!hideNavigationBarWhenOnCreated()) {
+			// show navigation bar
+			((RelativeLayout) findViewById(R.id.navBar_relativeLayout))
+					.setVisibility(View.VISIBLE);
+
+			// set nav bar back button item, if not null
+			if (null != _mBackBarBtnItem) {
+				setLeftBarButtonItem(_mBackBarBtnItem);
+			}
 		}
+
+		// set parameter view to navigation content linearLayout
+		((LinearLayout) findViewById(R.id.navContent_relativeLayout))
+				.addView(view);
 	}
 
 	// set navBar background color
@@ -118,6 +140,18 @@ public class NavigationActivity extends Activity implements
 	public void setNavBarBackgroundDrawable(Drawable navBarBackgroundDrawable) {
 		((RelativeLayout) findViewById(R.id.navBar_relativeLayout))
 				.setBackgroundDrawable(navBarBackgroundDrawable);
+	}
+
+	// nav back bar button item normal drawable
+	protected Drawable backBarBtnItemNormalDrawable() {
+		return getResources().getDrawable(
+				R.drawable.img_leftbarbtnitem_normal_bg);
+	}
+
+	// nav back bar button item pressed drawable
+	protected Drawable backBarBtnItemPressedDrawable() {
+		return getResources().getDrawable(
+				R.drawable.img_leftbarbtnitem_touchdown_bg);
 	}
 
 	// set left bar button item
@@ -177,14 +211,37 @@ public class NavigationActivity extends Activity implements
 
 		if (null != extraData) {
 			for (String extraDataKey : extraData.keySet()) {
-				// String
-				if (extraData.get(extraDataKey) instanceof String) {
-					_intent.putExtra(extraDataKey,
-							(String) extraData.get(extraDataKey));
-				}
-				// others, not implementation
-				else {
-					Log.d(LOG_TAG, "Type except of String not implementation");
+				// get value object
+				Object _valueObject = extraData.get(extraDataKey);
+
+				// check extra data type
+				if (_valueObject instanceof Short) {
+					_intent.putExtra(extraDataKey, (Short) _valueObject);
+				} else if (_valueObject instanceof Integer) {
+					_intent.putExtra(extraDataKey, (Integer) _valueObject);
+				} else if (_valueObject instanceof Long) {
+					_intent.putExtra(extraDataKey, (Long) _valueObject);
+				} else if (_valueObject instanceof Float) {
+					_intent.putExtra(extraDataKey, (Float) _valueObject);
+				} else if (_valueObject instanceof Double) {
+					_intent.putExtra(extraDataKey, (Double) _valueObject);
+				} else if (_valueObject instanceof Character) {
+					_intent.putExtra(extraDataKey, (Character) _valueObject);
+				} else if (_valueObject instanceof Byte) {
+					_intent.putExtra(extraDataKey, (Byte) _valueObject);
+				} else if (_valueObject instanceof Boolean) {
+					_intent.putExtra(extraDataKey, (Boolean) _valueObject);
+				} else if (_valueObject instanceof String) {
+					_intent.putExtra(extraDataKey, (String) _valueObject);
+				} else if (_valueObject instanceof CharSequence) {
+					_intent.putExtra(extraDataKey, (CharSequence) _valueObject);
+				} else if (_valueObject instanceof Serializable) {
+					_intent.putExtra(extraDataKey, (Serializable) _valueObject);
+				} else {
+					// others, not implementation
+					Log.d(LOG_TAG, "Type = "
+							+ extraData.get(extraDataKey).getClass().getName()
+							+ " not implementation");
 				}
 			}
 		}
@@ -202,18 +259,6 @@ public class NavigationActivity extends Activity implements
 	public void popActivity() {
 		// finish self activity
 		finish();
-	}
-
-	@Override
-	public Drawable backBarBtnItemNormalDrawable() {
-		return getResources().getDrawable(
-				R.drawable.img_leftbarbtnitem_normal_bg);
-	}
-
-	@Override
-	public Drawable backBarBtnItemPressedDrawable() {
-		return getResources().getDrawable(
-				R.drawable.img_leftbarbtnitem_touchdown_bg);
 	}
 
 }

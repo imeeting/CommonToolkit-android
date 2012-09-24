@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.richitec.commontoolkit.activityextension.R;
 
-public class BarButtonItem extends Button implements IBarButtonItemDrawable {
+public class BarButtonItem extends Button {
 
 	// normal background drawable
 	private Drawable _mNormalBackgroundDrawable;
@@ -148,14 +148,14 @@ public class BarButtonItem extends Button implements IBarButtonItemDrawable {
 		super.onDraw(canvas);
 	}
 
-	@Override
-	public Drawable leftBarBtnItemNormalDrawable() {
+	// left bar button item normal drawable
+	protected Drawable leftBarBtnItemNormalDrawable() {
 		return getResources().getDrawable(
 				R.drawable.img_leftbarbtnitem_normal_bg);
 	}
 
-	@Override
-	public Drawable rightBarBtnItemNormalDrawable() {
+	// right bar button item normal drawable
+	protected Drawable rightBarBtnItemNormalDrawable() {
 		return getResources().getDrawable(
 				R.drawable.img_rightbarbtnitem_normal_bg);
 	}
