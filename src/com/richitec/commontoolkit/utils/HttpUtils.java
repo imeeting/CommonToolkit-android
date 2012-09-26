@@ -1,5 +1,6 @@
 package com.richitec.commontoolkit.utils;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -18,10 +19,15 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -56,14 +62,17 @@ public class HttpUtils {
 	private HttpUtils() {
 		// init http param
 		HttpParams _httpParameters = new BasicHttpParams();
-
 		// set timeout
 		HttpConnectionParams.setConnectionTimeout(_httpParameters,
 				_mTimeoutConnection);
 		HttpConnectionParams.setSoTimeout(_httpParameters, _mTimeoutSocket);
 
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+		ClientConnectionManager cm = new ThreadSafeClientConnManager(_httpParameters, registry);
+		
 		// init http client
-		_mDefaultHttpClient = new DefaultHttpClient(_httpParameters);
+		_mDefaultHttpClient = new DefaultHttpClient(cm, _httpParameters);
 	}
 
 	private HttpClient getDefaultHttpClient() {
@@ -121,6 +130,11 @@ public class HttpUtils {
 					httpRequestListener.bindReqRespCallBackFunction(
 							_getHttpRequest, _response);
 				}
+				
+				if (_response != null) {
+					_response.getEntity().consumeContent();
+				}
+				
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
 						"Send synchronous get request excetion: "
@@ -135,6 +149,7 @@ public class HttpUtils {
 						&& null != httpRequestListener) {
 					httpRequestListener.onUnknownHost(_getHttpRequest);
 				}
+				_getHttpRequest.abort();
 			}
 			break;
 
@@ -217,6 +232,9 @@ public class HttpUtils {
 					httpRequestListener.bindReqRespCallBackFunction(
 							_postHttpRequest, _response);
 				}
+				if (_response != null) {
+					_response.getEntity().consumeContent();
+				}
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
 						"Send synchronous post request excetion: "
@@ -231,6 +249,8 @@ public class HttpUtils {
 						&& null != httpRequestListener) {
 					httpRequestListener.onUnknownHost(_postHttpRequest);
 				}
+				
+				_postHttpRequest.abort();
 			}
 			break;
 
@@ -478,6 +498,7 @@ public class HttpUtils {
 					// update request execute result
 					_ret = RequestExecuteResult.UNKNOWN_HOST;
 				}
+				_mHttpRequest.abort();
 			}
 
 			return _ret;
@@ -505,6 +526,14 @@ public class HttpUtils {
 					_mHttpRequestListener.bindReqRespCallBackFunction(
 							_mHttpRequest, _mHttpResponse);
 					break;
+				}
+			}
+			
+			if (_mHttpResponse != null) {
+				try {
+					_mHttpResponse.getEntity().consumeContent();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
