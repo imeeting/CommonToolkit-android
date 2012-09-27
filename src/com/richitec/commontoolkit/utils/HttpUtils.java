@@ -1,6 +1,5 @@
 package com.richitec.commontoolkit.utils;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -68,9 +66,11 @@ public class HttpUtils {
 		HttpConnectionParams.setSoTimeout(_httpParameters, _mTimeoutSocket);
 
 		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-		ClientConnectionManager cm = new ThreadSafeClientConnManager(_httpParameters, registry);
-		
+		registry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
+		ClientConnectionManager cm = new ThreadSafeClientConnManager(
+				_httpParameters, registry);
+
 		// init http client
 		_mDefaultHttpClient = new DefaultHttpClient(cm, _httpParameters);
 	}
@@ -120,21 +120,23 @@ public class HttpUtils {
 		switch (pRequestType) {
 		case SYNCHRONOUS:
 			// send synchronous get request
+			HttpResponseResult responseResult = new HttpResponseResult();
 			try {
 				HttpResponse _response = getHttpClient().execute(
 						_getHttpRequest);
-
+				responseResult.setStatusCode(_response.getStatusLine().getStatusCode());
+				responseResult.setResponseText(getHttpResponseEntityString(_response));
+				if (_response != null) {
+					_response.getEntity().consumeContent();
+				}
 				// check http request listener and bind request response
 				// callback function
 				if (null != httpRequestListener) {
 					httpRequestListener.bindReqRespCallBackFunction(
-							_getHttpRequest, _response);
+							responseResult);
 				}
-				
-				if (_response != null) {
-					_response.getEntity().consumeContent();
-				}
-				
+
+
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
 						"Send synchronous get request excetion: "
@@ -144,10 +146,10 @@ public class HttpUtils {
 				// process needed exception and check http request listener
 				if (ConnectTimeoutException.class == e.getClass()
 						&& null != httpRequestListener) {
-					httpRequestListener.onTimeout(_getHttpRequest);
+					httpRequestListener.onTimeout(responseResult);
 				} else if (UnknownHostException.class == e.getClass()
 						&& null != httpRequestListener) {
-					httpRequestListener.onUnknownHost(_getHttpRequest);
+					httpRequestListener.onUnknownHost(responseResult);
 				}
 				_getHttpRequest.abort();
 			}
@@ -222,18 +224,20 @@ public class HttpUtils {
 		switch (pRequestType) {
 		case SYNCHRONOUS:
 			// send synchronous post request
+			HttpResponseResult responseResult = new HttpResponseResult();
 			try {
 				HttpResponse _response = getHttpClient().execute(
 						_postHttpRequest);
-
+				responseResult.setStatusCode(_response.getStatusLine().getStatusCode());
+				responseResult.setResponseText(getHttpResponseEntityString(_response));
+				if (_response != null) {
+					_response.getEntity().consumeContent();
+				}
 				// check http request listener and bind request response
 				// callback function
 				if (null != httpRequestListener) {
 					httpRequestListener.bindReqRespCallBackFunction(
-							_postHttpRequest, _response);
-				}
-				if (_response != null) {
-					_response.getEntity().consumeContent();
+							responseResult);
 				}
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
@@ -244,12 +248,12 @@ public class HttpUtils {
 				// process needed exception and check http request listener
 				if (ConnectTimeoutException.class == e.getClass()
 						&& null != httpRequestListener) {
-					httpRequestListener.onTimeout(_postHttpRequest);
+					httpRequestListener.onTimeout(responseResult);
 				} else if (UnknownHostException.class == e.getClass()
 						&& null != httpRequestListener) {
-					httpRequestListener.onUnknownHost(_postHttpRequest);
+					httpRequestListener.onUnknownHost(responseResult);
 				}
-				
+
 				_postHttpRequest.abort();
 			}
 			break;
@@ -335,12 +339,13 @@ public class HttpUtils {
 
 	// get http response entity string
 	public static String getHttpResponseEntityString(HttpResponse response) {
-		String _respEntityString = null;
+		String _respEntityString = "";
 
 		// check response
 		if (null != response) {
 			try {
-				_respEntityString = EntityUtils.toString(response.getEntity());
+				_respEntityString = EntityUtils.toString(response.getEntity(),
+						HTTP.UTF_8);
 			} catch (Exception e) {
 				e.printStackTrace();
 
@@ -365,88 +370,119 @@ public class HttpUtils {
 		URLENCODED, MULTIPARTFORMDATA
 	}
 
+	/**
+	 * http response result set
+	 * 
+	 * @author star
+	 * 
+	 */
+	public static class HttpResponseResult {
+		private int statusCode;
+		private String responseText;
+
+		public HttpResponseResult() {
+			statusCode = -1;
+			responseText = "";
+		}
+
+		public int getStatusCode() {
+			return statusCode;
+		}
+
+		public void setStatusCode(int statusCode) {
+			this.statusCode = statusCode;
+		}
+
+		public String getResponseText() {
+			return responseText;
+		}
+
+		public void setResponseText(String responseText) {
+			this.responseText = responseText;
+		}
+
+	}
+
 	// http request listener
 	public static abstract class OnHttpRequestListener {
 
 		// bind request response callback function
-		private void bindReqRespCallBackFunction(HttpRequest request,
-				HttpResponse response) {
+		private void bindReqRespCallBackFunction(
+				HttpResponseResult responseResult) {
 			// check response status code
-			if (response != null && response.getStatusLine() != null) {
-				switch (response.getStatusLine().getStatusCode()) {
+			if (responseResult != null) {
+				switch (responseResult.getStatusCode()) {
 				case HttpStatus.SC_ACCEPTED:
 				case HttpStatus.SC_CREATED:
 				case HttpStatus.SC_OK:
-					onFinished(request, response);
+					onFinished(responseResult);
 					break;
 
 				case HttpStatus.SC_BAD_REQUEST:
-					onBadRequest(request, response);
+					onBadRequest(responseResult);
 					break;
 
 				case HttpStatus.SC_FORBIDDEN:
-					onForbidden(request, response);
+					onForbidden(responseResult);
 					break;
 
 				case HttpStatus.SC_NOT_FOUND:
-					onNotFound(request, response);
+					onNotFound(responseResult);
 					break;
 
 				case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-					onInternalServerError(request, response);
+					onInternalServerError(responseResult);
 					break;
 
 				default:
-					onFailed(request, response);
+					onFailed(responseResult);
 					break;
 				}
 			} else {
-				onFailed(request, response);
+				onFailed(responseResult);
 			}
 		}
 
 		// onFinished
-		public abstract void onFinished(HttpRequest request,
-				HttpResponse response);
+		public abstract void onFinished(HttpResponseResult responseResult);
 
 		// bad request
-		public void onBadRequest(HttpRequest request, HttpResponse response) {
+		public void onBadRequest(HttpResponseResult responseResult) {
 			// call onFailed callback function
-			onFailed(request, response);
+			onFailed(responseResult);
 		}
 
 		// forbidden
-		public void onForbidden(HttpRequest request, HttpResponse response) {
+		public void onForbidden(HttpResponseResult responseResult) {
 			// call onFailed callback function
-			onFailed(request, response);
+			onFailed(responseResult);
 		}
 
 		// not found
-		public void onNotFound(HttpRequest request, HttpResponse response) {
+		public void onNotFound(HttpResponseResult responseResult) {
 			// call onFailed callback function
-			onFailed(request, response);
+			onFailed(responseResult);
 		}
 
 		// internal server error
-		public void onInternalServerError(HttpRequest request,
-				HttpResponse response) {
+		public void onInternalServerError(HttpResponseResult responseResult) {
 			// call onFailed callback function
-			onFailed(request, response);
+			onFailed(responseResult);
 		}
 
 		// onFailed
-		public abstract void onFailed(HttpRequest request, HttpResponse response);
+		public abstract void onFailed(HttpResponseResult responseResult);
 
 		// on timeout
-		public void onTimeout(HttpRequest request) {
+		public void onTimeout(HttpResponseResult responseResult) {
 			// call onFailed callback function
-			onFailed(request, null);
+			onFailed(responseResult);
 		}
 
 		// on unknown host
-		public void onUnknownHost(HttpRequest request) {
+		public void onUnknownHost(HttpResponseResult responseResult) {
 			// call onFailed callback function
-			onFailed(request, null);
+			onFailed(responseResult);
 		}
 
 	}
@@ -468,6 +504,8 @@ public class HttpUtils {
 		// http request listener
 		private OnHttpRequestListener _mHttpRequestListener;
 
+		private HttpResponseResult _mResponseResult;
+
 		@Override
 		protected RequestExecuteResult doInBackground(Object... params) {
 			// init return result
@@ -480,8 +518,15 @@ public class HttpUtils {
 					OnHttpRequestListener.class, params);
 
 			// save http response
+			_mResponseResult = new HttpResponseResult();
 			try {
 				_mHttpResponse = getHttpClient().execute(_mHttpRequest);
+				_mResponseResult.setStatusCode(_mHttpResponse.getStatusLine()
+						.getStatusCode());
+				_mResponseResult.setResponseText(HttpUtils
+						.getHttpResponseEntityString(_mHttpResponse));
+
+				_mHttpResponse.getEntity().consumeContent();
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
 						"Send asynchronous http request excetion: "
@@ -514,28 +559,21 @@ public class HttpUtils {
 				// check result
 				switch (result) {
 				case TIMEOUT:
-					_mHttpRequestListener.onTimeout(_mHttpRequest);
+					_mHttpRequestListener.onTimeout(_mResponseResult);
 					break;
 
 				case UNKNOWN_HOST:
-					_mHttpRequestListener.onUnknownHost(_mHttpRequest);
+					_mHttpRequestListener.onUnknownHost(_mResponseResult);
 					break;
 
 				case NORMAL:
 				default:
-					_mHttpRequestListener.bindReqRespCallBackFunction(
-							_mHttpRequest, _mHttpResponse);
+					_mHttpRequestListener
+							.bindReqRespCallBackFunction(_mResponseResult);
 					break;
 				}
 			}
-			
-			if (_mHttpResponse != null) {
-				try {
-					_mHttpResponse.getEntity().consumeContent();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+
 		}
 
 		// get suitable param from params with class name

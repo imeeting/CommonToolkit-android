@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/navBar_relativeLayout"
         android:layout_width="fill_parent"
-        android:layout_height="46dp"
+        android:layout_height="52dp"
         android:background="@drawable/img_navbar_bg"
         android:orientation="horizontal"
         android:visibility="gone" >
