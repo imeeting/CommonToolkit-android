@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- transparent color -->
+    <color name="threequarters_light_slate_gray">#b0778899</color>
+
+    <!-- pure color -->
     <color name="dark_dim_gray">#424242</color>
+    <color name="gray">#808080</color>
 
 </resources>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+
+    <RelativeLayout
+        android:id="@+id/alphabet_relativeLayout"
+        android:layout_width="28dp"
+        android:layout_height="fill_parent"
+        android:layout_gravity="right"
+        android:layout_marginBottom="6dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@android:color/transparent"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp" >
+
+        <TextView
+            android:id="@+id/headLetter_textView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:textColor="@color/gray"
+            android:textSize="13dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/otherLetters_linearLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/headLetter_textView"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                layout="@layout/alphabet_otherletter_layout"
+                android:visibility="gone" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</FrameLayout>

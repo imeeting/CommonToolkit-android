@@ -63,7 +63,7 @@ public class NavigationActivity extends Activity {
 	@Override
 	public void setContentView(int layoutResID) {
 		// set content view
-		super.setContentView(R.layout.activity_navigation);
+		super.setContentView(R.layout.navigation_activity_layout);
 
 		LinearLayout body = (LinearLayout) findViewById(R.id.navContent_relativeLayout);
 		body.removeAllViews();
