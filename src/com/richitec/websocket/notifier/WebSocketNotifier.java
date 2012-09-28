@@ -40,11 +40,11 @@ public class WebSocketNotifier {
 				public void onDisconnect() {
 					System.out.println("onDisconnect");
 					if (needConnect) {
-						try {
+//						try {
 							connect();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
 					}
 				}
 
@@ -101,13 +101,23 @@ public class WebSocketNotifier {
 		this.actionListener = lis;
 	}
 
-	public void connect() throws IOException {
+	public void connect(){
 		needConnect = true;
 		try {
 			if (sk == null) {
 				initialize();
 			}
-			sk.connect();
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						sk.connect();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		} catch (URLNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -116,9 +126,16 @@ public class WebSocketNotifier {
 	public void disconnect() {
 		needConnect = false;
 		if (sk != null) {
-			sk.disconnect();
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					sk.disconnect();
+					sk = null;
+				}
+			}).start();
 		}
-		sk = null;
+		
 	}
 
 }
