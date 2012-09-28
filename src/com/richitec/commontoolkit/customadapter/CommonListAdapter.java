@@ -1,7 +1,10 @@
 package com.richitec.commontoolkit.customadapter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.content.Context;
 import android.util.SparseArray;
@@ -12,10 +15,13 @@ import android.widget.BaseAdapter;
 
 public abstract class CommonListAdapter extends BaseAdapter {
 
+	// alphabet key
+	public static final String ALPHABET_INDEX = "alphabet_index_key";
+
 	// layout inflater
 	protected LayoutInflater _mLayoutInflater;
 	// data
-	protected List<? extends Map<String, ?>> _mData;
+	protected List<Map<String, ?>> _mData;
 	// items layout resource id
 	protected int _mItemsLayoutResId;
 	// data keys
@@ -23,14 +29,13 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	// items component resource identities
 	protected int[] _mItemsComponentResIds;
 
-	public CommonListAdapter(Context context,
-			List<? extends Map<String, ?>> data, int itemsLayoutResId,
-			String[] dataKeys, int[] itemsComponentResIds) {
+	public CommonListAdapter(Context context, List<Map<String, ?>> data,
+			int itemsLayoutResId, String[] dataKeys, int[] itemsComponentResIds) {
 		// save layout inflater, data, items layout resource id, data keys and
 		// items component resource identities
 		_mLayoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		_mData = data;
+		_mData = null == data ? new ArrayList<Map<String, ?>>() : data;
 		_mItemsLayoutResId = itemsLayoutResId;
 		_mDataKeys = dataKeys;
 		_mItemsComponentResIds = itemsComponentResIds;
@@ -93,6 +98,74 @@ public abstract class CommonListAdapter extends BaseAdapter {
 		}
 
 		return convertView;
+	}
+
+	// set data
+	public CommonListAdapter setData(List<Map<String, ?>> data) {
+		// set data
+		_mData = data;
+
+		// notify data set changed
+		notifyDataSetChanged();
+
+		return this;
+	}
+
+	// append data
+	public CommonListAdapter appendData(List<Map<String, ?>> data) {
+		// append data
+		_mData.addAll(data);
+
+		// notify data set changed
+		notifyDataSetChanged();
+
+		return this;
+	}
+
+	public CommonListAdapter appendData(Map<String, ?> data) {
+		// append data
+		_mData.add(data);
+
+		// notify data set changed
+		notifyDataSetChanged();
+
+		return this;
+	}
+
+	// remove data
+	public CommonListAdapter removeData(Map<String, ?> data) {
+		// append data
+		_mData.remove(data);
+
+		// notify data set changed
+		notifyDataSetChanged();
+
+		return this;
+	}
+
+	public CommonListAdapter removeData(int data) {
+		// append data
+		_mData.remove(data);
+
+		// notify data set changed
+		notifyDataSetChanged();
+
+		return this;
+	}
+
+	// get quick alphabet bar alphabet set
+	public Set<String> getAlphabet() {
+		Set<String> _alphabet = new HashSet<String>();
+
+		// init alphabet
+		for (Map<String, ?> _data : _mData) {
+			// check if existed alphabet
+			if (_data.keySet().contains(ALPHABET_INDEX)) {
+				_alphabet.add((String) _data.get(ALPHABET_INDEX));
+			}
+		}
+
+		return _alphabet;
 	}
 
 	// bind view and data

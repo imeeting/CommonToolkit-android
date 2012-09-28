@@ -2,8 +2,10 @@ package com.richitec.commontoolkit.customcomponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Activity;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +25,7 @@ import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
 import com.richitec.commontoolkit.activityextension.R;
 import com.richitec.commontoolkit.customadapter.CommonListAdapter;
 
-public class ListViewQuickAlphabetBar {
+public class ListViewQuickAlphabetBar extends DataSetObserver {
 
 	private static final String LOG_TAG = "ListViewQuickAlphabetBar";
 
@@ -37,6 +40,12 @@ public class ListViewQuickAlphabetBar {
 
 	// dependent listView
 	private ListView _mDependentListView;
+
+	// dependent listView data previous count
+	private Integer _mDepedentListViewDataPreviousCount;
+
+	// alphabet
+	private List<Character> _mAlphabet;
 
 	// listView quick alphabet bar touch listener
 	private OnTouchListener _mOnTouchListener;
@@ -57,7 +66,7 @@ public class ListViewQuickAlphabetBar {
 		_mAlphabetRelativeLayout
 				.setOnTouchListener(new OnAlphabetRelativeLayoutTouchListener());
 
-		if (null != dependentListView) {
+		if (null != dependentListView && null != dependentListView.getAdapter()) {
 			// init alphabet touched letter toast
 			_mAlphabetTouchedLetterToast = new AlphabetTouchedLetterToast(
 					dependentListView);
@@ -67,9 +76,23 @@ public class ListViewQuickAlphabetBar {
 
 			// bind listView and alphabet
 			bindListViewAlphabet(dependentListView);
+		} else {
+			Log.e(LOG_TAG,
+					null == dependentListView ? "Dependent listView is null"
+							: "Dependent listView = " + dependentListView
+									+ " and its adapter is null");
+		}
+	}
 
-			// ??, test by ares
-			updateAlphabet(_mDependentListView);
+	@Override
+	public void onChanged() {
+		super.onChanged();
+
+		// check dependent listView data count
+		if (_mDepedentListViewDataPreviousCount != _mDependentListView
+				.getAdapter().getCount()) {
+			// update alphabet
+			updateAlphabet(_mDependentListView.getAdapter());
 		}
 	}
 
@@ -84,6 +107,12 @@ public class ListViewQuickAlphabetBar {
 			// add alphabet relativeLayout to dependent listView
 			((FrameLayout) dependentListView.getParent())
 					.addView(_mAlphabetRelativeLayout);
+
+			// register data set changed observer
+			dependentListView.getAdapter().registerDataSetObserver(this);
+
+			// init alphabet
+			updateAlphabet(dependentListView.getAdapter());
 		} else {
 			Log.e(LOG_TAG, "Dependent listView = " + dependentListView
 					+ " and its parent view = " + dependentListView.getParent());
@@ -91,10 +120,12 @@ public class ListViewQuickAlphabetBar {
 	}
 
 	// update alphabet
-	private void updateAlphabet(ListView dependentListView) {
-		// check dependent listView
-		if (null != dependentListView
-				&& dependentListView.getAdapter() instanceof CommonListAdapter) {
+	private void updateAlphabet(ListAdapter dependentListViewAdapter) {
+		// save dependent listView adapter data count
+		_mDepedentListViewDataPreviousCount = dependentListViewAdapter
+				.getCount();
+
+		if (dependentListViewAdapter instanceof CommonListAdapter) {
 			// clear alphabet relativeLayout
 			// hide head letter textView
 			TextView _headLetterTextView = (TextView) _mAlphabetRelativeLayout
@@ -110,44 +141,74 @@ public class ListViewQuickAlphabetBar {
 						.setVisibility(View.GONE);
 			}
 
-			// ??, test by ares
-			List<Character> _presentAlphabet = new ArrayList<Character>();
-			_presentAlphabet.add('A');
-			_presentAlphabet.add('C');
-			_presentAlphabet.add('H');
-			_presentAlphabet.add('J');
-			_presentAlphabet.add('M');
-			_presentAlphabet.add('W');
-			_presentAlphabet.add('X');
-			_presentAlphabet.add('Z');
-			_presentAlphabet.add('#');
+			// check dependent listView adapter alphabet set
+			Set<String> _dependentListViewAdapterAlphabetSet = ((CommonListAdapter) dependentListViewAdapter)
+					.getAlphabet();
+			if (0 != _dependentListViewAdapterAlphabetSet.size()) {
+				// init present alphabet
+				_mAlphabet = new ArrayList<Character>();
+				for (int i = 0; i < ALPHABET.length(); i++) {
+					for (String _alphabetIndex : _dependentListViewAdapterAlphabetSet) {
+						// "" alphabet index
+						if (_alphabetIndex.equalsIgnoreCase("")) {
+							// #
+							if (ALPHABET.length() - 1 == i) {
+								// add to alphabet and remove from dependent
+								// listView adapter alphabet set
+								_mAlphabet.add(ALPHABET.charAt(i));
 
-			// set alphabet
-			for (int i = 0; i < _presentAlphabet.size(); i++) {
-				// get letter
-				String _letter = String.valueOf(_presentAlphabet.get(i));
+								_dependentListViewAdapterAlphabetSet
+										.remove(_alphabetIndex);
 
-				// head letter
-				if (0 == i) {
-					// set head letter textView text and show it
-					_headLetterTextView.setText(_letter);
-					_headLetterTextView.setVisibility(View.VISIBLE);
-				} else {
-					// show other letters linearLayout if it is not visible
-					if (!_otherLettersLinearLayout.isShown()) {
-						_otherLettersLinearLayout.setVisibility(View.VISIBLE);
+								break;
+							}
+						} else if (String
+								.valueOf(ALPHABET.charAt(i))
+								.equalsIgnoreCase(
+										String.valueOf(_alphabetIndex.charAt(0)))) {
+							// add to alphabet and remove from dependent
+							// listView adapter alphabet set
+							_mAlphabet.add(ALPHABET.charAt(i));
+
+							_dependentListViewAdapterAlphabetSet
+									.remove(_alphabetIndex);
+
+							break;
+						}
 					}
-
-					// set other letter textView text and show it
-					TextView _otherLetterTextView = (TextView) _otherLettersLinearLayout
-							.getChildAt(i);
-					_otherLetterTextView.setText(_letter);
-					_otherLetterTextView.setVisibility(View.VISIBLE);
 				}
+
+				// init alphabet bar
+				for (int i = 0; i < _mAlphabet.size(); i++) {
+					// get letter
+					String _letter = String.valueOf(_mAlphabet.get(i));
+
+					// head letter
+					if (0 == i) {
+						// set head letter textView text and show it
+						_headLetterTextView.setText(_letter);
+						_headLetterTextView.setVisibility(View.VISIBLE);
+					} else {
+						// show other letters linearLayout if it is not visible
+						if (!_otherLettersLinearLayout.isShown()) {
+							_otherLettersLinearLayout
+									.setVisibility(View.VISIBLE);
+						}
+
+						// set other letter textView text and show it
+						TextView _otherLetterTextView = (TextView) _otherLettersLinearLayout
+								.getChildAt(i);
+						_otherLetterTextView.setText(_letter);
+						_otherLetterTextView.setVisibility(View.VISIBLE);
+					}
+				}
+			} else {
+				Log.w(LOG_TAG, "Dependent listView adapter alphabet is empty");
 			}
 		} else {
-			Log.e(LOG_TAG, "Dependent listView = " + dependentListView
-					+ " and its adapter = " + dependentListView.getAdapter());
+			Log.w(LOG_TAG, "Dependent listView adapter = "
+					+ dependentListViewAdapter + " and class name = "
+					+ dependentListViewAdapter.getClass().getName());
 		}
 	}
 
@@ -200,39 +261,45 @@ public class ListViewQuickAlphabetBar {
 		if (0 != headLetterEndPoint.y) {
 			// only one letter
 			if (0 == otherLettersEndPoint.y) {
-				// head letter
-				Log.d(LOG_TAG, "head letter");
-				_mAlphabetTouchedLetterToast.setText("head letter").show();
+				// init touched letter(head letter) and show alphabet touched
+				// letter toast
+				_touchedLetter = _mAlphabet.get(0);
 
-				// ??
+				_mAlphabetTouchedLetterToast.setText(
+						String.valueOf(_touchedLetter)).show();
 			} else {
 				// get other letter textView average height
-				float _otherLetterTextViewAverageHeight = (float) ((otherLettersEndPoint.y - headLetterEndPoint.y) / 8.0);
+				float _otherLetterTextViewAverageHeight = (float) ((otherLettersEndPoint.y - headLetterEndPoint.y) / (_mAlphabet
+						.size() - 1));
 
 				// up
 				if (_touchedLocationY < headLetterEndPoint.y) {
-					// head letter
-					Log.d(LOG_TAG, "head letter");
-					_mAlphabetTouchedLetterToast.setText("head letter").show();
+					// init touched letter(head letter) and show alphabet
+					// touched letter toast
+					_touchedLetter = _mAlphabet.get(0);
 
-					// ??
+					_mAlphabetTouchedLetterToast.setText(
+							String.valueOf(_touchedLetter)).show();
 				}
 				// down
 				else if (_touchedLocationY >= otherLettersEndPoint.y) {
-					// other letters last letter
-					Log.d(LOG_TAG, "last other letter");
-					_mAlphabetTouchedLetterToast.setText("last other letter")
-							.show();
+					// init touched letter(other letters last letter) and show
+					// alphabet touched letter toast
+					_touchedLetter = _mAlphabet.get(_mAlphabet.size() - 1);
 
-					// ??
-				} else {
-					// letter of other letters
-					int _index = (int) ((_touchedLocationY - headLetterEndPoint.y) / _otherLetterTextViewAverageHeight) + 1;
-					Log.d(LOG_TAG, _index + " letter of other letters");
 					_mAlphabetTouchedLetterToast.setText(
-							_index + " letter of other letters").show();
+							String.valueOf(_touchedLetter)).show();
+				} else {
+					// init touched letter(letter of other letters, remember
+					// process last letter textView bottom bounds) and show
+					// alphabet touched letter toast
+					int _index = (int) ((_touchedLocationY - headLetterEndPoint.y) / _otherLetterTextViewAverageHeight) + 1;
+					_touchedLetter = _mAlphabet
+							.get(_mAlphabet.size() == _index ? _mAlphabet
+									.size() - 1 : _index);
 
-					// ??
+					_mAlphabetTouchedLetterToast.setText(
+							String.valueOf(_touchedLetter)).show();
 				}
 			}
 		}
@@ -261,8 +328,8 @@ public class ListViewQuickAlphabetBar {
 
 			// set gravity
 			_mAlphabetTouchedLetterToast.setGravity(Gravity.CENTER_VERTICAL
-					| Gravity.LEFT, _location[0] + dependentListView.getWidth()
-					/ 2, 0);
+					| Gravity.LEFT,
+					(_location[0] + dependentListView.getWidth()) / 2, 0);
 		}
 
 		// set text
@@ -313,8 +380,9 @@ public class ListViewQuickAlphabetBar {
 						_headLetterTextViewEndPoint,
 						_otherLettersLinearLayoutEndPoint);
 
-				// check touch listener
-				if (null != _mOnTouchListener && null != _mDependentListView) {
+				// check touch listener and touched letter
+				if (null != _mOnTouchListener && null != _mDependentListView
+						&& null != _touchedLetter) {
 					_mOnTouchListener.onTouch(_mAlphabetRelativeLayout,
 							_mDependentListView, event, _touchedLetter);
 				}
