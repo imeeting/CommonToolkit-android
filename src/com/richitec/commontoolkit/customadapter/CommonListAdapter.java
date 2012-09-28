@@ -154,14 +154,24 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	}
 
 	// get quick alphabet bar alphabet set
-	public Set<String> getAlphabet() {
-		Set<String> _alphabet = new HashSet<String>();
+	public Set<Character> getAlphabet() {
+		// not start with 26 English character alpha
+		final Character OTHER_ALPHABET_INDEX = '#';
+
+		Set<Character> _alphabet = new HashSet<Character>();
 
 		// init alphabet
 		for (Map<String, ?> _data : _mData) {
 			// check if existed alphabet
 			if (_data.keySet().contains(ALPHABET_INDEX)) {
-				_alphabet.add((String) _data.get(ALPHABET_INDEX));
+				// get alphabet index string
+				String _alphabetIndexString = (String) _data
+						.get(ALPHABET_INDEX);
+
+				_alphabet
+						.add(null == _alphabetIndexString ? OTHER_ALPHABET_INDEX
+								: _alphabetIndexString.matches("^[A-Za-z]+.*") ? _alphabetIndexString
+										.charAt(0) : OTHER_ALPHABET_INDEX);
 			}
 		}
 

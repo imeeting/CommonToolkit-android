@@ -142,30 +142,17 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 			}
 
 			// check dependent listView adapter alphabet set
-			Set<String> _dependentListViewAdapterAlphabetSet = ((CommonListAdapter) dependentListViewAdapter)
+			Set<Character> _dependentListViewAdapterAlphabetSet = ((CommonListAdapter) dependentListViewAdapter)
 					.getAlphabet();
 			if (0 != _dependentListViewAdapterAlphabetSet.size()) {
 				// init present alphabet
 				_mAlphabet = new ArrayList<Character>();
 				for (int i = 0; i < ALPHABET.length(); i++) {
-					for (String _alphabetIndex : _dependentListViewAdapterAlphabetSet) {
-						// "" alphabet index
-						if (_alphabetIndex.equalsIgnoreCase("")) {
-							// #
-							if (ALPHABET.length() - 1 == i) {
-								// add to alphabet and remove from dependent
-								// listView adapter alphabet set
-								_mAlphabet.add(ALPHABET.charAt(i));
-
-								_dependentListViewAdapterAlphabetSet
-										.remove(_alphabetIndex);
-
-								break;
-							}
-						} else if (String
-								.valueOf(ALPHABET.charAt(i))
+					for (Character _alphabetIndex : _dependentListViewAdapterAlphabetSet) {
+						// compare
+						if (String.valueOf(ALPHABET.charAt(i))
 								.equalsIgnoreCase(
-										String.valueOf(_alphabetIndex.charAt(0)))) {
+										String.valueOf(_alphabetIndex))) {
 							// add to alphabet and remove from dependent
 							// listView adapter alphabet set
 							_mAlphabet.add(ALPHABET.charAt(i));
@@ -178,7 +165,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 					}
 				}
 
-				// init alphabet bar
+				// init quick alphabet bar
 				for (int i = 0; i < _mAlphabet.size(); i++) {
 					// get letter
 					String _letter = String.valueOf(_mAlphabet.get(i));
