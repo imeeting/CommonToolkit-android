@@ -40,10 +40,6 @@ public abstract class CommonListAdapter extends BaseAdapter {
 		_mDataKeys = dataKeys;
 		_mItemsComponentResIds = itemsComponentResIds;
 	}
-
-	public void setData(List<? extends Map<String, ?>> data) {
-		this._mData = data;
-	}
 	
 	public List<? extends Map<String, ?>> getData() {
 		return _mData;
