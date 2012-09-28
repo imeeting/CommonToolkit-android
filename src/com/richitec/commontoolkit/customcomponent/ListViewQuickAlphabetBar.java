@@ -47,6 +47,9 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 	// alphabet
 	private List<Character> _mAlphabet;
 
+	// previous touched letter
+	private Character _mAlphabetRelativeLayoutPreviousTouchedLetter;
+
 	// listView quick alphabet bar touch listener
 	private OnTouchListener _mOnTouchListener;
 
@@ -337,7 +340,6 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 	// alphabet relativeLayout on touch listener
 	class OnAlphabetRelativeLayoutTouchListener implements
 			android.view.View.OnTouchListener {
-
 		// define head letter textView and other letters linearLayout end point
 		final Point _headLetterTextViewEndPoint = new Point(-1, -1);
 		final Point _otherLettersLinearLayoutEndPoint = new Point(-1, -1);
@@ -368,8 +370,14 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 						_otherLettersLinearLayoutEndPoint);
 
 				// check touch listener and touched letter
-				if (null != _mOnTouchListener && null != _mDependentListView
-						&& null != _touchedLetter) {
+				if (null != _mOnTouchListener
+						&& null != _mDependentListView
+						&& null != _touchedLetter
+						&& !_touchedLetter
+								.equals(_mAlphabetRelativeLayoutPreviousTouchedLetter)) {
+					// save touched letter
+					_mAlphabetRelativeLayoutPreviousTouchedLetter = _touchedLetter;
+
 					_mOnTouchListener.onTouch(_mAlphabetRelativeLayout,
 							_mDependentListView, event, _touchedLetter);
 				}
