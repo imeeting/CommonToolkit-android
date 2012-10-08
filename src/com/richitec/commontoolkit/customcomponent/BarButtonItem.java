@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Button;
 
 import com.richitec.commontoolkit.activityextension.R;
@@ -131,23 +133,6 @@ public class BarButtonItem extends Button {
 				.getString(titleId), btnClickListener);
 	}
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		// set the button background image based on whether the button in its
-		// pressed state
-		if (isPressed()) {
-			if (null != _mPressedBackgroundDrawable) {
-				setBackgroundDrawable(_mPressedBackgroundDrawable);
-			}
-		} else {
-			if (null != _mNormalBackgroundDrawable) {
-				setBackgroundDrawable(_mNormalBackgroundDrawable);
-			}
-		}
-
-		super.onDraw(canvas);
-	}
-
 	// left bar button item normal drawable
 	protected Drawable leftBarBtnItemNormalDrawable() {
 		return getResources().getDrawable(
@@ -158,6 +143,21 @@ public class BarButtonItem extends Button {
 	protected Drawable rightBarBtnItemNormalDrawable() {
 		return getResources().getDrawable(
 				R.drawable.img_rightbarbtnitem_normal_bg);
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			if (null != _mPressedBackgroundDrawable) {
+				setBackgroundDrawable(_mPressedBackgroundDrawable);
+			}
+		} else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+			if (null != _mNormalBackgroundDrawable) {
+				setBackgroundDrawable(_mNormalBackgroundDrawable);
+			}
+		}
+		
+		return super.onTouchEvent(event);
 	}
 
 	// inner class

@@ -34,6 +34,9 @@ public class AddressBookManager {
 
 	private static final String LOG_TAG = "AddressBookManager";
 
+	private static String[] PhoneNumberFilterPrefix = { "17909", "11808",
+			"12593", "17951", "17911", "086", "+86", "86" };
+
 	// singleton instance
 	private static volatile AddressBookManager _singletonInstance;
 
@@ -431,7 +434,7 @@ public class AddressBookManager {
 						.getColumnIndex(Phone.CONTACT_ID));
 				String _phoneNumber = _phoneCursor.getString(_phoneCursor
 						.getColumnIndex(Phone.NUMBER));
-
+				_phoneNumber = filterNumber(_phoneNumber);
 				// Log.d(LOG_TAG,
 				// "getAllContactsPhoneNumbers - aggregated id = "
 				// + _aggregatedId + " and phone number = " + _phoneNumber);
@@ -1271,6 +1274,16 @@ public class AddressBookManager {
 		}
 
 		return _ret;
+	}
+
+	private String filterNumber(String number) {
+		for (String prefix : PhoneNumberFilterPrefix) {
+			int index = number.indexOf(prefix);
+			if (index == 0 && prefix.length() < number.length()) {
+				number = number.substring(prefix.length());
+			}
+		}
+		return number;
 	}
 
 	// inner class
