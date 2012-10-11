@@ -755,10 +755,10 @@ public class AddressBookManager {
 			// check search scope and reset scope
 			if (phoneNumber.length() >= 2
 					&& _mContactsSearchResultMap.keySet().contains(
-							phoneNumber.substring(0, phoneNumber.length()))) {
+							phoneNumber.substring(0, phoneNumber.length() - 1))) {
 				_searchScope = new ArrayList<ContactBean>();
 				for (Map<String, Object> _resultMap : _mContactsSearchResultMap
-						.get(phoneNumber.substring(0, phoneNumber.length()))) {
+						.get(phoneNumber.substring(0, phoneNumber.length() - 1))) {
 					_searchScope.add((ContactBean) _resultMap
 							.get(MATCHING_RESULT_CONTACT));
 				}
@@ -875,10 +875,10 @@ public class AddressBookManager {
 			// check search scope and reset scope
 			if (name.length() >= 2
 					&& _mContactsSearchResultMap.keySet().contains(
-							name.substring(0, name.length()))) {
+							name.substring(0, name.length() - 1))) {
 				_searchScope = new ArrayList<ContactBean>();
 				for (Map<String, Object> _resultMap : _mContactsSearchResultMap
-						.get(name.substring(0, name.length()))) {
+						.get(name.substring(0, name.length() - 1))) {
 					_searchScope.add((ContactBean) _resultMap
 							.get(MATCHING_RESULT_CONTACT));
 				}
@@ -888,8 +888,8 @@ public class AddressBookManager {
 			List<Map<String, Object>> _contactsSearchedResults = new ArrayList<Map<String, Object>>();
 
 			// split contact search name
-			List<List<String>> _contactSearchNameSplitList = null;
-			if (_searchScope.size() >= 1) {
+			List<List<String>> _contactSearchNameSplitList = new ArrayList<List<String>>();
+			if (_searchScope.size() > 1) {
 				// init contact search name split array
 				_contactSearchNameSplitList = splitContactSearchName(name);
 			}
@@ -1162,10 +1162,10 @@ public class AddressBookManager {
 			// check search scope and reset scope
 			if (name.length() >= 2
 					&& _mContactsSearchResultMap.keySet().contains(
-							name.substring(0, name.length()))) {
+							name.substring(0, name.length() - 1))) {
 				_searchScope = new ArrayList<ContactBean>();
 				for (Map<String, Object> _resultMap : _mContactsSearchResultMap
-						.get(name.substring(0, name.length()))) {
+						.get(name.substring(0, name.length() - 1))) {
 					_searchScope.add((ContactBean) _resultMap
 							.get(MATCHING_RESULT_CONTACT));
 				}
