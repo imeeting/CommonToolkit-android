@@ -839,7 +839,8 @@ public class AddressBookManager {
 				.getContactsByPhone(phoneNumber, ContactSortedType.PHONETICS);
 	}
 
-	// get contacts list by name with matching type and sorted type
+	// get contacts list by name(not Chinese character) with matching type and
+	// sorted type
 	public List<ContactBean> getContactsByName(String name,
 			ContactNameMatchingType nameMatchingType,
 			ContactSortedType sortedType) {
@@ -887,10 +888,10 @@ public class AddressBookManager {
 			List<Map<String, Object>> _contactsSearchedResults = new ArrayList<Map<String, Object>>();
 
 			// split contact search name
-			List<List<String>> _ContactSearchNameSplitList = null;
+			List<List<String>> _contactSearchNameSplitList = null;
 			if (_searchScope.size() >= 1) {
 				// init contact search name split array
-				_ContactSearchNameSplitList = splitContactSearchName(name);
+				_contactSearchNameSplitList = splitContactSearchName(name);
 			}
 
 			// search in scope
@@ -901,7 +902,7 @@ public class AddressBookManager {
 				}
 
 				// traversal all search name split array
-				for (List<String> _splitObjects : _ContactSearchNameSplitList) {
+				for (List<String> _splitObjects : _contactSearchNameSplitList) {
 					// split name unmatch flag
 					boolean _splitNameUnmatch = false;
 
@@ -1123,6 +1124,206 @@ public class AddressBookManager {
 	public List<ContactBean> getContactsByName(String name) {
 		return this.getContactsByName(name, ContactNameMatchingType.FUZZY,
 				ContactSortedType.PHONETICS);
+	}
+
+	// get contacts list by name(Chinese character) with matching type and
+	// sorted type
+	public List<ContactBean> getContactsByChineseName(String name,
+			ContactNameMatchingType nameMatchingType,
+			ContactSortedType sortedType) {
+		List<ContactBean> _searchedContacts = new ArrayList<ContactBean>();
+
+		// name to lower case
+		name = name.toLowerCase();
+
+		// check all contacts detail info array
+		if (0 == _mAllContactsInfoArray.size()) {
+			getAllContactsDetailInfo();
+		}
+
+		// check contacts search name
+		if (_mContactsSearchResultMap.containsKey(name)) {
+			for (Map<String, Object> _resultMap : _mContactsSearchResultMap
+					.get(name)) {
+				// get matching result contact
+				ContactBean _contact = (ContactBean) _resultMap
+						.get(MATCHING_RESULT_CONTACT);
+
+				// add contact to searched result list and reset its name
+				// matching indexes
+				_searchedContacts.add(_contact);
+				_contact.getExtension().put(NAME_MATCHING_INDEXES,
+						_resultMap.get(MATCHING_RESULT_INDEXES));
+			}
+		} else {
+			// define contacts search scope
+			List<ContactBean> _searchScope = _mAllContactsInfoArray;
+
+			// check search scope and reset scope
+			if (name.length() >= 2
+					&& _mContactsSearchResultMap.keySet().contains(
+							name.substring(0, name.length()))) {
+				_searchScope = new ArrayList<ContactBean>();
+				for (Map<String, Object> _resultMap : _mContactsSearchResultMap
+						.get(name.substring(0, name.length()))) {
+					_searchScope.add((ContactBean) _resultMap
+							.get(MATCHING_RESULT_CONTACT));
+				}
+			}
+
+			// define contacts searched results list
+			List<Map<String, Object>> _contactsSearchedResults = new ArrayList<Map<String, Object>>();
+
+			// split contact search name
+			List<String> _contactSearchNameSplitObjects = StringUtils
+					.toStringList(name);
+
+			// search in scope
+			for (ContactBean _contact : _searchScope) {
+				// skip the contact has not structured name
+				if (null == _contact.getFullNames()) {
+					continue;
+				}
+
+				// split name unmatch flag
+				boolean _splitNameUnmatch = false;
+
+				// name matching indexes map
+				SparseArray<Integer> _nameMatchingIndexesMap = new SparseArray<Integer>();
+
+				// compare split objects(List) count with contact full
+				// names(List) count
+				if (_contactSearchNameSplitObjects.size() > _contact
+						.getFullNames().size()) {
+					continue;
+				}
+
+				// check name matching type
+				switch (nameMatchingType) {
+				case FUZZY:
+					Log.d(LOG_TAG,
+							"get contacts by Chinese name fuzzy name matching unimplement");
+					_splitNameUnmatch = true;
+					break;
+
+				case ORDER:
+				default:
+					// slide split objects list on contact full names list
+					for (int slideIndex = 0; slideIndex < _contact
+							.getFullNames().size()
+							- _contactSearchNameSplitObjects.size() + 1; slideIndex++) {
+						// split objects list match flag in particular contact
+						// full names list
+						boolean _splitObjectsMatched = false;
+
+						// compare each split object in list
+						for (int splitObjectIndex = 0; splitObjectIndex < _contactSearchNameSplitObjects
+								.size(); splitObjectIndex++) {
+							// one split object in split objects unmatch flag
+							boolean _oneSplitObjectUnmatched = !_contact
+									.getFullNames()
+									.get(slideIndex + splitObjectIndex)
+									.startsWith(
+											_contactSearchNameSplitObjects
+													.get(splitObjectIndex));
+
+							// one split object in split objects unmatch,
+							// break, slide split name array
+							if (_oneSplitObjectUnmatched) {
+								break;
+							}
+
+							// all split object in lists matched, break
+							if (!_oneSplitObjectUnmatched
+									&& splitObjectIndex == _contactSearchNameSplitObjects
+											.size() - 1) {
+								_splitObjectsMatched = true;
+								break;
+							}
+						}
+
+						// one particular split objects list matched, break
+						if (_splitObjectsMatched) {
+							// set name matching index array
+							for (int i = 0; i < _contactSearchNameSplitObjects
+									.size(); i++) {
+								// get contact full name and split object
+								String _fullName = _contact.getFullNames().get(
+										slideIndex + i);
+								String _splitObject = _contactSearchNameSplitObjects
+										.get(i);
+
+								// get the contact matched full name and add
+								// matching indexes to name matching indexes
+								// list
+								if (_fullName.startsWith(_splitObject)) {
+									// put matching indexes integer range in
+									// name matching indexes map
+									_nameMatchingIndexesMap
+											.put(slideIndex + i,
+													_fullName
+															.equalsIgnoreCase(_splitObject)
+															&& 1 == _fullName
+																	.length() ? NAME_CHARACTER_FUZZYMATCHED_LENGTH
+															: _contactSearchNameSplitObjects
+																	.get(i)
+																	.length());
+								}
+							}
+
+							break;
+						}
+
+						// all split objects list unmatch, break, goto next
+						// contact
+						if (!_splitObjectsMatched
+								&& slideIndex == _contact.getFullNames().size()
+										- _contactSearchNameSplitObjects.size()) {
+							_splitNameUnmatch = true;
+							break;
+						}
+					}
+					break;
+				}
+
+				// has one contact name matched, add it in contact search
+				// result list
+				if (!_splitNameUnmatch) {
+					// add contact to result
+					_searchedContacts.add(_contact);
+
+					// append contact matching indexes map
+					_contact.getExtension().put(NAME_MATCHING_INDEXES,
+							_nameMatchingIndexesMap);
+
+					// generate contact searched result and add it to
+					// searched contact array
+					Map<String, Object> _contactsSearchedResult = new HashMap<String, Object>();
+					_contactsSearchedResult.put(MATCHING_RESULT_CONTACT,
+							_contact);
+					_contactsSearchedResult.put(MATCHING_RESULT_INDEXES,
+							_nameMatchingIndexesMap);
+
+					_contactsSearchedResults.add(_contactsSearchedResult);
+				}
+			}
+
+			// add contact searched results to contacts search result map
+			_mContactsSearchResultMap.put(name, _contactsSearchedResults);
+		}
+
+		// check sorted type
+		if (ContactSortedType.PHONETICS == sortedType) {
+			Collections.sort(_searchedContacts, CONTACTNAMEPHONETIC_COMPARATOR);
+		}
+
+		return _searchedContacts;
+	}
+
+	// get contacts list by Chinese name(Chinese character): order matching
+	public List<ContactBean> getContactsByChineseName(String name) {
+		return this.getContactsByChineseName(name,
+				ContactNameMatchingType.ORDER, ContactSortedType.PHONETICS);
 	}
 
 	// get contact end
