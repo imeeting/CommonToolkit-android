@@ -889,7 +889,7 @@ public class AddressBookManager {
 
 			// split contact search name
 			List<List<String>> _contactSearchNameSplitList = new ArrayList<List<String>>();
-			if (_searchScope.size() > 1) {
+			if (_searchScope.size() >= 1) {
 				// init contact search name split array
 				_contactSearchNameSplitList = splitContactSearchName(name);
 			}
