@@ -1484,6 +1484,25 @@ public class AddressBookManager {
 				number = number.substring(prefix.length());
 			}
 		}
+		//edit by :lu hui 2012/10/22
+		//some phone number format may be xxx-xxx-xxxx, so the following just delete the char '-'
+		int index = -1;
+		while((index = number.indexOf('-'))!=-1){
+			int length = number.length()-1;
+			switch(index){
+			case 0:number = number.substring(1);
+					break;
+			default : 
+					if(number.length()-1!=index){
+					  String tmp1 = number.substring(0,index); 
+					  String tmp2 = number.substring(index+1);
+					  number = tmp1+tmp2;
+					}
+					else
+						number = number.substring(0, length);
+			}
+			
+		}
 		return number;
 	}
 
