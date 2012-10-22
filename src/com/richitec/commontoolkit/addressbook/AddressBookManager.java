@@ -1484,6 +1484,9 @@ public class AddressBookManager {
 				number = number.substring(prefix.length());
 			}
 		}
+		//edit by :lu hui 2012/10/22
+		//some phone number format may be xxx-xxx-xxxx, so the following just delete the char '-'
+		number = number.replace("-", "");
 		return number;
 	}
 
