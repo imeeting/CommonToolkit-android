@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.util.Log;
+
 import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
 
 public class ContactBean implements Serializable {

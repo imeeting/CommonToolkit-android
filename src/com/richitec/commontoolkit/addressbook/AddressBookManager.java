@@ -11,9 +11,12 @@ import java.util.Map;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.Message;
+import android.provider.Contacts.People;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
@@ -42,6 +45,9 @@ public class AddressBookManager {
 
 	// contact sqlite query content resolver
 	private ContentResolver _mContentResolver;
+	
+	//contact db observer
+	//private ContactsContentObserver _mContactsContentObserver;
 
 	// collator instance
 	private Collator _mCollator;
@@ -124,6 +130,34 @@ public class AddressBookManager {
 		// init collator instance
 		_mCollator = Collator.getInstance();
 	}
+	
+	/*//if not regist then regist or change the Observer handler
+	public void registContactObserverOrChangeHandler(Handler handler){	
+		if(_mContactsContentObserver==null){
+			Log.d("debug observer regist", "regist!!!");
+			_mContactsContentObserver = new ContactsContentObserver(handler);
+			_mContentResolver.registerContentObserver(Contacts.CONTENT_URI, true, _mContactsContentObserver);
+		}
+		else
+			_mContactsContentObserver.setHandler(handler);
+	}
+	
+	public void removeContactObserverHandler(){
+		if(_mContactsContentObserver!=null)
+			_mContactsContentObserver.setHandler(null);
+	}
+	
+	//Resist observer with normal handler
+	public void registContactOberver(){
+		Log.d("debug observer regist", "regist!!!");
+		_mContactsContentObserver = new ContactsContentObserver();
+		_mContentResolver.registerContentObserver(Contacts.CONTENT_URI, true, _mContactsContentObserver);
+	}
+	
+	public void unRegistDBObserver(){
+		if(_mContactsContentObserver!=null)
+			_mContentResolver.unregisterContentObserver(_mContactsContentObserver);
+	}*/
 
 	// get addressBookManager singleton instance
 	public static AddressBookManager getInstance() {
@@ -149,12 +183,22 @@ public class AddressBookManager {
 
 	// get all name phonetic sorted contacts detail info array
 	public List<ContactBean> getAllNamePhoneticSortedContactsInfoArray() {
+		//Log.d("AddressBook", "get all contact form addressbook to contact " + _mAllContactsInfoArray.size());
 		List<ContactBean> _allNamePhoneticSortedContactsInfoArray = new ArrayList<ContactBean>();
 		_allNamePhoneticSortedContactsInfoArray.addAll(_mAllContactsInfoArray);
 		Collections.sort(_allNamePhoneticSortedContactsInfoArray,
 				CONTACTNAMEPHONETIC_COMPARATOR);
 
 		return _allNamePhoneticSortedContactsInfoArray;
+	}
+	
+	public void copyAllContactsInfo(List<ContactBean> oldContactsInfo){
+//		Log.d("AddressBook", "before copy : " + oldContactsInfo.size());
+		oldContactsInfo.clear();
+		oldContactsInfo.addAll(_mAllContactsInfoArray);
+		Collections.sort(oldContactsInfo,
+				CONTACTNAMEPHONETIC_COMPARATOR);
+//		Log.d("AddressBook", "after copy : " + oldContactsInfo.size());
 	}
 
 	// traversal addressBook, important, do it first
@@ -1489,6 +1533,33 @@ public class AddressBookManager {
 		number = number.replace("-", "");
 		return number;
 	}
+	
+	//update new phone number to db
+	public void updateContactPhone(long contactId,String oldPhone,String newPhone){
+		//get phones according to contanct id
+		String[] projection = {Phone._ID,Phone.RAW_CONTACT_ID,Phone.NUMBER};
+		String selection = Data.MIMETYPE + "=? and "+Phone.CONTACT_ID+"=?";
+		String[] selectionArgs = {Phone.CONTENT_ITEM_TYPE,contactId+""};
+		
+		Cursor phoneCursor = _mContentResolver.query(Data.CONTENT_URI, projection, selection, selectionArgs, null);
+		if(phoneCursor!=null){
+			while(phoneCursor.moveToNext()){
+				long id = phoneCursor.getLong(phoneCursor.getColumnIndex(Phone._ID));
+				long r_id = phoneCursor.getLong(phoneCursor.getColumnIndex(Phone.RAW_CONTACT_ID));
+				String phone = phoneCursor.getString(phoneCursor.getColumnIndex(Phone.NUMBER));
+				//find the old record and update it
+				if(phone.equals(oldPhone)){				
+					Log.d("debug update phone", newPhone);
+					ContentValues contentValue = new ContentValues();
+					contentValue.put(Phone.DATA1, newPhone);
+					String where = Phone.RAW_CONTACT_ID+"=? and "+Data.MIMETYPE+"=? and "+Phone._ID+"=?";
+					String[] args ={r_id+"",Phone.CONTENT_ITEM_TYPE,id+""};
+					_mContentResolver.update(Data.CONTENT_URI, contentValue, where, args);
+					break;
+				}
+			}
+		}
+	}
 
 	// inner class
 	// contact searched sorted type
@@ -1500,18 +1571,369 @@ public class AddressBookManager {
 	public static enum ContactNameMatchingType {
 		FUZZY, ORDER
 	}
+	
+	public int syncContact(){
+		boolean isCreate = false;
+		
+		final int TYPE_DELETE_OR_CREATE = 1;
+		final int TYPE_MODIFY = 2;
+		
+		int updateType = TYPE_MODIFY;
+		
+		// contacts db changed
+		Log.d(LOG_TAG, "contacts database changed");
+
+		// reset all aggregated contacts raw contacts dirty type, deleted
+		// first
+		for (ContactBean _contact : _mAllContactsInfoArray) {
+			for (Map<String, Object> _rawIdValueMap : _contact.getRawIds()
+					.values()) {
+				_rawIdValueMap.put(RAWCONTACT_DIRTYTYPE,
+						ContactDirtyType.DELETEED);
+			}
+		}
+
+		// all dirty contact aggregated ids list
+		List<Long> _allDirtyContactsIdsList = new ArrayList<Long>();
+
+		// traversal raw_contacts table to get contact dirty flag
+		// define constant
+		final String[] _projection = new String[] {RawContacts.CONTACT_ID,
+				RawContacts.VERSION, RawContacts.DELETED };
+
+		// use contentResolver to query raw_contacts table
+		Cursor _versionCursor = _mContentResolver.query(
+				RawContacts.CONTENT_URI, _projection, null, null, null);
+
+		// check version cursor and traverse result
+		if (null != _versionCursor) {
+			while (_versionCursor.moveToNext()) {
+				// get aggregated id, version and deleted flag
+				Long _aggregatedId = _versionCursor.getLong(_versionCursor
+						.getColumnIndex(RawContacts.CONTACT_ID));
+				Integer _version = _versionCursor.getInt(_versionCursor
+						.getColumnIndex(RawContacts.VERSION));
+				Integer _deleted = _versionCursor.getInt(_versionCursor
+						.getColumnIndex(RawContacts.DELETED));
+
+//				 Log.d(LOG_TAG,
+//				 "ContactsContentObserver - onChange - aggregated id = "
+//				 + _aggregatedId + " and deleted flag = "
+//				 + _deleted + " version = " + _version);
+
+				// skip synchronous deleted
+				if (1 == _deleted) {
+					continue;
+				}
+
+				// check contact has been existed in all contacts detail
+				// info map
+				if (_mAllContactsInfoMap.containsKey(_aggregatedId)) {
+					// one version matched flag
+					boolean _oneVersionMatched = false;
+
+					// process the contact rawIds each value list
+					for (Map<String, Object> _rawIdValueMap : _mAllContactsInfoMap
+							.get(_aggregatedId).getRawIds().values()) {
+						// version not equal
+						if (_rawIdValueMap.get(RAWCONTACT_VERSION).equals(
+								_version)) {
+							_oneVersionMatched = true;
+
+							// update the contact's raw contact dirty flag,
+							// normal
+							_rawIdValueMap.put(RAWCONTACT_DIRTYTYPE,
+									ContactDirtyType.NORMAL);
+
+							break;
+						}
+					}
+
+					// if none version matched, mark as dirty data
+					if (!_oneVersionMatched) {
+						Log.d(LOG_TAG, "the contact aggregated id = "
+								+ _aggregatedId + " changed");
+
+						// update the contact dirty flag, modified
+						_mAllContactsInfoMap.get(_aggregatedId).setDirty(
+								ContactDirtyType.MODIFIED);
+					}
+				} else {
+					Log.d(LOG_TAG, "the contact aggregated id = "
+							+ _aggregatedId + " new added");
+					isCreate = true;
+					// add to all dirty contacts aggregated ids list
+					_allDirtyContactsIdsList.add(_aggregatedId);
+				}
+			}
+
+			// close version cursor
+			_versionCursor.close();
+		}
+
+		// check contact and its raw contact dirty type and get all dirty
+		// contact ids
+		for (ContactBean _contact : _mAllContactsInfoArray) {
+			// normal and deleted contact
+			if (ContactDirtyType.NORMAL == _contact.getDirty()) {
+				// deleted flag
+				boolean _deletedContact = true;
+
+				for (Map<String, Object> _rawIdValueMap : _contact
+						.getRawIds().values()) {
+					if (ContactDirtyType.NORMAL == _rawIdValueMap
+							.get(RAWCONTACT_DIRTYTYPE)) {
+						_deletedContact = false;
+
+						break;
+					}
+				}
+
+				if (_deletedContact) {
+					Log.d(LOG_TAG, "the contact aggregated id = "
+							+ _contact.getId() + " deleted");
+
+					// add to all dirty contacts aggregated ids list
+					_allDirtyContactsIdsList.add(_contact.getId());
+				}
+			} else {
+				// add to all dirty contacts aggregated ids list
+				_allDirtyContactsIdsList.add(_contact.getId());
+			}
+		}
+
+		// recover all aggregated contacts raw contacts dirty type
+		for (ContactBean _contact : _mAllContactsInfoArray) {
+			_contact.setDirty(ContactDirtyType.NORMAL);
+
+			for (Map<String, Object> _rawIdValueMap : _contact.getRawIds()
+					.values()) {
+				_rawIdValueMap.put(RAWCONTACT_DIRTYTYPE,
+						ContactDirtyType.NORMAL);
+			}
+		}
+
+		Log.d(LOG_TAG, "all dirty contacts ids list = "
+				+ _allDirtyContactsIdsList);
+
+		// update dirty contact data
+		for (Long _dirtyContactId : _allDirtyContactsIdsList) {
+			// define the updating contact
+			ContactBean _contact = null;
+			// contact new phone numbers list
+			List<String> _newPhoneNumbers = new ArrayList<String>();
+
+			// define constant
+			final String[] _dataProjection = new String[] { Data.MIMETYPE,
+					Data.DISPLAY_NAME, Data.RAW_CONTACT_ID,
+					RawContacts.ACCOUNT_NAME, RawContacts.VERSION,
+					StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME,
+					Phone.NUMBER, Photo.PHOTO };
+			final String _dataSelection = RawContacts.CONTACT_ID + "=?";
+			final String[] _dataSelectionArgs = new String[] { _dirtyContactId
+					.toString() };
+
+			// use contentResolver to query data table
+			Cursor _dataCursor = _mContentResolver.query(Data.CONTENT_URI,
+					_dataProjection, _dataSelection, _dataSelectionArgs,
+					null);
+
+			// check version cursor and traverse result
+			if (null != _dataCursor) {
+				while (_dataCursor.moveToNext()) {
+					// get mime type
+					String _mimeType = _dataCursor.getString(_dataCursor
+							.getColumnIndex(Data.MIMETYPE));
+					String _displayName = _dataCursor.getString(_dataCursor
+							.getColumnIndex(Data.DISPLAY_NAME));
+					Long _rawId = _dataCursor.getLong(_dataCursor
+							.getColumnIndex(Data.RAW_CONTACT_ID));
+					Integer _version = _dataCursor.getInt(_dataCursor
+							.getColumnIndex(RawContacts.VERSION));
+					String _ownershipAccountName = _dataCursor
+							.getString(_dataCursor
+									.getColumnIndex(RawContacts.ACCOUNT_NAME));
+					String _givenName = _dataCursor.getString(_dataCursor
+							.getColumnIndex(StructuredName.GIVEN_NAME));
+					String _familyName = _dataCursor.getString(_dataCursor
+							.getColumnIndex(StructuredName.FAMILY_NAME));
+					String _phoneNumber = _dataCursor.getString(_dataCursor
+							.getColumnIndex(Phone.NUMBER));
+					byte[] _photoData = _dataCursor.getBlob(_dataCursor
+							.getColumnIndex(Photo.PHOTO));
+
+//					 Log.d(LOG_TAG, "contact mime type = " + _mimeType
+//					 + " , display name =" + _displayName
+//					 + " , raw id = " + _rawId + " , version = "
+//					 + _version + " , account name = "
+//					 + _ownershipAccountName + " , given name = "
+//					 + _givenName + " , family name = "
+//					 + _familyName + " , number = " + _phoneNumber
+//					 + " and photo = " + _photoData);
+
+					// check contact has been existed in all contacts detail
+					// info
+					// map
+					if (_mAllContactsInfoMap.containsKey(_dirtyContactId)) {
+						// get the contact
+						_contact = _mAllContactsInfoMap
+								.get(_dirtyContactId);
+						Log.d("AddressBook exist id : ", _contact.getId()+"");
+					} else {
+						
+						// generate new contact
+						_contact = new ContactBean();
+						_contact.setId(_dirtyContactId);
+						// generate rawIds value map and add ownership
+						// account name, version and dirty type to it
+						Map<String, Object> _rawIdsValueMap = new HashMap<String, Object>();
+						_rawIdsValueMap.put(RAWCONTACT_ACCOUNTNAME,
+								_ownershipAccountName);
+						_rawIdsValueMap.put(RAWCONTACT_VERSION, _version);
+						_rawIdsValueMap.put(RAWCONTACT_DIRTYTYPE,
+								ContactDirtyType.NORMAL);
+						// generate rawIds map and put rawId and rawIds
+						// value map to it
+						Map<Long, Map<String, Object>> _rawIdsMap = new HashMap<Long, Map<String, Object>>();
+						_rawIdsMap.put(_rawId, _rawIdsValueMap);
+						// set contact rawIds map
+						_contact.setRawIds(_rawIdsMap);
+
+						// add the new contact to all contacts detail info
+						// map and list
+						_mAllContactsInfoMap.put(_dirtyContactId, _contact);
+						for (int i = 0; i < _mAllContactsInfoArray.size(); i++) {
+							// get the contact in all contacts detail info
+							// list
+							ContactBean _contactInList = _mAllContactsInfoArray
+									.get(i);
+							// replace
+							if (_dirtyContactId == _contactInList.getId()) {
+								_contactInList = _contact;
+							} else if (_dirtyContactId < _contactInList
+									.getId()) {
+								_mAllContactsInfoArray.add(i, _contact);
+							}else if(i == _mAllContactsInfoArray.size()-1){
+								Log.d("AddressBook add id : ", _contact.getId()+"");
+								_mAllContactsInfoArray.add(_contact);
+							}
+						}
+					}
+
+					// set attributes
+					// set display name
+					_contact.setDisplayName(_displayName);
+
+					// set contact rawIds map
+					if (!_contact.getRawIds().containsKey(_rawId)) {
+						// generate rawIds value map and add ownership
+						// account name, version and dirty type to it
+						Map<String, Object> _rawIdsValueMap = new HashMap<String, Object>();
+						_rawIdsValueMap.put(RAWCONTACT_ACCOUNTNAME,
+								_ownershipAccountName);
+						_rawIdsValueMap.put(RAWCONTACT_VERSION, _version);
+						_rawIdsValueMap.put(RAWCONTACT_DIRTYTYPE,
+								ContactDirtyType.NORMAL);
+
+						_contact.getRawIds().put(_rawId, _rawIdsValueMap);
+					}
+
+					// set full names and name phonetics
+					if (StructuredName.CONTENT_ITEM_TYPE.equals(_mimeType)) {
+						// generate full name list, put given name and
+						// family name to it and generate name phonetics
+						List<String> _fullNamesList = new ArrayList<String>();
+						List<List<String>> _namePhoneticsList = new ArrayList<List<String>>();
+						if (null != _familyName) {
+							_fullNamesList.addAll(StringUtils
+									.toStringList(_familyName));
+
+							_namePhoneticsList.addAll(PinyinUtils
+									.pinyins4String(_familyName));
+						}
+						if (null != _givenName) {
+							_fullNamesList.addAll(StringUtils
+									.toStringList(_givenName));
+
+							_namePhoneticsList.addAll(PinyinUtils
+									.pinyins4String(_givenName));
+						}
+						// set contact full names list and name phonetics if
+						// have
+						if (0 != _fullNamesList.size()) {
+							_contact.setFullNames(_fullNamesList);
+						}
+						if (0 != _namePhoneticsList.size()) {
+							_contact.setNamePhonetics(_namePhoneticsList);
+						}
+					}
+
+					// set phone numbers
+					if (Phone.CONTENT_ITEM_TYPE.equals(_mimeType)) {
+						// add to contact new phone numbers list
+						_newPhoneNumbers.add(_phoneNumber);
+					}
+
+					// set photo
+					if (Photo.CONTENT_ITEM_TYPE.equals(_mimeType)) {
+						_contact.setPhoto(_photoData);
+					}
+
+					// set dirty type
+					_contact.setDirty(ContactDirtyType.NORMAL);
+				}
+
+				// close data cursor
+				_dataCursor.close();
+			}
+			// set the contact phone numbers list
+			if(_contact!=null){
+				_contact.setPhoneNumbers(_newPhoneNumbers);
+				//Log.d("AddressBook", "setphone");
+				//is new contact created
+				if(isCreate){
+					Log.d("AddressBook", "create");				
+					updateType = TYPE_DELETE_OR_CREATE;
+				}
+			}
+			else{
+				//if _contact is null, it means the contact according to the _dirtyContactId is deleted! so just delete it from map and array
+				ContactBean deletedContact = _mAllContactsInfoMap.get(_dirtyContactId);
+				_mAllContactsInfoArray.remove(deletedContact);
+				_mAllContactsInfoMap.remove(_dirtyContactId);
+				updateType = TYPE_DELETE_OR_CREATE;
+			}
+		}
+		
+		if(_allDirtyContactsIdsList.size()!=0){
+			//if contacts change all the search result cache should be cleared in case of dirty data
+			_mContactsSearchResultMap.clear();
+		}
+		return updateType;
+	}
 
 	// contacts db changed observer
 	class ContactsContentObserver extends ContentObserver {
+		private Handler myHandler;
 
 		public ContactsContentObserver() {
 			super(new Handler());
+		}
+		
+		public ContactsContentObserver(Handler handler){
+			super(handler);
+			myHandler = handler;
+		}
+		
+		public void setHandler(Handler handler){
+			myHandler = handler;
 		}
 
 		@Override
 		public void onChange(boolean selfChange) {
 			super.onChange(selfChange);
-
+			boolean isCreate = false;
+			
 			// contacts db changed
 			Log.d(LOG_TAG, "contacts database changed");
 
@@ -1530,7 +1952,7 @@ public class AddressBookManager {
 
 			// traversal raw_contacts table to get contact dirty flag
 			// define constant
-			final String[] _projection = new String[] { RawContacts.CONTACT_ID,
+			final String[] _projection = new String[] {RawContacts.CONTACT_ID,
 					RawContacts.VERSION, RawContacts.DELETED };
 
 			// use contentResolver to query raw_contacts table
@@ -1548,10 +1970,10 @@ public class AddressBookManager {
 					Integer _deleted = _versionCursor.getInt(_versionCursor
 							.getColumnIndex(RawContacts.DELETED));
 
-					// Log.d(LOG_TAG,
-					// "ContactsContentObserver - onChange - aggregated id = "
-					// + _aggregatedId + " and deleted flag = "
-					// + _deleted);
+//					 Log.d(LOG_TAG,
+//					 "ContactsContentObserver - onChange - aggregated id = "
+//					 + _aggregatedId + " and deleted flag = "
+//					 + _deleted + " version = " + _version);
 
 					// skip synchronous deleted
 					if (1 == _deleted) {
@@ -1593,7 +2015,7 @@ public class AddressBookManager {
 					} else {
 						Log.d(LOG_TAG, "the contact aggregated id = "
 								+ _aggregatedId + " new added");
-
+						isCreate = true;
 						// add to all dirty contacts aggregated ids list
 						_allDirtyContactsIdsList.add(_aggregatedId);
 					}
@@ -1694,14 +2116,14 @@ public class AddressBookManager {
 						byte[] _photoData = _dataCursor.getBlob(_dataCursor
 								.getColumnIndex(Photo.PHOTO));
 
-						// Log.d(LOG_TAG, "contact mime type = " + _mimeType
-						// + " , display name =" + _displayName
-						// + " , raw id = " + _rawId + " , version = "
-						// + _version + " , account name = "
-						// + _ownershipAccountName + " , given name = "
-						// + _givenName + " , family name = "
-						// + _familyName + " , number = " + _phoneNumber
-						// + " and photo = " + _photoData);
+//						 Log.d(LOG_TAG, "contact mime type = " + _mimeType
+//						 + " , display name =" + _displayName
+//						 + " , raw id = " + _rawId + " , version = "
+//						 + _version + " , account name = "
+//						 + _ownershipAccountName + " , given name = "
+//						 + _givenName + " , family name = "
+//						 + _familyName + " , number = " + _phoneNumber
+//						 + " and photo = " + _photoData);
 
 						// check contact has been existed in all contacts detail
 						// info
@@ -1710,7 +2132,9 @@ public class AddressBookManager {
 							// get the contact
 							_contact = _mAllContactsInfoMap
 									.get(_dirtyContactId);
+							Log.d("AddressBook exist id : ", _contact.getId()+"");
 						} else {
+							
 							// generate new contact
 							_contact = new ContactBean();
 							_contact.setId(_dirtyContactId);
@@ -1737,13 +2161,15 @@ public class AddressBookManager {
 								// list
 								ContactBean _contactInList = _mAllContactsInfoArray
 										.get(i);
-
 								// replace
 								if (_dirtyContactId == _contactInList.getId()) {
 									_contactInList = _contact;
 								} else if (_dirtyContactId < _contactInList
 										.getId()) {
 									_mAllContactsInfoArray.add(i, _contact);
+								}else if(i == _mAllContactsInfoArray.size()-1){
+									Log.d("AddressBook add id : ", _contact.getId()+"");
+									_mAllContactsInfoArray.add(_contact);
 								}
 							}
 						}
@@ -1814,9 +2240,43 @@ public class AddressBookManager {
 					// close data cursor
 					_dataCursor.close();
 				}
-
 				// set the contact phone numbers list
-				_contact.setPhoneNumbers(_newPhoneNumbers);
+				if(_contact!=null){
+					_contact.setPhoneNumbers(_newPhoneNumbers);
+					//Log.d("AddressBook", "setphone");
+					//is new contact created
+					if(isCreate){
+						//Log.d("AddressBook", "create");
+						if(myHandler!=null){
+							//send message to delete contact in UI 
+							Message m = myHandler.obtainMessage(3, "new Contact");
+							myHandler.sendMessage(m);
+							isCreate = false;
+						}
+					}
+				}
+				else{
+					//if _contact is null, it means the contact according to the _dirtyContactId is deleted! so just delete it from map and array
+					ContactBean deletedContact = _mAllContactsInfoMap.get(_dirtyContactId);
+					_mAllContactsInfoArray.remove(deletedContact);
+					_mAllContactsInfoMap.remove(_dirtyContactId);
+					if(myHandler!=null){
+						//send message to delete contact in UI 
+						Message m = myHandler.obtainMessage(2, deletedContact);
+						myHandler.sendMessage(m);
+					}
+				}
+			}
+			
+			if(_allDirtyContactsIdsList.size()!=0){
+				//if contacts change all the search result cache should be cleared in case of dirty data
+				_mContactsSearchResultMap.clear();
+				if(myHandler!=null){
+					//send Message to update UI
+					Message m = myHandler.obtainMessage(1, "updateABList");
+					//Log.d("AddressBook", "send message!!!");
+					myHandler.sendMessage(m);
+				}
 			}
 		}
 
