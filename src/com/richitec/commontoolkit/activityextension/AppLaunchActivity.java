@@ -1,5 +1,7 @@
 package com.richitec.commontoolkit.activityextension;
 
+import com.richitec.commontoolkit.addressbook.AddressBookManager;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +28,10 @@ public abstract class AppLaunchActivity extends Activity {
 		// save application context
 		_mAppContext = this.getApplicationContext();
 
+		//check AddressBook context
+		if(AddressBookManager.getContex()==null)
+			AddressBookManager.setContex(_mAppContext);
+		
 		// set loading splash image
 		((ImageView) findViewById(R.id.appSplash_imageView))
 				.setImageDrawable(splashImg());
