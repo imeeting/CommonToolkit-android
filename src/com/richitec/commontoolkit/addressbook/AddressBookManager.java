@@ -12,6 +12,7 @@ import java.util.Map;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Handler;
@@ -51,6 +52,8 @@ public class AddressBookManager {
 
 	// collator instance
 	private Collator _mCollator;
+	
+	private static Context context;
 
 	// all contacts detail info array
 	private final List<ContactBean> _mAllContactsInfoArray = new ArrayList<ContactBean>();
@@ -121,8 +124,9 @@ public class AddressBookManager {
 	// private constructor
 	private AddressBookManager() {
 		// init content resolver
-		_mContentResolver = AppLaunchActivity.getAppContext()
-				.getContentResolver();
+		/*_mContentResolver = AppLaunchActivity.getAppContext()
+				.getContentResolver();*/
+		_mContentResolver = context.getContentResolver();
 
 		// init pinyin4j
 		PinyinHelper.toHanyuPinyinStringArray(PinyinUtils.PINYINUTILS_INIT);
@@ -170,6 +174,14 @@ public class AddressBookManager {
 		}
 
 		return _singletonInstance;
+	}
+	
+	public static Context getContex(){
+		return context;
+	}
+	
+	public static void setContex(Context c){
+		context = c;
 	}
 
 	public Collator getCollator() {
@@ -1558,7 +1570,8 @@ public class AddressBookManager {
 					break;
 				}
 			}
-		}
+			phoneCursor.close();
+		}	
 	}
 
 	// inner class
@@ -1573,7 +1586,7 @@ public class AddressBookManager {
 	}
 	
 	public int syncContact(){
-		boolean isCreate = false;
+		boolean isCreate = false;//indicate whether a new contact is added in 
 		
 		final int TYPE_DELETE_OR_CREATE = 1;
 		final int TYPE_MODIFY = 2;
