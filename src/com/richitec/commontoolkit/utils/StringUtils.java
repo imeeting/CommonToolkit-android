@@ -289,37 +289,33 @@ public class StringUtils {
 		return _ret.toString();
 	}
 
-	// replace string
-	public static String replace(String string, String original,
-			String replacement) {
-		// find the original string position of the string
-		int _pos = string.indexOf(original);
+	// trim string, not only at header and tail but also anywhere
+	public static String trim(String origString, String trimExpression) {
+		// define the return string
+		String _ret = origString;
 
-		// found it
-		if (-1 != _pos) {
+		// check the string parameter
+		if (null != origString && null != trimExpression) {
+			// define string builder
+			StringBuilder _stringBuilder = new StringBuilder();
 
-			StringBuffer _tmp = new StringBuffer();
+			// traversal the original string
+			for (int i = 0; i < origString.length(); i++) {
+				// get the character
+				char _char = origString.charAt(i);
 
-			// define the last matched position
-			int _lastPos = 0;
+				// check the character
+				if (!trimExpression.contains(new String(new char[] { _char }))) {
+					// append to string builder
+					_stringBuilder.append(_char);
+				}
+			}
 
-			do {
-				_tmp.append(string.substring(_lastPos, _pos)).append(
-						replacement);
-
-				// save last matched and reset matched position
-				_lastPos = _pos + original.length();
-				_pos = string.indexOf(original, _lastPos);
-			} while (-1 != _pos);
-
-			// append last
-			_tmp.append(string.substring(_lastPos));
-
-			// reset the string
-			string = _tmp.toString();
+			// reset return string
+			_ret = _stringBuilder.toString();
 		}
 
-		return string;
+		return _ret;
 	}
 
 }

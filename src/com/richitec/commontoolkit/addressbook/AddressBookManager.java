@@ -488,9 +488,11 @@ public class AddressBookManager {
 				// get aggregated id and phone number
 				Long _aggregatedId = _phoneCursor.getLong(_phoneCursor
 						.getColumnIndex(Phone.CONTACT_ID));
+				
 				String _phoneNumber = _phoneCursor.getString(_phoneCursor
 						.getColumnIndex(Phone.NUMBER));
 				_phoneNumber = filterNumber(_phoneNumber);
+				
 				// Log.d(LOG_TAG,
 				// "getAllContactsPhoneNumbers - aggregated id = "
 				// + _aggregatedId + " and phone number = " + _phoneNumber);
@@ -1543,6 +1545,8 @@ public class AddressBookManager {
 		//edit by :lu hui 2012/10/22
 		//some phone number format may be xxx-xxx-xxxx, so the following just delete the char '-'
 		number = number.replace("-", "");
+		number = StringUtils.trim(number, "-()");
+	
 		return number;
 	}
 	

@@ -260,5 +260,55 @@ public class NavigationActivity extends Activity {
 		// finish self activity
 		finish();
 	}
+	//
+	// @Override
+	// public void onBackPressed() {
+	// // get alive activity list
+	// List<ActivityManager.RunningTaskInfo> _aliveActivityList =
+	// ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE))
+	// .getRunningTasks(100);
+	//
+	// // check alive activity list
+	// if (null != _aliveActivityList && _aliveActivityList.size() >= 1) {
+	// for (ActivityManager.RunningTaskInfo _runningTaskInfo :
+	// _aliveActivityList) {
+	// // check top activity
+	// if (!_runningTaskInfo.topActivity.getPackageName()
+	// .equalsIgnoreCase(getPackageName())) {
+	// continue;
+	// } else {
+	// // only one activity
+	// if (1 == _runningTaskInfo.numActivities) {
+	// Log.d(LOG_TAG, "only one activity"
+	// + " and activities number = "
+	// + _runningTaskInfo.numActivities);
+	//
+	// // ??
+	// } else {
+	// Log.d(LOG_TAG, "top activity = "
+	// + _runningTaskInfo.topActivity.getClassName()
+	// + " , base activity = "
+	// + _runningTaskInfo.baseActivity.getClassName()
+	// + " , number activity = "
+	// + _runningTaskInfo.numActivities
+	// + " and number running = "
+	// + _runningTaskInfo.numRunning);
+	//
+	// // check activity lifecycle and state
+	// for (int i = 0; i < _runningTaskInfo.numActivities; i++) {
+	// //
+	// }
+	//
+	// // normal back pressed
+	// super.onBackPressed();
+	// }
+	// }
+	// }
+	// } else {
+	// Log.e(LOG_TAG,
+	// "Get alive activity list error, alive activity list = "
+	// + _aliveActivityList);
+	// }
+	// }
 
 }

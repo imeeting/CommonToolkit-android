@@ -6,7 +6,7 @@ import java.util.List;
 public class CommonUtils {
 
 	// convert array to list
-	public static List<Object> array2List(Object[] array) {
+	public static List<?> array2List(Object[] array) {
 		List<Object> _ret = new ArrayList<Object>();
 
 		if (null != array) {
