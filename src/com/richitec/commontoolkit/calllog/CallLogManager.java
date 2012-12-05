@@ -38,7 +38,7 @@ public class CallLogManager {
 		// use contentResolver to query calls table
 		Cursor _callLogCursor = CONTENT_REROLVER.query(
 				CallLog.Calls.CONTENT_URI, _projection, null, null,
-				CallLog.Calls.DEFAULT_SORT_ORDER);
+				CallLog.Calls.DEFAULT_SORT_ORDER + " limit 100");
 
 		// check call log cursor and traverse result
 		if (null != _callLogCursor) {
