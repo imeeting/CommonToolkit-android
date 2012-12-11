@@ -8,10 +8,12 @@ import android.app.Activity;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -79,6 +81,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 
 			// bind listView and alphabet
 			bindListViewAlphabet(dependentListView);
+//			enlargeAlphabetIndexerTouchRegion();
 		} else {
 			Log.e(LOG_TAG,
 					null == dependentListView ? "Dependent listView is null"
@@ -86,6 +89,28 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 									+ " and its adapter is null");
 		}
 	}
+
+//	private void enlargeAlphabetIndexerTouchRegion() {
+//		final View parent = (View) _mAlphabetRelativeLayout.getParent();
+//		parent.post(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				Log.d("commontoolkit", "enlarge alphabet indexer touch region");
+//				Rect touchRect = new Rect();
+//				_mAlphabetRelativeLayout.getHitRect(touchRect);
+//				Log.d("commontoolkit", "1 rect left: "+ touchRect.left + " right: " + touchRect.right);
+//				touchRect.left -= 200;
+//				touchRect.right += 20;
+//				touchRect.top -=20;
+//				touchRect.bottom += 20;
+//				Log.d("commontoolkit", "2 rect left: "+ touchRect.left + " right: " + touchRect.right);
+//				TouchDelegate touchDelegate = new TouchDelegate(touchRect,
+//						_mAlphabetRelativeLayout);
+//				parent.setTouchDelegate(touchDelegate);
+//			}
+//		});
+//	}
 
 	@Override
 	public void onChanged() {
