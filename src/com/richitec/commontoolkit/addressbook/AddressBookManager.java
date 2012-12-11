@@ -35,11 +35,20 @@ import com.richitec.commontoolkit.utils.StringUtils;
 
 public class AddressBookManager {
 
+	public static final int FILTER_DEFAULT = 0;
+	public static final int FILTER_ONLY_IP_PREFIX = 1;
+	public static final int FILTER_IP_AND_CODE_PREFIX = 2;
+	
+	private static int filterMode = FILTER_DEFAULT;
+	
 	private static final String LOG_TAG = "AddressBookManager";
 
-	private static String[] PhoneNumberFilterPrefix = { "17909", "11808",
-			"12593", "17951", "17911", "086", "+86", "86" };
+	private static String[] PhoneNumberFilterIPPrefix = { "17909", "11808",
+			"12593", "17951", "17911" };
 
+	private static String[] PhoneNumberFilterCodePrefix = { "+86", "0086",
+		"086" };
+	
 	// singleton instance
 	private static volatile AddressBookManager _singletonInstance;
 
@@ -510,7 +519,7 @@ public class AddressBookManager {
 				
 				String _phoneNumber = _phoneCursor.getString(_phoneCursor
 						.getColumnIndex(Phone.NUMBER));
-				_phoneNumber = StringUtils.trim(_phoneNumber, "-() ");
+				_phoneNumber = filterNumber(_phoneNumber, filterMode);
 				
 				// Log.d(LOG_TAG,
 				// "getAllContactsPhoneNumbers - aggregated id = "
@@ -1555,15 +1564,34 @@ public class AddressBookManager {
 	}
 
 	public static String filterNumber(String number) {
-		for (String prefix : PhoneNumberFilterPrefix) {
-			int index = number.indexOf(prefix);
-			if (index == 0 && prefix.length() < number.length()) {
-				number = number.substring(prefix.length());
-			}
-		}
-		number = StringUtils.trim(number, "-() ");
+		return filterNumber(number, FILTER_DEFAULT);
+	}
 	
+	public static String filterNumber(String number, int filterMode) {
+		switch (filterMode) {
+		case FILTER_IP_AND_CODE_PREFIX:
+			for (String prefix : PhoneNumberFilterCodePrefix) {
+				int index = number.indexOf(prefix);
+				if (index == 0 && prefix.length() < number.length()) {
+					number = number.substring(prefix.length());
+				}
+			}
+		case FILTER_ONLY_IP_PREFIX:
+			for (String prefix : PhoneNumberFilterIPPrefix) {
+				int index = number.indexOf(prefix);
+				if (index == 0 && prefix.length() < number.length()) {
+					number = number.substring(prefix.length());
+				}
+			}
+			break;
+		}
+		
+		number = StringUtils.trim(number, "-() ");
 		return number;
+	}
+	
+	public static void setFilterMode(int mode) {
+		filterMode = mode;
 	}
 	
 	//update new phone number to db
@@ -1760,7 +1788,7 @@ public class AddressBookManager {
 			final String[] _dataProjection = new String[] { Data.MIMETYPE,
 					Data.DISPLAY_NAME, Data.RAW_CONTACT_ID,
 					RawContacts.ACCOUNT_NAME, RawContacts.VERSION,
-					StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME,
+					StructuredName.GIVEN_NAME, StructuredName.MIDDLE_NAME, StructuredName.FAMILY_NAME,
 					Phone.NUMBER, Photo.PHOTO };
 			final String _dataSelection = RawContacts.CONTACT_ID + "=?";
 			final String[] _dataSelectionArgs = new String[] { _dirtyContactId
@@ -1788,6 +1816,8 @@ public class AddressBookManager {
 									.getColumnIndex(RawContacts.ACCOUNT_NAME));
 					String _givenName = _dataCursor.getString(_dataCursor
 							.getColumnIndex(StructuredName.GIVEN_NAME));
+					String _middleName = _dataCursor.getString(_dataCursor
+							.getColumnIndex(StructuredName.MIDDLE_NAME));
 					String _familyName = _dataCursor.getString(_dataCursor
 							.getColumnIndex(StructuredName.FAMILY_NAME));
 					String _phoneNumber = _dataCursor.getString(_dataCursor
@@ -1795,6 +1825,7 @@ public class AddressBookManager {
 					byte[] _photoData = _dataCursor.getBlob(_dataCursor
 							.getColumnIndex(Photo.PHOTO));
 
+					_phoneNumber = filterNumber(_phoneNumber, filterMode);
 //					 Log.d(LOG_TAG, "contact mime type = " + _mimeType
 //					 + " , display name =" + _displayName
 //					 + " , raw id = " + _rawId + " , version = "
@@ -1883,6 +1914,14 @@ public class AddressBookManager {
 
 							_namePhoneticsList.addAll(PinyinUtils
 									.pinyins4String(_familyName));
+						}
+						if (null != _middleName) {
+							_fullNamesList.addAll(StringUtils
+									.toStringList(_middleName));
+
+							_namePhoneticsList.addAll(PinyinUtils
+									.pinyins4String(_middleName));
+
 						}
 						if (null != _givenName) {
 							_fullNamesList.addAll(StringUtils
