@@ -1545,6 +1545,7 @@ public class AddressBookManager {
 		//edit by :lu hui 2012/10/22
 		//some phone number format may be xxx-xxx-xxxx, so the following just delete the char '-'
 		number = number.replace("-", "");
+		number = number.replace(" ", "");
 		number = StringUtils.trim(number, "-()");
 	
 		return number;
