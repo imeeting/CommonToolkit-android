@@ -17,7 +17,6 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Contacts.People;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
@@ -359,7 +358,8 @@ public class AddressBookManager {
 	private void getAllContactsStructuredName() {
 		// define constant
 		final String[] _projection = new String[] { StructuredName.CONTACT_ID,
-				StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME };
+				StructuredName.GIVEN_NAME, StructuredName.MIDDLE_NAME,
+				StructuredName.FAMILY_NAME };
 		final String _selection = Data.MIMETYPE + "=?";
 		final String[] _selectionArgs = new String[] { StructuredName.CONTENT_ITEM_TYPE };
 
@@ -370,17 +370,20 @@ public class AddressBookManager {
 		// check name cursor and traverse result
 		if (null != _nameCursor) {
 			while (_nameCursor.moveToNext()) {
-				// get aggregated id, given name and family name
+				// get aggregated id, given name, middle name and family name
 				Long _aggregatedId = _nameCursor.getLong(_nameCursor
 						.getColumnIndex(StructuredName.CONTACT_ID));
 				String _givenName = _nameCursor.getString(_nameCursor
 						.getColumnIndex(StructuredName.GIVEN_NAME));
+				String _middleName = _nameCursor.getString(_nameCursor
+						.getColumnIndex(StructuredName.MIDDLE_NAME));
 				String _familyName = _nameCursor.getString(_nameCursor
 						.getColumnIndex(StructuredName.FAMILY_NAME));
 
 				// Log.d(LOG_TAG,
 				// "getAllContactsStructuredName - aggregatedId: "
 				// + _aggregatedId + " , given name: " + _givenName
+				// + " , middle name = " + _middleName
 				// + " and family name: " + _familyName);
 
 				// check contact has been existed in all contacts detail info
@@ -392,8 +395,8 @@ public class AddressBookManager {
 
 					// check contact full name list
 					if (null == _contact.getFullNames()) {
-						// generate full name list, put given name and family
-						// name to it and generate name phonetics
+						// generate full name list, put given name, middle name
+						// and family name to it and generate name phonetics
 						List<String> _fullNamesList = new ArrayList<String>();
 						List<List<String>> _namePhoneticsList = new ArrayList<List<String>>();
 
@@ -413,7 +416,16 @@ public class AddressBookManager {
 								_namePhoneticsList.addAll(PinyinUtils
 										.pinyins4String(_familyName));
 
-								_displayName.append(_familyName);
+								_displayName.append(_familyName).append(' ');
+							}
+							if (null != _middleName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_middleName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_middleName));
+
+								_displayName.append(_middleName);
 							}
 							if (null != _givenName) {
 								_fullNamesList.addAll(StringUtils
@@ -422,17 +434,16 @@ public class AddressBookManager {
 								_namePhoneticsList.addAll(PinyinUtils
 										.pinyins4String(_givenName));
 
-								if (0 != _displayName.length()) {
-									_displayName.append(' ');
-								}
 								_displayName.append(_givenName);
 							}
 
 							// update contact display name
 							if (0 != _fullNamesList.size()
-									&& (null == _familyName || !_familyName
+									&& (null == _familyName || _familyName
 											.matches("[\u4e00-\u9fa5]"))
-									&& (null == _givenName || !_givenName
+									&& (null == _middleName || _middleName
+											.matches("[\u4e00-\u9fa5]"))
+									&& (null == _givenName || _givenName
 											.matches("[\u4e00-\u9fa5]"))) {
 								_contact.setDisplayName(_displayName.toString());
 							}
@@ -443,6 +454,13 @@ public class AddressBookManager {
 
 								_namePhoneticsList.addAll(PinyinUtils
 										.pinyins4String(_givenName));
+							}
+							if (null != _middleName) {
+								_fullNamesList.addAll(StringUtils
+										.toStringList(_middleName));
+
+								_namePhoneticsList.addAll(PinyinUtils
+										.pinyins4String(_middleName));
 							}
 							if (null != _familyName) {
 								_fullNamesList.addAll(StringUtils
@@ -488,10 +506,11 @@ public class AddressBookManager {
 				// get aggregated id and phone number
 				Long _aggregatedId = _phoneCursor.getLong(_phoneCursor
 						.getColumnIndex(Phone.CONTACT_ID));
+
 				
 				String _phoneNumber = _phoneCursor.getString(_phoneCursor
 						.getColumnIndex(Phone.NUMBER));
-				_phoneNumber = filterNumber(_phoneNumber);
+				_phoneNumber = StringUtils.trim(_phoneNumber, "-() ");
 				
 				// Log.d(LOG_TAG,
 				// "getAllContactsPhoneNumbers - aggregated id = "
@@ -1535,18 +1554,14 @@ public class AddressBookManager {
 		return _ret;
 	}
 
-	private String filterNumber(String number) {
+	public static String filterNumber(String number) {
 		for (String prefix : PhoneNumberFilterPrefix) {
 			int index = number.indexOf(prefix);
 			if (index == 0 && prefix.length() < number.length()) {
 				number = number.substring(prefix.length());
 			}
 		}
-		//edit by :lu hui 2012/10/22
-		//some phone number format may be xxx-xxx-xxxx, so the following just delete the char '-'
-		number = number.replace("-", "");
-		number = number.replace(" ", "");
-		number = StringUtils.trim(number, "-()");
+		number = StringUtils.trim(number, "-() ");
 	
 		return number;
 	}
