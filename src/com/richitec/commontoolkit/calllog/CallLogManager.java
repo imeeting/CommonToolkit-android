@@ -71,14 +71,36 @@ public class CallLogManager {
 				Locale _systemCurrentSettingLanguage = DeviceUtils
 						.getSystemCurrentSettingLanguage();
 
+				// check callee phone, then update callee phone and name
+				// callee phone unknown
+				if (null == _calleePhone || Long.parseLong(_calleePhone) < 0) {
+					_calleePhone = "";
+
+					// check callee name and update callee name
+					if (null == _calleeName
+							|| _calleeName.trim().equalsIgnoreCase("")) {
+						_calleeName = Locale.SIMPLIFIED_CHINESE
+								.equals(_systemCurrentSettingLanguage) ? "未知号码"
+								: Locale.TRADITIONAL_CHINESE
+										.equals(_systemCurrentSettingLanguage) ? "未知號碼"
+										: "Unknown Phone";
+					}
+				} else {
+					// check callee name and update callee name
+					if (null == _calleeName
+							|| _calleeName.trim().equalsIgnoreCase("")) {
+						_calleeName = Locale.SIMPLIFIED_CHINESE
+								.equals(_systemCurrentSettingLanguage) ? "未知联系人"
+								: Locale.TRADITIONAL_CHINESE
+										.equals(_systemCurrentSettingLanguage) ? "未知聯繫人"
+										: "Unknown";
+					}
+				}
+
 				// set call log id, callee name, callee phone, call date, call
 				// duration and call type
 				_callLog.setCallLogId(_callLogId);
-				_callLog.setCalleeName(null == _calleeName ? Locale.SIMPLIFIED_CHINESE
-						.equals(_systemCurrentSettingLanguage) ? "未知"
-						: Locale.TRADITIONAL_CHINESE
-								.equals(_systemCurrentSettingLanguage) ? "未知"
-								: "Unknown" : _calleeName);
+				_callLog.setCalleeName(_calleeName);
 				_callLog.setCalleePhone(_calleePhone);
 				_callLog.setCallDate(_callDate);
 				_callLog.setCallDuration(_callDuration);

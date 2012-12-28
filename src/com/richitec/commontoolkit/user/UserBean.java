@@ -1,5 +1,8 @@
 package com.richitec.commontoolkit.user;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * User Bean
  * 
@@ -12,13 +15,16 @@ public class UserBean {
 	private String userKey = "";
 	private boolean rememberPwd;
 
+	private Map<String, Object> store;
 	public UserBean() {
+		store = new HashMap<String, Object>();
 	}
 
 	public UserBean(String name, String password, String userKey) {
 		this.name = name;
 		this.password = password;
 		this.userKey = userKey;
+		store = new HashMap<String, Object>();
 	}
 
 	public String getName() {
@@ -51,6 +57,14 @@ public class UserBean {
 
 	public void setRememberPwd(boolean rememberPwd) {
 		this.rememberPwd = rememberPwd;
+	}
+	
+	public void setValue(String key, Object value) {
+		store.put(key, value);
+	}
+	
+	public Object getValue(String key) {
+		return store.get(key);
 	}
 
 	public String toString() {
