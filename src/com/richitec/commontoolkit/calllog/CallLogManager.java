@@ -73,7 +73,7 @@ public class CallLogManager {
 
 				// check callee phone, then update callee phone and name
 				// callee phone unknown
-				if (null == _calleePhone || Long.parseLong(_calleePhone) < 0) {
+				if (null == _calleePhone || _calleePhone.startsWith("-")) {
 					_calleePhone = "";
 
 					// check callee name and update callee name
