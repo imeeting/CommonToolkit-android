@@ -32,8 +32,6 @@ import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
-import com.richitec.internationalcode.AreaAbbreviation;
-import com.richitec.internationalcode.utils.InternationalCodeHelper;
 
 public class AddressBookManager {
 
@@ -229,7 +227,6 @@ public class AddressBookManager {
 
 		// get all contacts detail info
 		Log.d(LOG_TAG, "getAllContactsDetailInfo - begin");
-
 		getAllContactsDetailInfo();
 
 		// // add contacts changed ContentObserver
@@ -238,13 +235,6 @@ public class AddressBookManager {
 		// new ContactsContentObserver());
 
 		Log.d(LOG_TAG, "getAllContactsDetailInfo - end");
-
-		// get all international code
-		Log.d(LOG_TAG, "getAllInternationalCodes - begin");
-
-		InternationalCodeHelper.getAllInternationalCodes();
-
-		Log.d(LOG_TAG, "getAllInternationalCodes - end");
 	}
 
 	// get all contacts detail info
@@ -726,43 +716,6 @@ public class AddressBookManager {
 		return origNamePhonetics;
 	}
 
-	// get contacts list by given phone number: full matching ignore strings and
-	// analyzable, recognizable areae abbreviations
-	private List<ContactBean> getContactsListByPhone(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> analyzableAreaeAbbreviations,
-			List<AreaAbbreviation> recognizableAreaeAbbreviations) {
-		List<ContactBean> _contacts = new ArrayList<ContactBean>();
-
-		// traversal all contacts detail info array
-		for (ContactBean _contact : _mAllContactsInfoArray) {
-			// get contact phone numbers list
-			List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
-
-			// check the contact phone numbers
-			if (null != _contactPhoneNumbers
-					&& 0 != _contactPhoneNumbers.size()) {
-				// traversal analyze phone number array
-				for (String analyzedPhoneNumber : analyzePhoneNumber(
-						phoneNumber, ignoreStrings,
-						analyzableAreaeAbbreviations,
-						recognizableAreaeAbbreviations)) {
-					// check contact phone numbers contains analyzed phone
-					// number
-					if (_contactPhoneNumbers.contains(analyzedPhoneNumber)) {
-						// add contact to return result
-						_contacts.add(_contact);
-
-						// break immediately
-						break;
-					}
-				}
-			}
-		}
-
-		return _contacts;
-	}
-
 	// get contacts list by given phone number: full matching
 	private List<ContactBean> getContactsListByPhone(String phoneNumber) {
 		List<ContactBean> _contacts = new ArrayList<ContactBean>();
@@ -783,36 +736,15 @@ public class AddressBookManager {
 		return _contacts;
 	}
 
-	// get contacts display name list by given phone number, ignore strings and
-	// analyzable, recognizable areae abbreviations
-	public List<String> getContactsDisplayNamesByPhone(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> analyzableAreaeAbbreviations,
-			List<AreaAbbreviation> recognizableAreaeAbbreviations) {
-		List<String> _displayNames = new ArrayList<String>();
+	// get contact bean object by aggregated id
+	public ContactBean getContactByAggregatedId(Long aggregatedId) {
+		ContactBean _contact = null;
 
-		// traversal all matched contacts detail info array
-		for (ContactBean _contact : getContactsListByPhone(phoneNumber,
-				ignoreStrings, analyzableAreaeAbbreviations,
-				recognizableAreaeAbbreviations)) {
-			_displayNames.add(_contact.getDisplayName());
+		if (_mAllContactsInfoMap.containsKey(aggregatedId)) {
+			_contact = _mAllContactsInfoMap.get(aggregatedId);
 		}
 
-		// check return display names list
-		if (0 == _displayNames.size()) {
-			_displayNames.add(phoneNumber);
-		}
-
-		return _displayNames;
-	}
-
-	// get contacts display name list by given phone number, ignore strings and
-	// areae abbreviations
-	public List<String> getContactsDisplayNamesByPhone(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> areaeAbbreviations) {
-		return getContactsDisplayNamesByPhone(phoneNumber, ignoreStrings,
-				areaeAbbreviations, areaeAbbreviations);
+		return _contact;
 	}
 
 	// get contacts display name list by given phone number
@@ -830,44 +762,6 @@ public class AddressBookManager {
 		}
 
 		return _displayNames;
-	}
-
-	// get contacts photo list by given phone number, ignore strings and
-	// analyzable, recognizable areae abbreviations
-	public List<byte[]> getContactsPhotosByPhone(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> analyzableAreaeAbbreviations,
-			List<AreaAbbreviation> recognizableAreaeAbbreviations) {
-		List<byte[]> _photos = new ArrayList<byte[]>();
-
-		// traversal all matched contacts detail info array
-		for (ContactBean _contact : getContactsListByPhone(phoneNumber,
-				ignoreStrings, analyzableAreaeAbbreviations,
-				recognizableAreaeAbbreviations)) {
-			// get contact photo
-			byte[] _photo = _contact.getPhoto();
-
-			// check contact photo
-			if (null != _photo) {
-				_photos.add(_photo);
-			}
-		}
-
-		// check return photos list
-		if (0 == _photos.size()) {
-			_photos.add(null);
-		}
-
-		return _photos;
-	}
-
-	// get contacts photo list by given phone number, ignore strings and areae
-	// abbreviations
-	public List<byte[]> getContactsPhotosByPhone(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> areaeAbbreviations) {
-		return getContactsPhotosByPhone(phoneNumber, ignoreStrings,
-				areaeAbbreviations, areaeAbbreviations);
 	}
 
 	// get contacts photo list by given phone number
@@ -893,60 +787,6 @@ public class AddressBookManager {
 		return _photos;
 	}
 
-	// is contact with the given phone number, ignore strings and analyzable,
-	// recognizable areae abbreviations in address book, return the contact
-	// aggregated id if true else return null
-	public Long isContactWithPhoneInAddressBook(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> analyzableAreaeAbbreviations,
-			List<AreaAbbreviation> recognizableAreaeAbbreviations) {
-		Long _ret = null;
-
-		// traversal all contacts detail info array
-		for (ContactBean _contact : _mAllContactsInfoArray) {
-			// get contact phone numbers list
-			List<String> _contactPhoneNumbers = _contact.getPhoneNumbers();
-
-			// check the contact phone numbers
-			if (null != _contactPhoneNumbers
-					&& 0 != _contactPhoneNumbers.size()) {
-				// traversal analyze phone number array
-				for (String analyzedPhoneNumber : analyzePhoneNumber(
-						phoneNumber, ignoreStrings,
-						analyzableAreaeAbbreviations,
-						recognizableAreaeAbbreviations)) {
-					// check contact phone numbers contains analyzed phone
-					// number
-					if (_contactPhoneNumbers.contains(analyzedPhoneNumber)) {
-						// add contact id to return result
-						_ret = _contact.getId();
-
-						// break immediately
-						break;
-					}
-				}
-
-				// check return result
-				if (null != _ret) {
-					// break immediately
-					break;
-				}
-			}
-		}
-
-		return _ret;
-	}
-
-	// is contact with the given phone number, ignore strings and areae
-	// abbreviations in address book, return the contact aggregated id if true
-	// else return null
-	public Long isContactWithPhoneInAddressBook(String phoneNumber,
-			List<String> ignoreStrings,
-			List<AreaAbbreviation> areaeAbbreviations) {
-		return isContactWithPhoneInAddressBook(phoneNumber, ignoreStrings,
-				areaeAbbreviations, areaeAbbreviations);
-	}
-
 	// is contact with the given phone number in address book, return the
 	// contact aggregated id if true else return null
 	public Long isContactWithPhoneInAddressBook(String phoneNumber) {
@@ -968,17 +808,6 @@ public class AddressBookManager {
 		}
 
 		return _ret;
-	}
-
-	// get contact bean object by aggregated id
-	public ContactBean getContactByAggregatedId(Long aggregatedId) {
-		ContactBean _contact = null;
-
-		if (_mAllContactsInfoMap.containsKey(aggregatedId)) {
-			_contact = _mAllContactsInfoMap.get(aggregatedId);
-		}
-
-		return _contact;
 	}
 
 	// get contacts list by phone number with sorted type
@@ -1791,7 +1620,6 @@ public class AddressBookManager {
 			}
 			phoneCursor.close();
 		}	
-
 	}
 
 	// inner class
