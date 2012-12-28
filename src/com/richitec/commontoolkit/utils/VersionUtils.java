@@ -2,6 +2,7 @@ package com.richitec.commontoolkit.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 
 public class VersionUtils {
 
@@ -50,6 +51,7 @@ public class VersionUtils {
 	 *         to local, -1: server version is older than local
 	 */
 	public static int compareVersion(String verFromServer, String verLocal) {
+		Log.d("commontoolkit", "version from server: " + verFromServer + " local version: " + verLocal);
 		if (verFromServer == null || verLocal == null) {
 			return 0;
 		}
