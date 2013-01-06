@@ -544,14 +544,15 @@ public class AddressBookManager {
 						// check and add phone number to phone number list
 						if (!_contact.getPhoneNumbers().contains(_phoneNumber)) {
 							_contact.getPhoneNumbers().add(_phoneNumber);
-						} else {
-							Log.d(LOG_TAG,
-									"Contact his name = "
-											+ _contact.getDisplayName()
-											+ " and phone number = "
-											+ _phoneNumber
-											+ " had been existed in his phone number list");
-						}
+						} 
+//						else {
+//							Log.d(LOG_TAG,
+//									"Contact his name = "
+//											+ _contact.getDisplayName()
+//											+ " and phone number = "
+//											+ _phoneNumber
+//											+ " had been existed in his phone number list");
+//						}
 					}
 				}
 			}
