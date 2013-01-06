@@ -23,7 +23,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
 import com.richitec.commontoolkit.activityextension.R;
 import com.richitec.commontoolkit.customadapter.CommonListAdapter;
 
@@ -56,22 +55,23 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 	private OnTouchListener _mOnTouchListener;
 
 	public ListViewQuickAlphabetBar(ListView dependentListView) {
-		// get quickAlphabetBar frameLayout
-		FrameLayout _quickAlphabetBarFrameLayout = (FrameLayout) ((LayoutInflater) AppLaunchActivity
-				.getAppContext().getSystemService(
-						Activity.LAYOUT_INFLATER_SERVICE)).inflate(
-				R.layout.listview_quickalphabetbar_layout, null);
-
-		// save alphabet relativeLayout
-		_mAlphabetRelativeLayout = (RelativeLayout) _quickAlphabetBarFrameLayout
-				.findViewById(R.id.alphabet_relativeLayout);
-		_quickAlphabetBarFrameLayout.removeView(_mAlphabetRelativeLayout);
-
-		// set alphabet relativeLayout on touch listener
-		_mAlphabetRelativeLayout
-				.setOnTouchListener(new OnAlphabetRelativeLayoutTouchListener());
-
+		// check dependent lisView and its adapter
 		if (null != dependentListView && null != dependentListView.getAdapter()) {
+			// get quickAlphabetBar frameLayout
+			FrameLayout _quickAlphabetBarFrameLayout = (FrameLayout) ((LayoutInflater) dependentListView
+					.getContext().getSystemService(
+							Activity.LAYOUT_INFLATER_SERVICE)).inflate(
+					R.layout.listview_quickalphabetbar_layout, null);
+
+			// save alphabet relativeLayout
+			_mAlphabetRelativeLayout = (RelativeLayout) _quickAlphabetBarFrameLayout
+					.findViewById(R.id.alphabet_relativeLayout);
+			_quickAlphabetBarFrameLayout.removeView(_mAlphabetRelativeLayout);
+
+			// set alphabet relativeLayout on touch listener
+			_mAlphabetRelativeLayout
+					.setOnTouchListener(new OnAlphabetRelativeLayoutTouchListener());
+
 			// init alphabet touched letter toast
 			_mAlphabetTouchedLetterToast = new AlphabetTouchedLetterToast(
 					dependentListView);

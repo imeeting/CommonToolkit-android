@@ -21,9 +21,24 @@ public class CallLogManager {
 
 	private static final String LOG_TAG = "CallLogManager";
 
-	// define content resolver
-	private static final ContentResolver CONTENT_REROLVER = AppLaunchActivity
-			.getAppContext().getContentResolver();
+	// call log sqlite query content resolver
+	private static volatile ContentResolver _contentResolver;
+
+	// get content resolver
+	private static ContentResolver getContentResolver() {
+		// check content resolver instance
+		if (null == _contentResolver) {
+			synchronized (CallLogManager.class) {
+				if (null == _contentResolver) {
+					// init content resolver object
+					_contentResolver = AppLaunchActivity.getAppContext()
+							.getContentResolver();
+				}
+			}
+		}
+
+		return _contentResolver;
+	}
 
 	// get all call logs
 	public static List<CallLogBean> getAllCallLogs() {
@@ -36,7 +51,7 @@ public class CallLogManager {
 				CallLog.Calls.DATE, CallLog.Calls.DURATION, CallLog.Calls.TYPE };
 
 		// use contentResolver to query calls table
-		Cursor _callLogCursor = CONTENT_REROLVER.query(
+		Cursor _callLogCursor = getContentResolver().query(
 				CallLog.Calls.CONTENT_URI, _projection, null, null,
 				CallLog.Calls.DEFAULT_SORT_ORDER + " limit 100");
 
@@ -136,7 +151,7 @@ public class CallLogManager {
 		_callLogValues.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
 
 		// inert new added call log values to calls table
-		Uri _newAddedCallLogUri = CONTENT_REROLVER.insert(
+		Uri _newAddedCallLogUri = getContentResolver().insert(
 				CallLog.Calls.CONTENT_URI, _callLogValues);
 
 		// reset return new added call log id
@@ -184,8 +199,8 @@ public class CallLogManager {
 							+ _callLogValues.getAsLong(CallLog.Calls.DURATION));
 
 			// update calls table record with index
-			CONTENT_REROLVER.update(CallLog.Calls.CONTENT_URI, _callLogValues,
-					_where, _selectionArgs);
+			getContentResolver().update(CallLog.Calls.CONTENT_URI,
+					_callLogValues, _where, _selectionArgs);
 		}
 	}
 
