@@ -29,15 +29,12 @@ public class CommonUtils {
 	}
 
 	// check if intent available or not
-	public static boolean isIntentAvailable(Intent intent) {
+	public static boolean isIntentAvailable(Intent intent, Context context) {
 		// define return result
 		boolean _ret = true;
 
-		// get application context
-		Context _appContext = AppLaunchActivity.getAppContext();
-
 		// get and check intent resolve info list
-		List<ResolveInfo> _resolveInfoList = _appContext.getPackageManager()
+		List<ResolveInfo> _resolveInfoList = context.getPackageManager()
 				.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
 
 		// check
