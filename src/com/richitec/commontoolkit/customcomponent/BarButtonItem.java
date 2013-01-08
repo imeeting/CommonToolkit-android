@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 
-import com.richitec.commontoolkit.activityextension.R;
+import com.richitec.commontoolkit.R;
 
 public class BarButtonItem extends Button {
 

@@ -14,7 +14,7 @@ import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
-import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
+import com.richitec.commontoolkit.CommonToolkitApplication;
 
 public abstract class CommonPopupWindow extends PopupWindow {
 
@@ -102,7 +102,7 @@ public abstract class CommonPopupWindow extends PopupWindow {
 	// constructor with popup window layout resource id
 	public CommonPopupWindow(int resource, int width, int height,
 			boolean focusable, boolean isBindDefListener) {
-		super(((LayoutInflater) AppLaunchActivity.getAppContext()
+		super(((LayoutInflater) CommonToolkitApplication.getContext()
 				.getSystemService(Activity.LAYOUT_INFLATER_SERVICE)).inflate(
 				resource, null), width, height, focusable);
 

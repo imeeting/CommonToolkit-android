@@ -28,7 +28,7 @@ import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
 import android.util.SparseIntArray;
 
-import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
+import com.richitec.commontoolkit.CommonToolkitApplication;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
@@ -132,9 +132,8 @@ public class AddressBookManager {
 	// private constructor
 	private AddressBookManager() {
 		// init content resolver
-		/*_mContentResolver = AppLaunchActivity.getAppContext()
-				.getContentResolver();*/
-		_mContentResolver = context.getContentResolver();
+		_mContentResolver = CommonToolkitApplication.getContext()
+				.getContentResolver();
 
 		// init pinyin4j
 		PinyinHelper.toHanyuPinyinStringArray(PinyinUtils.PINYINUTILS_INIT);
@@ -412,7 +411,7 @@ public class AddressBookManager {
 						// check locale language
 						if (Locale.CHINESE
 								.getLanguage()
-								.equals(AppLaunchActivity.getAppContext()
+								.equals(CommonToolkitApplication.getContext()
 										.getResources().getConfiguration().locale
 										.getLanguage())) {
 							// display name

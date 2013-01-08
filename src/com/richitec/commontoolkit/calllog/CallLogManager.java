@@ -13,7 +13,7 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.util.Log;
 
-import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
+import com.richitec.commontoolkit.CommonToolkitApplication;
 import com.richitec.commontoolkit.calllog.CallLogBean.CallType;
 import com.richitec.commontoolkit.utils.DeviceUtils;
 
@@ -31,7 +31,7 @@ public class CallLogManager {
 			synchronized (CallLogManager.class) {
 				if (null == _contentResolver) {
 					// init content resolver object
-					_contentResolver = AppLaunchActivity.getAppContext()
+					_contentResolver = CommonToolkitApplication.getContext()
 							.getContentResolver();
 				}
 			}

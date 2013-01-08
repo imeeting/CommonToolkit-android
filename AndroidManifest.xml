@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.richitec.commontoolkit.activityextension"
+    package="com.richitec.commontoolkit"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,16 +13,17 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <application
+        android:name=".CommonToolkitApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".AppLaunchActivity"
+            android:name=".activityextension.AppLaunchActivity"
             android:label="@string/title_activity_app_launch"
             android:theme="@style/AppLaunchActivityTheme" >
         </activity>
         <activity
-            android:name=".NavigationActivity"
+            android:name=".activityextension.NavigationActivity"
             android:label="@string/title_activity_navigation" >
         </activity>
     </application>

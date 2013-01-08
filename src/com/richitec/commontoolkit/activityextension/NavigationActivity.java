@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.richitec.commontoolkit.R;
 import com.richitec.commontoolkit.customcomponent.BarButtonItem;
 import com.richitec.commontoolkit.customcomponent.BarButtonItem.BarButtonItemStyle;
 

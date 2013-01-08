@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.richitec.commontoolkit.activityextension.R;
+import com.richitec.commontoolkit.R;
 
 public class CommonTabSpecIndicator extends RelativeLayout {
 

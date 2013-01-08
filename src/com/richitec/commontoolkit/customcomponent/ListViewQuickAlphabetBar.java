@@ -23,7 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.richitec.commontoolkit.activityextension.R;
+import com.richitec.commontoolkit.R;
 import com.richitec.commontoolkit.customadapter.CommonListAdapter;
 
 public class ListViewQuickAlphabetBar extends DataSetObserver {

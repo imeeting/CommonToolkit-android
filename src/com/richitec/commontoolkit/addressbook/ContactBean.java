@@ -9,6 +9,7 @@ import java.util.Map;
 import android.util.Log;
 
 import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
+import com.richitec.commontoolkit.CommonToolkitApplication;
 
 public class ContactBean implements Serializable {
 
@@ -118,8 +119,8 @@ public class ContactBean implements Serializable {
 		//
 		if (null == phoneNumbers || 0 == phoneNumbers.size()) {
 			// get locale object
-			Locale _locale = AppLaunchActivity.getAppContext().getResources()
-					.getConfiguration().locale;
+			Locale _locale = CommonToolkitApplication.getContext()
+					.getResources().getConfiguration().locale;
 
 			// check locale country code
 			if (Locale.CHINA.equals(_locale)) {
