@@ -1,7 +1,5 @@
 package com.richitec.commontoolkit.activityextension;
 
-import com.richitec.commontoolkit.addressbook.AddressBookManager;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
