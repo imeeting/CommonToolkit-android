@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.richitec.commontoolkit.activityextension.AppLaunchActivity;
 import com.richitec.commontoolkit.CommonToolkitApplication;
+import com.richitec.commontoolkit.utils.DeviceUtils;
 
 public class ContactBean implements Serializable {
 
@@ -118,14 +119,15 @@ public class ContactBean implements Serializable {
 
 		//
 		if (null == phoneNumbers || 0 == phoneNumbers.size()) {
-			// get locale object
-			Locale _locale = CommonToolkitApplication.getContext()
-					.getResources().getConfiguration().locale;
+			// get system current setting language
+			Locale _systemCurrentSettingLanguage = DeviceUtils
+					.getSystemCurrentSettingLanguage();
 
 			// check locale country code
-			if (Locale.CHINA.equals(_locale)) {
+			if (Locale.SIMPLIFIED_CHINESE.equals(_systemCurrentSettingLanguage)) {
 				_formatPhoneNumbers.append("无号码");
-			} else if (Locale.TAIWAN.equals(_locale)) {
+			} else if (Locale.TRADITIONAL_CHINESE
+					.equals(_systemCurrentSettingLanguage)) {
 				_formatPhoneNumbers.append("無號碼");
 			} else {
 				_formatPhoneNumbers.append("No Phone");
