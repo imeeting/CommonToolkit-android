@@ -1,5 +1,6 @@
 package com.richitec.commontoolkit.addressbook;
 
+import com.richitec.commontoolkit.CommonToolkitApplication;
 import com.richitec.commontoolkit.addressbook.AddressBookManager;
 
 import android.app.Service;
@@ -20,7 +21,7 @@ public class ContactSyncService extends Service{
 		public void onChange(boolean selfChange) {
 			// 当联系人表发生变化时进行相应的操作
 			Log.d("ContactSynService", "Contacts Modified");
-			if(AddressBookManager.getContex()!=null){
+			if(CommonToolkitApplication.getContext() != null){
 				int updateType = AddressBookManager.getInstance().syncContact();
 				if(updateUIHandler!=null){
 					Message m = updateUIHandler.obtainMessage(updateType, "updateABList");

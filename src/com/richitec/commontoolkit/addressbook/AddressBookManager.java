@@ -183,14 +183,6 @@ public class AddressBookManager {
 		return _singletonInstance;
 	}
 	
-	public static Context getContex(){
-		return context;
-	}
-	
-	public static void setContex(Context c){
-		context = c;
-	}
-
 	public Collator getCollator() {
 		return _mCollator;
 	}
