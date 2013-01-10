@@ -16,9 +16,8 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 
 	private static final String LOG_TAG = "CommonListCursorAdapter";
 
-	// dependent view
-	private View _mDependentView;
-
+	// context
+	protected Context _mContext;
 	// layout inflater
 	protected LayoutInflater _mLayoutInflater;
 	// items layout resource id
@@ -31,26 +30,18 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 	// cursor data list
 	protected final List<Object> _data = new ArrayList<Object>();
 
-	public CommonListCursorAdapter(Context context, View dependentView,
-			int itemsLayoutResId, Cursor c, String[] dataKeys,
-			int[] itemsComponentResIds) {
+	public CommonListCursorAdapter(Context context, int itemsLayoutResId,
+			Cursor c, String[] dataKeys, int[] itemsComponentResIds) {
 		super(context, c);
 
-		// save dependent view
-		_mDependentView = dependentView;
-
-		// save layout inflater, items layout resource id, data keys and items
-		// component resource identities
+		// save context, layout inflater, items layout resource id, data keys
+		// and items component resource identities
+		_mContext = context;
 		_mLayoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		_mItemsLayoutResId = itemsLayoutResId;
 		_mDataKeys = dataKeys;
 		_mItemsComponentResIds = itemsComponentResIds;
-	}
-
-	public CommonListCursorAdapter(Context context, int itemsLayoutResId,
-			Cursor c, String[] dataKeys, int[] itemsComponentResIds) {
-		this(context, null, itemsLayoutResId, c, dataKeys, itemsComponentResIds);
 	}
 
 	@Override
@@ -75,10 +66,6 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		return _mLayoutInflater.inflate(_mItemsLayoutResId, parent, false);
-	}
-
-	protected View getDependentView() {
-		return _mDependentView;
 	}
 
 	public List<Object> getDataList() {

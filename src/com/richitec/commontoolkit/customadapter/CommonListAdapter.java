@@ -18,6 +18,8 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	// alphabet key
 	public static final String ALPHABET_INDEX = "alphabet_index_key";
 
+	// context
+	protected Context _mContext;
 	// layout inflater
 	protected LayoutInflater _mLayoutInflater;
 	// data
@@ -31,8 +33,9 @@ public abstract class CommonListAdapter extends BaseAdapter {
 
 	public CommonListAdapter(Context context, List<Map<String, ?>> data,
 			int itemsLayoutResId, String[] dataKeys, int[] itemsComponentResIds) {
-		// save layout inflater, data, items layout resource id, data keys and
-		// items component resource identities
+		// save context, layout inflater, data, items layout resource id, data
+		// keys and items component resource identities
+		_mContext = context;
 		_mLayoutInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		_mData = null == data ? new ArrayList<Map<String, ?>>() : data;
