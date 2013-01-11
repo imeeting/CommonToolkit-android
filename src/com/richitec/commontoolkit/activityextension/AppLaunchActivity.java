@@ -17,7 +17,9 @@ public abstract class AppLaunchActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
+		Log.d("commontoolkit", "AppLaunchActivity onCreate");
+		
 		// set content view
 		setContentView(R.layout.app_launch_activity_layout);
 
@@ -38,6 +40,7 @@ public abstract class AppLaunchActivity extends Activity {
 	// application did finish launching
 	public abstract void didFinishLaunching();
 
+	public void doPostExecute() {};
 	// inner class
 	// application launching task
 	class AppLaunchingTask extends AsyncTask<Intent, Integer, Integer> {
@@ -74,6 +77,7 @@ public abstract class AppLaunchActivity extends Activity {
 
 			// check result
 			if (0 == result) {
+				doPostExecute();
 				// check intent activity
 				if (null != _mIntent) {
 					// go to intent activity
