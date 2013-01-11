@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.richitec.commontoolkit.R;
 import com.richitec.commontoolkit.customcomponent.BarButtonItem;
 import com.richitec.commontoolkit.customcomponent.BarButtonItem.BarButtonItemStyle;
+import com.richitec.commontoolkit.customcomponent.ImageBarButtonItem;
 
 public class NavigationActivity extends Activity {
 
@@ -163,12 +164,26 @@ public class NavigationActivity extends Activity {
 		_leftBtnLayout.addView(barButtonItem);
 	}
 
+	public void setLeftBarButtonItem(ImageBarButtonItem imageBarButtonItem) {
+		// remove default navigation bar left button item and add the new one
+		FrameLayout _leftBtnLayout = (FrameLayout) findViewById(R.id.left_btn_frameLayout);
+		_leftBtnLayout.removeAllViews();
+		_leftBtnLayout.addView(imageBarButtonItem);
+	}
+
 	// set right bar button item
 	public void setRightBarButtonItem(BarButtonItem barButtonItem) {
 		// remove default navigation bar left button item and add the new one
 		FrameLayout _rightBtnLayout = (FrameLayout) findViewById(R.id.right_btn_frameLayout);
 		_rightBtnLayout.removeAllViews();
 		_rightBtnLayout.addView(barButtonItem);
+	}
+
+	public void setRightBarButtonItem(ImageBarButtonItem imageBarButtonItem) {
+		// remove default navigation bar left button item and add the new one
+		FrameLayout _rightBtnLayout = (FrameLayout) findViewById(R.id.right_btn_frameLayout);
+		_rightBtnLayout.removeAllViews();
+		_rightBtnLayout.addView(imageBarButtonItem);
 	}
 
 	@Override
