@@ -31,6 +31,37 @@ public abstract class AppLaunchActivity extends Activity {
 		new AppLaunchingTask().execute(intentActivity());
 	}
 
+	
+	@Override
+	protected void onStop() {
+		Log.d("commontoolkit", "AppLaunchActivity - onStop");
+		super.onStop();
+	}
+	
+	@Override
+	protected void onResume() {
+		Log.d("commontoolkit", "AppLaunchActivity - onResume");
+		super.onResume();
+	}
+		
+	@Override
+    protected void onPause() {
+		Log.d("commontoolkit", "AppLaunchActivity - onPause");
+		super.onPause();
+    }
+	
+	@Override
+	protected void onRestart() {
+		Log.d("commontoolkit", "AppLaunchActivity - onRestart");
+		super.onRestart();
+	}
+
+	@Override
+	protected void onStart() {
+		Log.d("commontoolkit", "AppLaunchActivity - onStart");
+		super.onStart();
+	}
+	
 	// application loading splash image
 	public abstract Drawable splashImg();
 

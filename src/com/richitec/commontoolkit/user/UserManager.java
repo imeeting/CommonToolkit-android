@@ -1,16 +1,19 @@
 package com.richitec.commontoolkit.user;
 
+import android.util.Log;
+
 import com.richitec.commontoolkit.utils.StringUtils;
 
 public class UserManager {
 
 	// singleton instance
-	private static volatile UserManager _singletonInstance;
+	private static UserManager _singletonInstance;
 
 	// user bean
 	private UserBean userBean;
 
 	private UserManager() {
+		Log.d("commontoolkit", "constrct UserManager");
 		// init user bean
 		userBean = new UserBean();
 	}

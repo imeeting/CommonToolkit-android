@@ -133,7 +133,7 @@ public class AddressBookManager {
 
 	// private constructor
 	private AddressBookManager() {
-		Log.d("commontoolkit", "construct AddressBookManager");
+		Log.d("commontoolkit", "construct AddressBookManager - " + this);
 		// init content resolver
 		_mContentResolver = CommonToolkitApplication.getContext()
 				.getContentResolver();
