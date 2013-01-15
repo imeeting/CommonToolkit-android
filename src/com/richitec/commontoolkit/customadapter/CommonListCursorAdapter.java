@@ -28,7 +28,7 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 	protected int[] _mItemsComponentResIds;
 
 	// cursor data list
-	protected final List<Object> _data = new ArrayList<Object>();
+	protected List<Object> _mData;
 
 	public CommonListCursorAdapter(Context context, int itemsLayoutResId,
 			Cursor c, String[] dataKeys, int[] itemsComponentResIds) {
@@ -42,13 +42,16 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 		_mItemsLayoutResId = itemsLayoutResId;
 		_mDataKeys = dataKeys;
 		_mItemsComponentResIds = itemsComponentResIds;
+
+		// init cursor data list
+		_mData = new ArrayList<Object>();
 	}
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		// check cursor position and append cursor data
-		if (cursor.getPosition() >= _data.size()) {
-			appendCursorData(_data, cursor);
+		if (cursor.getPosition() >= _mData.size()) {
+			appendCursorData(_mData, cursor);
 		} else {
 			Log.d(LOG_TAG, "Rollback, mustn't append cursor data");
 		}
@@ -59,7 +62,7 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 			bindView(
 					view.findViewById(_mItemsComponentResIds[i]),
 					recombinationData(_mDataKeys[i],
-							_data.get(cursor.getPosition())), _mDataKeys[i]);
+							_mData.get(cursor.getPosition())), _mDataKeys[i]);
 		}
 	}
 
@@ -69,7 +72,13 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 	}
 
 	public List<Object> getDataList() {
-		return _data;
+		return _mData;
+	}
+
+	// set data, important only for data restore
+	public void setData(List<Object> data) {
+		// set data
+		_mData = data;
 	}
 
 	// append cursor data

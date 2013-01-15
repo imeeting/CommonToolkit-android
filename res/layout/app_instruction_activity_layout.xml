@@ -1,0 +1,51 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activityextension.AppInstructionActivity" >
+
+    <ViewFlipper
+        android:id="@+id/instructionViewFlipper"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center" >
+    </ViewFlipper>
+
+    <RelativeLayout
+        android:id="@+id/instructionNavigationRelativeLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:padding="12dp" >
+
+        <LinearLayout
+            android:id="@+id/instructionCursorLinearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="#ff0000"
+            android:minWidth="35dp"
+            android:orientation="horizontal" >
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/instructionNav_PreviousImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/instructionCursorLinearLayout"
+            android:contentDescription="@string/instruction_previousNavigation_imageView_content_description"
+            android:src="@android:drawable/arrow_up_float" />
+
+        <ImageView
+            android:id="@+id/instructionNav_NextImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/instructionCursorLinearLayout"
+            android:contentDescription="@string/instruction_nextNavigation_imageView_content_description"
+            android:src="@android:drawable/arrow_down_float" />
+    </RelativeLayout>
+
+</FrameLayout>

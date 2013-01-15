@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.richitec.commontoolkit"
     android:versionCode="1"
@@ -25,6 +26,10 @@
         <activity
             android:name=".activityextension.NavigationActivity"
             android:label="@string/title_activity_navigation" >
+        </activity>
+        <activity
+            android:name=".activityextension.AppInstructionActivity"
+            android:label="@string/title_activity_app_instruction" >
         </activity>
     </application>
 
