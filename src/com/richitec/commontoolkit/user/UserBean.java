@@ -17,19 +17,9 @@ public class UserBean {
 
 	private Map<String, Object> store;
 	
-	private boolean inited;
-	
-	private void setAsInited() {
-		inited = true;
-	}
-	
-	public boolean isInited() {
-		return inited;
-	}
 	
 	public UserBean() {
 		store = new HashMap<String, Object>();
-		inited = false;
 	}
 
 	public UserBean(String name, String password, String userKey) {
@@ -37,7 +27,6 @@ public class UserBean {
 		this.password = password;
 		this.userKey = userKey;
 		store = new HashMap<String, Object>();
-		setAsInited();
 	}
 
 	public String getName() {
@@ -46,7 +35,6 @@ public class UserBean {
 
 	public void setName(String name) {
 		this.name = name;
-		setAsInited();
 	}
 
 	public String getPassword() {
@@ -55,7 +43,6 @@ public class UserBean {
 
 	public void setPassword(String password) {
 		this.password = password;
-		setAsInited();
 	}
 
 	public String getUserKey() {
@@ -64,7 +51,6 @@ public class UserBean {
 
 	public void setUserKey(String userkey) {
 		this.userKey = userkey;
-		setAsInited();
 	}
 
 	public boolean isRememberPwd() {
@@ -73,12 +59,10 @@ public class UserBean {
 
 	public void setRememberPwd(boolean rememberPwd) {
 		this.rememberPwd = rememberPwd;
-		setAsInited();
 	}
 	
 	public void setValue(String key, Object value) {
 		store.put(key, value);
-		setAsInited();
 	}
 	
 	public Object getValue(String key) {

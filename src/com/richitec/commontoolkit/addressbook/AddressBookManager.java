@@ -54,6 +54,8 @@ public class AddressBookManager {
 	// singleton instance
 	private static AddressBookManager _singletonInstance;
 
+	private boolean inited = false;
+	
 	// contact sqlite query content resolver
 	private ContentResolver _mContentResolver;
 
@@ -143,8 +145,21 @@ public class AddressBookManager {
 
 		// init collator instance
 		_mCollator = Collator.getInstance();
+		inited = false;
 	}
 
+	private void setAsInited() {
+		inited = true;
+	}
+	
+	/**
+	 * whether the addressbook has been loaded
+	 * @return
+	 */
+	public boolean isInited() {
+		return inited;
+	}
+	
 	public void addContactObserverhandler(Handler handler) {
 		if (_mContactsContentObserver != null) {
 			_mContactsContentObserver.addHandler(handler);
@@ -226,7 +241,7 @@ public class AddressBookManager {
 		// _mContentResolver.registerContentObserver(Contacts.CONTENT_URI,
 		// false,
 		// new ContactsContentObserver());
-
+		setAsInited();
 		Log.d(LOG_TAG, "getAllContactsDetailInfo - end");
 	}
 
