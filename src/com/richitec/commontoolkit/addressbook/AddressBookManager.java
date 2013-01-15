@@ -53,7 +53,7 @@ public class AddressBookManager {
 			"086" };
 
 	// singleton instance
-	private static AddressBookManager _singletonInstance;
+	private static volatile AddressBookManager _singletonInstance;
 
 	private boolean inited = false;
 	
