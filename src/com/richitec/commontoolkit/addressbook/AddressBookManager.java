@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import android.content.ContentResolver;
@@ -2018,13 +2020,13 @@ public class AddressBookManager {
 
 		public ContactsContentObserver() {
 			super(new Handler());
-			handlerList = new HashSet<Handler>();
+			handlerList = new CopyOnWriteArraySet<Handler>();
 		}
 
 		public void addHandler(Handler handler) {
 			handlerList.add(handler);
 		}
-
+		
 		public void removeHandler(Handler handler) {
 			handlerList.remove(handler);
 		}
