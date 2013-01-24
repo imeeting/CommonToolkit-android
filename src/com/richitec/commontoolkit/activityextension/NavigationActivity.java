@@ -23,7 +23,8 @@ import com.richitec.commontoolkit.customcomponent.ImageBarButtonItem;
 
 public class NavigationActivity extends Activity {
 
-	private static final String LOG_TAG = "NavigationActivity";
+	private static final String LOG_TAG = NavigationActivity.class
+			.getCanonicalName();
 
 	// commonToolkit navigation activity onCreate param key
 	private static final String NAV_ACTIVITY_PARAM_KEY = "nav_back_btn_default_title";
@@ -94,7 +95,7 @@ public class NavigationActivity extends Activity {
 
 	@Override
 	public void setContentView(View view, LayoutParams params) {
-		Log.d(LOG_TAG, "navigation activity set content view, view: " + view
+		Log.d(LOG_TAG, "Navigation activity set content view, view: " + view
 				+ " and layout params: " + params);
 
 		// set content view
@@ -295,13 +296,13 @@ public class NavigationActivity extends Activity {
 	// } else {
 	// // only one activity
 	// if (1 == _runningTaskInfo.numActivities) {
-	// Log.d(LOG_TAG, "only one activity"
+	// Log.d(LOG_TAG, "Only one activity"
 	// + " and activities number = "
 	// + _runningTaskInfo.numActivities);
 	//
 	// // ??
 	// } else {
-	// Log.d(LOG_TAG, "top activity = "
+	// Log.d(LOG_TAG, "Top activity = "
 	// + _runningTaskInfo.topActivity.getClassName()
 	// + " , base activity = "
 	// + _runningTaskInfo.baseActivity.getClassName()

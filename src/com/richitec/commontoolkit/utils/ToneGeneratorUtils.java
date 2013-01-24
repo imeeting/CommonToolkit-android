@@ -8,11 +8,12 @@ import android.media.ToneGenerator;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.richitec.commontoolkit.CommonToolkitApplication;
+import com.richitec.commontoolkit.CTApplication;
 
 public class ToneGeneratorUtils {
 
-	private static final String LOG_TAG = "ToneGeneratorUtils";
+	private static final String LOG_TAG = ToneGeneratorUtils.class
+			.getCanonicalName();
 
 	// sound play duration and volume
 	private final Integer SOUND_DURATION_MS = 120;
@@ -45,7 +46,7 @@ public class ToneGeneratorUtils {
 	// private constructor
 	private ToneGeneratorUtils() {
 		// init audio manager
-		_mAudioManager = (AudioManager) CommonToolkitApplication.getContext()
+		_mAudioManager = (AudioManager) CTApplication.getContext()
 				.getSystemService(Context.AUDIO_SERVICE);
 	}
 
@@ -97,13 +98,13 @@ public class ToneGeneratorUtils {
 					_mToneGenerator = new ToneGenerator(
 							AudioManager.STREAM_MUSIC, SOUND_VOLUME);
 				} catch (Exception e) {
-					_mToneGenerator = null;
-
-					e.printStackTrace();
-
 					Log.e(LOG_TAG,
 							"Creating local media sound tone generator error, exception message = "
 									+ e.getMessage());
+
+					e.printStackTrace();
+
+					_mToneGenerator = null;
 				}
 			}
 
@@ -126,7 +127,7 @@ public class ToneGeneratorUtils {
 	// play dtmf sound with tone id
 	public void playDTMFSound(Integer toneId) {
 		// get and check system dtmf sound enable or disable when dial
-		if (1 == Settings.System.getInt(CommonToolkitApplication.getContext()
+		if (1 == Settings.System.getInt(CTApplication.getContext()
 				.getContentResolver(), Settings.System.DTMF_TONE_WHEN_DIALING,
 				1)) {
 			// play dtmf sound with tone id

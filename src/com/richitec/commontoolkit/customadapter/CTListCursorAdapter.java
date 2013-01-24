@@ -12,9 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
-public abstract class CommonListCursorAdapter extends CursorAdapter {
+public abstract class CTListCursorAdapter extends CursorAdapter {
 
-	private static final String LOG_TAG = "CommonListCursorAdapter";
+	private static final String LOG_TAG = CTListCursorAdapter.class
+			.getCanonicalName();
 
 	// context
 	protected Context _mContext;
@@ -30,8 +31,8 @@ public abstract class CommonListCursorAdapter extends CursorAdapter {
 	// cursor data list
 	protected List<Object> _mData;
 
-	public CommonListCursorAdapter(Context context, int itemsLayoutResId,
-			Cursor c, String[] dataKeys, int[] itemsComponentResIds) {
+	public CTListCursorAdapter(Context context, int itemsLayoutResId, Cursor c,
+			String[] dataKeys, int[] itemsComponentResIds) {
 		super(context, c);
 
 		// save context, layout inflater, items layout resource id, data keys

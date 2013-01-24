@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public abstract class CommonListAdapter extends BaseAdapter {
+public abstract class CTListAdapter extends BaseAdapter {
 
 	// alphabet key
 	public static final String ALPHABET_INDEX = "alphabet_index_key";
@@ -31,7 +31,7 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	// items component resource identities
 	protected int[] _mItemsComponentResIds;
 
-	public CommonListAdapter(Context context, List<Map<String, ?>> data,
+	public CTListAdapter(Context context, List<Map<String, ?>> data,
 			int itemsLayoutResId, String[] dataKeys, int[] itemsComponentResIds) {
 		// save context, layout inflater, data, items layout resource id, data
 		// keys and items component resource identities
@@ -100,7 +100,7 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	}
 
 	// set data
-	public CommonListAdapter setData(List<Map<String, ?>> data) {
+	public CTListAdapter setData(List<Map<String, ?>> data) {
 		// set data
 		_mData = data;
 
@@ -111,7 +111,7 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	}
 
 	// append data
-	public CommonListAdapter appendData(List<Map<String, ?>> data) {
+	public CTListAdapter appendData(List<Map<String, ?>> data) {
 		// append data
 		_mData.addAll(data);
 
@@ -121,7 +121,7 @@ public abstract class CommonListAdapter extends BaseAdapter {
 		return this;
 	}
 
-	public CommonListAdapter appendData(Map<String, ?> data) {
+	public CTListAdapter appendData(Map<String, ?> data) {
 		// append data
 		_mData.add(data);
 
@@ -132,7 +132,7 @@ public abstract class CommonListAdapter extends BaseAdapter {
 	}
 
 	// remove data
-	public CommonListAdapter removeData(Map<String, ?> data) {
+	public CTListAdapter removeData(Map<String, ?> data) {
 		// append data
 		_mData.remove(data);
 
@@ -142,7 +142,7 @@ public abstract class CommonListAdapter extends BaseAdapter {
 		return this;
 	}
 
-	public CommonListAdapter removeData(int data) {
+	public CTListAdapter removeData(int data) {
 		// append data
 		_mData.remove(data);
 

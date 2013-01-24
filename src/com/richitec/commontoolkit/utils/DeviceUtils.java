@@ -10,7 +10,7 @@ import android.util.Log;
 public class DeviceUtils {
 
 	// get system current setting language. zh_CN, zh_TW etc.
-	public static Locale getSystemCurrentSettingLanguage() {
+	public static Locale systemSettingLanguage() {
 		// define return result
 		Locale _ret = Locale.ENGLISH;
 

@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.util.Log;
 
 public class StringUtils {
 
-	private static final String LOG_TAG = "StringUtils";
+	private static final String LOG_TAG = StringUtils.class.getCanonicalName();
 
 	// split the string with given split word
 	public static String[] split(String string, String splitWord) {
@@ -124,71 +120,13 @@ public class StringUtils {
 
 			return new String(_ret);
 		} catch (Exception e) {
+			Log.e(LOG_TAG, "String md5 error, string = " + string
+					+ " and exception message = " + e.getMessage());
+
 			e.printStackTrace();
 
 			return null;
 		}
-	}
-
-	// perfect http request url
-	public static String perfectHttpRequestUrl(String string) {
-		String _ret = string;
-
-		// check url is nil and has prefix "http://" or "https://"
-		if (null != string && !string.equalsIgnoreCase("")
-				&& !string.startsWith("http://")
-				&& !string.startsWith("https://")) {
-			StringBuilder _tmpStringBuilder = new StringBuilder("http://");
-			_tmpStringBuilder.append(_ret);
-
-			_ret = _tmpStringBuilder.toString();
-		}
-
-		return _ret;
-	}
-
-	// convert string to json object
-	public static JSONObject toJSONObject(String string) {
-		JSONObject _stringJsonObject = null;
-
-		// check string
-		if (null != string) {
-			// convert
-			try {
-				_stringJsonObject = new JSONObject(string);
-			} catch (JSONException e) {
-				e.printStackTrace();
-
-				Log.e(LOG_TAG, "Convert string = " + string
-						+ " to json object exception: " + e.getMessage());
-			}
-		} else {
-			Log.e(LOG_TAG, "Convert to json object string is null");
-		}
-
-		return _stringJsonObject;
-	}
-
-	// convert string to json array
-	public static JSONArray toJSONArray(String string) {
-		JSONArray _stringJsonArray = null;
-
-		// check string
-		if (null != string) {
-			// convert
-			try {
-				_stringJsonArray = new JSONArray(string);
-			} catch (JSONException e) {
-				e.printStackTrace();
-
-				Log.e(LOG_TAG, "Convert string = " + string
-						+ " to json array exception: " + e.getMessage());
-			}
-		} else {
-			Log.e(LOG_TAG, "Convert to json array string is null");
-		}
-
-		return _stringJsonArray;
 	}
 
 	// convert string to string array, according to Chinese character

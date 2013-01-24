@@ -13,13 +13,14 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.util.Log;
 
-import com.richitec.commontoolkit.CommonToolkitApplication;
+import com.richitec.commontoolkit.CTApplication;
 import com.richitec.commontoolkit.calllog.CallLogBean.CallType;
 import com.richitec.commontoolkit.utils.DeviceUtils;
 
 public class CallLogManager {
 
-	private static final String LOG_TAG = "CallLogManager";
+	private static final String LOG_TAG = CallLogManager.class
+			.getCanonicalName();
 
 	// call log sqlite query content resolver
 	private static volatile ContentResolver _contentResolver;
@@ -31,7 +32,7 @@ public class CallLogManager {
 			synchronized (CallLogManager.class) {
 				if (null == _contentResolver) {
 					// init content resolver object
-					_contentResolver = CommonToolkitApplication.getContext()
+					_contentResolver = CTApplication.getContext()
 							.getContentResolver();
 				}
 			}
@@ -58,74 +59,6 @@ public class CallLogManager {
 		// check call log cursor and traverse result
 		if (null != _callLogCursor) {
 			while (_callLogCursor.moveToNext()) {
-				// // get call log id, callee name, callee phone, call date,
-				// call
-				// // duration and call type
-				// Long _callLogId = _callLogCursor.getLong(_callLogCursor
-				// .getColumnIndex(CallLog.Calls._ID));
-				// String _calleeName = _callLogCursor.getString(_callLogCursor
-				// .getColumnIndex(CallLog.Calls.CACHED_NAME));
-				// String _calleePhone = _callLogCursor.getString(_callLogCursor
-				// .getColumnIndex(CallLog.Calls.NUMBER));
-				// Long _callDate = _callLogCursor.getLong(_callLogCursor
-				// .getColumnIndex(CallLog.Calls.DATE));
-				// Long _callDuration = _callLogCursor.getLong(_callLogCursor
-				// .getColumnIndex(CallLog.Calls.DURATION));
-				// Integer _callType = _callLogCursor.getInt(_callLogCursor
-				// .getColumnIndex(CallLog.Calls.TYPE));
-				//
-				// // Log.d(LOG_TAG, "getAllCallLogs - callLogId: " + _callLogId
-				// // + ", callee name: " + _calleeName + ", callee number: "
-				// // + _calleePhone + ", call date: " + _callDate
-				// // + ", call duration: " + _callDuration
-				// // + " and call type: " + _callType);
-				//
-				// // new call log bean
-				// CallLogBean _callLog = new CallLogBean();
-				//
-				// // get system current setting language
-				// Locale _systemCurrentSettingLanguage = DeviceUtils
-				// .getSystemCurrentSettingLanguage();
-				//
-				// // check callee phone, then update callee phone and name
-				// // callee phone unknown
-				// if (null == _calleePhone || _calleePhone.startsWith("-")) {
-				// _calleePhone = "";
-				//
-				// // check callee name and update callee name
-				// if (null == _calleeName
-				// || _calleeName.trim().equalsIgnoreCase("")) {
-				// _calleeName = Locale.SIMPLIFIED_CHINESE
-				// .equals(_systemCurrentSettingLanguage) ? "未知号码"
-				// : Locale.TRADITIONAL_CHINESE
-				// .equals(_systemCurrentSettingLanguage) ? "未知號碼"
-				// : "Unknown Phone";
-				// }
-				// } else {
-				// // check callee name and update callee name
-				// if (null == _calleeName
-				// || _calleeName.trim().equalsIgnoreCase("")) {
-				// _calleeName = Locale.SIMPLIFIED_CHINESE
-				// .equals(_systemCurrentSettingLanguage) ? "未知联系人"
-				// : Locale.TRADITIONAL_CHINESE
-				// .equals(_systemCurrentSettingLanguage) ? "未知聯繫人"
-				// : "Unknown";
-				// }
-				// }
-				//
-				// // set call log id, callee name, callee phone, call date,
-				// call
-				// // duration and call type
-				// _callLog.setCallLogId(_callLogId);
-				// _callLog.setCalleeName(_calleeName);
-				// _callLog.setCalleePhone(_calleePhone);
-				// _callLog.setCallDate(_callDate);
-				// _callLog.setCallDuration(_callDuration);
-				// _callLog.setCallType(getCallType(_callType));
-				//
-				// // add call log to return result
-				// _ret.add(_callLog);
-
 				_ret.add(getCallLogFromCursor(_callLogCursor));
 			}
 
@@ -194,7 +127,9 @@ public class CallLogManager {
 				Log.e(LOG_TAG,
 						"Parse call duration string to integer error, duration = "
 								+ updateValues.get(CallLog.Calls.DURATION)
-								+ " and exception = " + e.getMessage());
+								+ " and exception message = " + e.getMessage());
+
+				e.printStackTrace();
 			}
 
 			Log.d(LOG_TAG,
@@ -239,7 +174,7 @@ public class CallLogManager {
 		Integer _callType = queryCursor.getInt(queryCursor
 				.getColumnIndex(CallLog.Calls.TYPE));
 
-		// Log.d(LOG_TAG, "get call log from cursor - callLogId: " + _callLogId
+		// Log.d(LOG_TAG, "Get call log from cursor - callLogId: " + _callLogId
 		// + ", callee name: " + _calleeName + ", callee number: "
 		// + _calleePhone + ", call date: " + _callDate
 		// + ", call duration: " + _callDuration + " and call type: "
@@ -247,7 +182,7 @@ public class CallLogManager {
 
 		// get system current setting language
 		Locale _systemCurrentSettingLanguage = DeviceUtils
-				.getSystemCurrentSettingLanguage();
+				.systemSettingLanguage();
 
 		// check callee phone, then update callee phone and name
 		// callee phone unknown

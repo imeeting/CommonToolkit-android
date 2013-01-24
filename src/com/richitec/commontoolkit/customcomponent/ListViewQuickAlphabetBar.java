@@ -21,14 +21,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.richitec.commontoolkit.R;
-import com.richitec.commontoolkit.customadapter.CommonListAdapter;
+import com.richitec.commontoolkit.customadapter.CTListAdapter;
 
 public class ListViewQuickAlphabetBar extends DataSetObserver {
 
-	private static final String LOG_TAG = "ListViewQuickAlphabetBar";
+	private static final String LOG_TAG = ListViewQuickAlphabetBar.class
+			.getCanonicalName();
 
 	// alphabet
 	private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#";
@@ -54,7 +54,8 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 	// listView quick alphabet bar touch listener
 	private OnTouchListener _mOnTouchListener;
 
-	public ListViewQuickAlphabetBar(ListView dependentListView) {
+	public ListViewQuickAlphabetBar(ListView dependentListView,
+			CTToast touchedAlphabetLetterDisplayToast) {
 		// check dependent lisView and its adapter
 		if (null != dependentListView && null != dependentListView.getAdapter()) {
 			// get quickAlphabetBar frameLayout
@@ -74,7 +75,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 
 			// init alphabet touched letter toast
 			_mAlphabetTouchedLetterToast = new AlphabetTouchedLetterToast(
-					dependentListView);
+					dependentListView, touchedAlphabetLetterDisplayToast);
 
 			// save dependent listView
 			_mDependentListView = dependentListView;
@@ -90,27 +91,9 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 		}
 	}
 
-//	private void enlargeAlphabetIndexerTouchRegion() {
-//		final View parent = (View) _mAlphabetRelativeLayout.getParent();
-//		parent.post(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				Log.d("commontoolkit", "enlarge alphabet indexer touch region");
-//				Rect touchRect = new Rect();
-//				_mAlphabetRelativeLayout.getHitRect(touchRect);
-//				Log.d("commontoolkit", "1 rect left: "+ touchRect.left + " right: " + touchRect.right);
-//				touchRect.left -= 200;
-//				touchRect.right += 20;
-//				touchRect.top -=20;
-//				touchRect.bottom += 20;
-//				Log.d("commontoolkit", "2 rect left: "+ touchRect.left + " right: " + touchRect.right);
-//				TouchDelegate touchDelegate = new TouchDelegate(touchRect,
-//						_mAlphabetRelativeLayout);
-//				parent.setTouchDelegate(touchDelegate);
-//			}
-//		});
-//	}
+	public ListViewQuickAlphabetBar(ListView dependentListView) {
+		this(dependentListView, null);
+	}
 
 	@Override
 	public void onChanged() {
@@ -153,7 +136,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 		_mDepedentListViewDataPreviousCount = dependentListViewAdapter
 				.getCount();
 
-		if (dependentListViewAdapter instanceof CommonListAdapter) {
+		if (dependentListViewAdapter instanceof CTListAdapter) {
 			// clear alphabet relativeLayout
 			// hide head letter textView
 			TextView _headLetterTextView = (TextView) _mAlphabetRelativeLayout
@@ -170,7 +153,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 			}
 
 			// check dependent listView adapter alphabet set
-			Set<Character> _dependentListViewAdapterAlphabetSet = ((CommonListAdapter) dependentListViewAdapter)
+			Set<Character> _dependentListViewAdapterAlphabetSet = ((CTListAdapter) dependentListViewAdapter)
 					.getAlphabet();
 			if (0 != _dependentListViewAdapterAlphabetSet.size()) {
 				// init present alphabet
@@ -330,34 +313,43 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 	// alphabet touched letter toast
 	class AlphabetTouchedLetterToast {
 
-		// alphabet touched letter toast
-		Toast _mAlphabetTouchedLetterToast;
+		// toast for displaying touched alphabet letter
+		CTToast _mDisplayToast;
 
-		public AlphabetTouchedLetterToast(ListView dependentListView) {
-			_mAlphabetTouchedLetterToast = Toast.makeText(
-					dependentListView.getContext(), "", Toast.LENGTH_SHORT);
+		public AlphabetTouchedLetterToast(ListView dependentListView,
+				CTToast touchedAlphabetLetterDisplayToast) {
+			// check touched alphabet letter display toast and set toast for
+			// displaying touched alphabet letter
+			if (null == touchedAlphabetLetterDisplayToast) {
+				// init toast for displaying touched alphabet letter
+				_mDisplayToast = CTToast.makeText(
+						dependentListView.getContext(), "",
+						CTToast.LENGTH_TRANSIENT);
 
-			// get dependent listView original point
-			final int[] _location = new int[2];
-			dependentListView.getLocationOnScreen(_location);
+				// get dependent listView original point
+				final int[] _location = new int[2];
+				dependentListView.getLocationOnScreen(_location);
 
-			// set gravity
-			_mAlphabetTouchedLetterToast.setGravity(Gravity.CENTER_VERTICAL
-					| Gravity.LEFT,
-					(_location[0] + dependentListView.getWidth()) / 2, 0);
+				// set gravity
+				_mDisplayToast.setGravity(Gravity.CENTER_VERTICAL
+						| Gravity.LEFT,
+						(_location[0] + dependentListView.getWidth()) / 2, 0);
+			} else {
+				_mDisplayToast = touchedAlphabetLetterDisplayToast;
+			}
 		}
 
 		// set text
-		public Toast setText(CharSequence text) {
-			_mAlphabetTouchedLetterToast.setText(text);
+		public CTToast setText(CharSequence text) {
+			_mDisplayToast.setText(text);
 
-			return _mAlphabetTouchedLetterToast;
+			return _mDisplayToast;
 		}
 
-		public Toast setText(int text) {
-			_mAlphabetTouchedLetterToast.setText(text);
+		public CTToast setText(int text) {
+			_mDisplayToast.setText(text);
 
-			return _mAlphabetTouchedLetterToast;
+			return _mDisplayToast;
 		}
 
 	}

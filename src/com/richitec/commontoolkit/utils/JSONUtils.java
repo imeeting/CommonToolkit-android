@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class JSONUtils {
 
-	private static final String LOG_TAG = "JSONUtils";
+	private static final String LOG_TAG = JSONUtils.class.getCanonicalName();
 
 	// get json object value with key and value class name
 	private static Object getJSONObjectValue(JSONObject jsonObject, String key,
@@ -37,12 +37,12 @@ public class JSONUtils {
 					_value = jsonObject.get(key);
 				}
 			} catch (JSONException e) {
-				e.printStackTrace();
-
 				Log.e(LOG_TAG,
 						"Get json = " + jsonObject + " value with key = " + key
 								+ " and value class = " + valueClass.getName()
-								+ " exception: " + e.getMessage());
+								+ " exception message = " + e.getMessage());
+
+				e.printStackTrace();
 			}
 		} else {
 			Log.e(LOG_TAG, "Get json value with key = " + key
@@ -129,12 +129,12 @@ public class JSONUtils {
 						_object = jsonArray.get(index);
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
-
 					Log.e(LOG_TAG, "Get json array = " + jsonArray
 							+ " object at index = " + index
 							+ " and object class = " + objectClass.getName()
-							+ " exception: " + e.getMessage());
+							+ " exception message = " + e.getMessage());
+
+					e.printStackTrace();
 				}
 			} else {
 				Log.e(LOG_TAG, "Get json array object at index = " + index
@@ -191,6 +191,54 @@ public class JSONUtils {
 	// get object from json array at index
 	public static Object getObjectFromJSONArray(JSONArray jsonArray, int index) {
 		return getJSONArrayObject(jsonArray, index, Object.class);
+	}
+
+	// convert string to json object
+	public static JSONObject toJSONObject(String parseString) {
+		JSONObject _stringJsonObject = null;
+
+		// check string
+		if (null != parseString) {
+			// convert
+			try {
+				_stringJsonObject = new JSONObject(parseString);
+			} catch (JSONException e) {
+				Log.e(LOG_TAG,
+						"Convert string = " + parseString
+								+ " to json object exception message = "
+								+ e.getMessage());
+
+				e.printStackTrace();
+			}
+		} else {
+			Log.e(LOG_TAG, "Convert to json object string is null");
+		}
+
+		return _stringJsonObject;
+	}
+
+	// convert string to json array
+	public static JSONArray toJSONArray(String parseString) {
+		JSONArray _stringJsonArray = null;
+
+		// check string
+		if (null != parseString) {
+			// convert
+			try {
+				_stringJsonArray = new JSONArray(parseString);
+			} catch (JSONException e) {
+				Log.e(LOG_TAG,
+						"Convert string = " + parseString
+								+ " to json array exception message = "
+								+ e.getMessage());
+
+				e.printStackTrace();
+			}
+		} else {
+			Log.e(LOG_TAG, "Convert to json array string is null");
+		}
+
+		return _stringJsonArray;
 	}
 
 }

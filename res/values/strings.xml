@@ -10,7 +10,10 @@
 
     <!-- application instruction activity -->
     <string name="title_activity_app_instruction">AppInstructionActivity</string>
+    <string name="instructionContent_imageView_content_description">instruction content imageView</string>
+    <string name="instructionContent_activeContent_imageView_description">instruction active content imageView</string>
     <string name="instruction_previousNavigation_imageView_content_description">instruction previous navigation imageView</string>
+    <string name="instructionContent_cursor_imageView_content_description">instruction content cursor imageView</string>
     <string name="instruction_nextNavigation_imageView_content_description">instruction next navigation imageView</string>
 
     <!-- navigation activity -->

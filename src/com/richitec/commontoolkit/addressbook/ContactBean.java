@@ -121,7 +121,7 @@ public class ContactBean implements Serializable {
 		if (null == phoneNumbers || 0 == phoneNumbers.size()) {
 			// get system current setting language
 			Locale _systemCurrentSettingLanguage = DeviceUtils
-					.getSystemCurrentSettingLanguage();
+					.systemSettingLanguage();
 
 			// check locale country code
 			if (Locale.SIMPLIFIED_CHINESE.equals(_systemCurrentSettingLanguage)) {

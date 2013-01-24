@@ -8,14 +8,14 @@ import android.widget.TextView;
 
 import com.richitec.commontoolkit.R;
 
-public class CommonTabSpecIndicator extends RelativeLayout {
+public class CTTabSpecIndicator extends RelativeLayout {
 
-	public CommonTabSpecIndicator(Context context) {
+	public CTTabSpecIndicator(Context context) {
 		super(context);
 	}
 
 	// constructor with tab spec background, label text color, label and icon
-	public CommonTabSpecIndicator(Context context, int tabSpecBackground,
+	public CTTabSpecIndicator(Context context, int tabSpecBackground,
 			int tabSpecLabel, int tabSpecIcon) {
 		super(context);
 
@@ -56,8 +56,7 @@ public class CommonTabSpecIndicator extends RelativeLayout {
 	}
 
 	// constructor with tab spec label and icon
-	public CommonTabSpecIndicator(Context context, int tabSpecLabel,
-			int tabSpecIcon) {
+	public CTTabSpecIndicator(Context context, int tabSpecLabel, int tabSpecIcon) {
 		this(context, R.drawable.tab_widget_item_bg, tabSpecLabel, tabSpecIcon);
 	}
 

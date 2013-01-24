@@ -6,11 +6,12 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.richitec.commontoolkit.CommonToolkitApplication;
+import com.richitec.commontoolkit.CTApplication;
 
 public class DataStorageUtils {
 
-	private static final String LOG_TAG = "DataStorageUtils";
+	private static final String LOG_TAG = DataStorageUtils.class
+			.getCanonicalName();
 
 	// shared preferences xml file default name
 	private static final String SHARED_PREFERENCES_FILEDEFNAME = "sharedPreferencesDataStorage";
@@ -33,7 +34,7 @@ public class DataStorageUtils {
 		default:
 			// put object to shared preferences editor
 			putObject2SharedPreferencesStorage(
-					CommonToolkitApplication
+					CTApplication
 							.getContext()
 							.getSharedPreferences(
 									null == fileName ? SHARED_PREFERENCES_FILEDEFNAME
@@ -64,7 +65,7 @@ public class DataStorageUtils {
 		case SHARED_PREFERENCES:
 		default: {
 			// get shared preferences editor
-			SharedPreferences.Editor _sharedPreferencesEditor = CommonToolkitApplication
+			SharedPreferences.Editor _sharedPreferencesEditor = CTApplication
 					.getContext()
 					.getSharedPreferences(
 							null == fileName ? SHARED_PREFERENCES_FILEDEFNAME
@@ -161,8 +162,8 @@ public class DataStorageUtils {
 		case SHARED_PREFERENCES:
 		default: {
 			// get shared preferences
-			SharedPreferences _sharedPreferences = CommonToolkitApplication
-					.getContext().getSharedPreferences(
+			SharedPreferences _sharedPreferences = CTApplication.getContext()
+					.getSharedPreferences(
 							null == fileName ? SHARED_PREFERENCES_FILEDEFNAME
 									: fileName, Activity.MODE_PRIVATE);
 
@@ -195,7 +196,7 @@ public class DataStorageUtils {
 		} else if (value instanceof Boolean) {
 			sharedPreferencesEditor.putBoolean(key, (Boolean) value);
 		} else {
-			Log.e(LOG_TAG, "the object = " + value.toString()
+			Log.e(LOG_TAG, "The object = " + value.toString()
 					+ " can't put to shared preferences editor");
 		}
 
@@ -239,8 +240,8 @@ public class DataStorageUtils {
 		case SHARED_PREFERENCES:
 		default: {
 			// get shared preferences
-			SharedPreferences _sharedPreferences = CommonToolkitApplication
-					.getContext().getSharedPreferences(
+			SharedPreferences _sharedPreferences = CTApplication.getContext()
+					.getSharedPreferences(
 							null == fileName ? SHARED_PREFERENCES_FILEDEFNAME
 									: fileName, Activity.MODE_PRIVATE);
 

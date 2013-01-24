@@ -4,13 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
-public class CommonToolkitApplication extends Application {
-	
-	// singleton instance
-	private static volatile CommonToolkitApplication _singletonInstance;
 
-	// private constructor
-	public CommonToolkitApplication() {
+public class CTApplication extends Application {
+
+	// singleton instance
+	private static volatile CTApplication _singletonInstance;
+
+	public CTApplication() {
 		super();
 		// init singleton instance
 		_singletonInstance = this;

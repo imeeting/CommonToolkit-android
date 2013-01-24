@@ -8,7 +8,44 @@
         android:id="@+id/instructionViewFlipper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_gravity="center" >
+        android:layout_gravity="center"
+        android:flipInterval="1000"
+        android:persistentDrawingCache="animation" >
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/app_instruction_content_layout" />
     </ViewFlipper>
 
     <RelativeLayout
@@ -24,28 +61,77 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="#ff0000"
-            android:minWidth="35dp"
+            android:minWidth="16dp"
             android:orientation="horizontal" >
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                layout="@layout/app_instruction_cursor_layout"
+                android:visibility="gone" />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/instructionNav_PreviousImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/instructionCursorLinearLayout"
             android:contentDescription="@string/instruction_previousNavigation_imageView_content_description"
-            android:src="@android:drawable/arrow_up_float" />
+            android:src="@drawable/img_instruction_previousnav"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/instructionNav_NextImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="8dp"
             android:layout_toRightOf="@id/instructionCursorLinearLayout"
             android:contentDescription="@string/instruction_nextNavigation_imageView_content_description"
-            android:src="@android:drawable/arrow_down_float" />
+            android:src="@drawable/img_instruction_nextnav"
+            android:visibility="gone" />
     </RelativeLayout>
 
 </FrameLayout>

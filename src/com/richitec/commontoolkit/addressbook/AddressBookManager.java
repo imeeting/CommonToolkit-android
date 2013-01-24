@@ -33,7 +33,7 @@ import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
 import android.util.SparseIntArray;
 
-import com.richitec.commontoolkit.CommonToolkitApplication;
+import com.richitec.commontoolkit.CTApplication;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
@@ -46,7 +46,8 @@ public class AddressBookManager {
 
 	private static int filterMode = FILTER_DEFAULT;
 
-	private static final String LOG_TAG = "AddressBookManager";
+	private static final String LOG_TAG = AddressBookManager.class
+			.getCanonicalName();
 
 	private static String[] PhoneNumberFilterIPPrefix = { "17909", "11808",
 			"12593", "17951", "17911" };
@@ -80,6 +81,9 @@ public class AddressBookManager {
 	// all groups members map. key: group id and value: ownership contact
 	// aggregated id list
 	private final Map<Long, List<Long>> _mAllGroupsMembersMap = new HashMap<Long, List<Long>>();
+
+	// contact name and Chinese name searching max length
+	private final Integer CONTACTNAME7CHINESENAME_SEARCHING_MAXLENGTH = 14;
 
 	// contacts search result map. key: search keyword (String), value: array of
 	// contact bean (ContactBean) and contact matching index array map
@@ -140,8 +144,7 @@ public class AddressBookManager {
 	private AddressBookManager() {
 		Log.d("commontoolkit", "construct AddressBookManager - " + this);
 		// init content resolver
-		_mContentResolver = CommonToolkitApplication.getContext()
-				.getContentResolver();
+		_mContentResolver = CTApplication.getContext().getContentResolver();
 
 		// init pinyin4j
 		PinyinHelper.toHanyuPinyinStringArray(PinyinUtils.PINYINUTILS_INIT);
@@ -237,7 +240,8 @@ public class AddressBookManager {
 		Log.d("AddressBookManager", "traversal addressBook");
 
 		// get all contacts detail info
-		Log.d(LOG_TAG, "getAllContactsDetailInfo - begin");
+		Log.d(LOG_TAG, "GetAllContactsDetailInfo - begin");
+
 		getAllContactsDetailInfo();
 
 		// // add contacts changed ContentObserver
@@ -245,7 +249,15 @@ public class AddressBookManager {
 		// false,
 		// new ContactsContentObserver());
 		setAsInited();
-		Log.d(LOG_TAG, "getAllContactsDetailInfo - end");
+
+		Log.d(LOG_TAG, "GetAllContactsDetailInfo - end");
+
+		// get all international code
+		Log.d(LOG_TAG, "GetAllInternationalCodes - begin");
+
+		InternationalCodeHelper.getAllInternationalCodes();
+
+		Log.d(LOG_TAG, "GetAllInternationalCodes - end");
 	}
 
 	// get all contacts detail info
@@ -279,7 +291,7 @@ public class AddressBookManager {
 						.getColumnIndex(Contacts.DISPLAY_NAME));
 
 				// Log.d(LOG_TAG,
-				// "getAllContactsId7DisplayName - aggregatedId: "
+				// "GetAllContactsId7DisplayName - aggregatedId: "
 				// + _aggregatedId + " and displayName: " + _displayName);
 
 				// check contact has been existed in all contacts detail info
@@ -332,7 +344,7 @@ public class AddressBookManager {
 						.getString(_rawIdsCursor
 								.getColumnIndex(RawContacts.ACCOUNT_NAME));
 
-				// Log.d(LOG_TAG, "getAllContactsRawIds - aggregatedId: "
+				// Log.d(LOG_TAG, "GetAllContactsRawIds - aggregatedId: "
 				// + _aggregatedId + " , rawId: " + _rawId
 				// + " and ownership account name: "
 				// + _ownershipAccountName);
@@ -401,7 +413,7 @@ public class AddressBookManager {
 						.getColumnIndex(StructuredName.FAMILY_NAME));
 
 				// Log.d(LOG_TAG,
-				// "getAllContactsStructuredName - aggregatedId: "
+				// "GetAllContactsStructuredName - aggregatedId: "
 				// + _aggregatedId + " , given name: " + _givenName
 				// + " , middle name = " + _middleName
 				// + " and family name: " + _familyName);
@@ -421,10 +433,9 @@ public class AddressBookManager {
 						List<List<String>> _namePhoneticsList = new ArrayList<List<String>>();
 
 						// check locale language
-						if (Locale.CHINESE
-								.getLanguage()
-								.equals(CommonToolkitApplication.getContext()
-										.getResources().getConfiguration().locale
+						if (Locale.CHINESE.getLanguage().equals(
+								CTApplication.getContext().getResources()
+										.getConfiguration().locale
 										.getLanguage())) {
 							// display name
 							StringBuilder _displayName = new StringBuilder();
@@ -532,7 +543,7 @@ public class AddressBookManager {
 				_phoneNumber = filterNumber(_phoneNumber, filterMode);
 
 				// Log.d(LOG_TAG,
-				// "getAllContactsPhoneNumbers - aggregated id = "
+				// "GetAllContactsPhoneNumbers - aggregated id = "
 				// + _aggregatedId + " and phone number = " + _phoneNumber);
 
 				// check contact has been existed in all contacts detail info
@@ -595,7 +606,7 @@ public class AddressBookManager {
 				Long _groupRowId = _groupsCursor.getLong(_groupsCursor
 						.getColumnIndex(GroupMembership.GROUP_ROW_ID));
 
-				// Log.d(LOG_TAG, "getAllContactsGroups - aggregated id = "
+				// Log.d(LOG_TAG, "GetAllContactsGroups - aggregated id = "
 				// + _aggregatedId + " and group row id = " + _groupRowId);
 
 				// check group has been existed in all group members map
@@ -633,7 +644,7 @@ public class AddressBookManager {
 				String _groupTitle = _groupsCursor.getString(_groupsCursor
 						.getColumnIndex(Groups.TITLE));
 
-				// Log.d(LOG_TAG, "getAllContactsGroups - group row id = "
+				// Log.d(LOG_TAG, "GetAllContactsGroups - group row id = "
 				// + _groupRowId + " and group title = " + _groupTitle);
 
 				// check group has been existed in all group members map
@@ -695,7 +706,7 @@ public class AddressBookManager {
 				byte[] _photoData = _photoCursor.getBlob(_photoCursor
 						.getColumnIndex(Photo.PHOTO));
 
-				// Log.d(LOG_TAG, "getAllContactsPhoto - aggregated id = "
+				// Log.d(LOG_TAG, "GetAllContactsPhoto - aggregated id = "
 				// + _aggregatedId + " and photo string = " + _photoData);
 
 				// check contact has been existed in all contacts detail info
@@ -953,7 +964,9 @@ public class AddressBookManager {
 		List<ContactBean> _searchedContacts = new ArrayList<ContactBean>();
 
 		// name to lower case
-		name = name.toLowerCase(Locale.getDefault());
+		name = (CONTACTNAME7CHINESENAME_SEARCHING_MAXLENGTH >= name.length() ? name
+				: name.substring(0, CONTACTNAME7CHINESENAME_SEARCHING_MAXLENGTH))
+				.toLowerCase(Locale.getDefault());
 
 		// check all contacts detail info array
 		if (0 == _mAllContactsInfoArray.size()) {
@@ -1240,7 +1253,9 @@ public class AddressBookManager {
 		List<ContactBean> _searchedContacts = new ArrayList<ContactBean>();
 
 		// name to lower case
-		name = name.toLowerCase(Locale.getDefault());
+		name = (CONTACTNAME7CHINESENAME_SEARCHING_MAXLENGTH >= name.length() ? name
+				: name.substring(0, CONTACTNAME7CHINESENAME_SEARCHING_MAXLENGTH))
+				.toLowerCase(Locale.getDefault());
 
 		// check all contacts detail info array
 		if (0 == _mAllContactsInfoArray.size()) {
@@ -1308,7 +1323,7 @@ public class AddressBookManager {
 				switch (nameMatchingType) {
 				case FUZZY:
 					Log.d(LOG_TAG,
-							"get contacts by Chinese name fuzzy name matching unimplement");
+							"Get contacts by Chinese name fuzzy name matching unimplement");
 					_splitNameUnmatch = true;
 					break;
 
@@ -1457,7 +1472,7 @@ public class AddressBookManager {
 
 		// check contact search name
 		if (null == contactSearchName || 0 == contactSearchName.length()) {
-			Log.d(LOG_TAG, "null or empty search name string mustn't split");
+			Log.d(LOG_TAG, "Null or empty search name string mustn't split");
 		} else if (contactSearchName.length() > 1) {
 			// get first character and others
 			String _firster = contactSearchName.substring(0, 1);
