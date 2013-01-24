@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -37,6 +35,7 @@ import com.richitec.commontoolkit.CTApplication;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
+import com.richitec.internationalcode.utils.InternationalCodeHelper;
 
 public class AddressBookManager {
 

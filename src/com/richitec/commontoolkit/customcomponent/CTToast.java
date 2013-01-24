@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -50,6 +51,9 @@ public class CTToast {
 
 	// popup window display timer task
 	private TimerTask _mPopupWindowDisplayTimerTask;
+
+	// dismiss display popup window handle
+	private final Handler DISMISS_DISPLAYPOPUPWINDOW_HANDLE = new Handler();
 
 	public CTToast(Context context, Integer contentViewResId) {
 		super();
@@ -207,7 +211,14 @@ public class CTToast {
 						@Override
 						public void run() {
 							// dismiss display popup window
-							_mDisplayPopupWindow.dismiss();
+							DISMISS_DISPLAYPOPUPWINDOW_HANDLE
+									.post(new Runnable() {
+
+										@Override
+										public void run() {
+											_mDisplayPopupWindow.dismiss();
+										}
+									});
 
 							// clear popup window display timer task
 							_mPopupWindowDisplayTimerTask = null;
