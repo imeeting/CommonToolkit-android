@@ -267,7 +267,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 						String.valueOf(_touchedLetter)).show();
 			} else {
 				// get other letter textView average height
-				float _otherLetterTextViewAverageHeight = (float) ((otherLettersEndPoint.y - headLetterEndPoint.y) / (_mAlphabet
+				float _otherLetterTextViewAverageHeight = ((float) (otherLettersEndPoint.y - headLetterEndPoint.y) / (_mAlphabet
 						.size() - 1));
 
 				// up
