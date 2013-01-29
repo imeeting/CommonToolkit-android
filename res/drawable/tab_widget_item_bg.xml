@@ -4,7 +4,7 @@
     <item android:state_selected="true"><shape>
             <corners android:radius="2dp" />
 
-            <solid android:color="@color/quarter_transparent" />
+            <solid android:color="@color/quarter_white_transparent" />
         </shape></item>
     <item android:drawable="@android:color/transparent"/>
 

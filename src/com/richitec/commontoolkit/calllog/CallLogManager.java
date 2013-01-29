@@ -94,15 +94,15 @@ public class CallLogManager {
 		// reset return new added call log id
 		_ret = ContentUris.parseId(_newAddedCallLogUri);
 
-		Log.d(LOG_TAG, "Insert new call log, call log id: " + _ret
-				+ ", callee number: " + calleePhone + ", call date: "
-				+ _callLogValues.getAsLong(CallLog.Calls.DATE)
-				+ ", callee name: " + calleeName);
+		// Log.d(LOG_TAG, "Insert new call log, call log id: " + _ret
+		// + ", callee number: " + calleePhone + ", call date: "
+		// + _callLogValues.getAsLong(CallLog.Calls.DATE)
+		// + ", callee name: " + calleeName);
 
 		return _ret;
 	}
 
-	// update call log call duration with call log id
+	// update call log with call log id
 	public static void updateCallLog(Long callLogId,
 			Map<String, String> updateValues) {
 		// define constant
@@ -111,10 +111,11 @@ public class CallLogManager {
 
 		// check call log id and update values map
 		if (null != callLogId && callLogId >= 1 && null != updateValues) {
-			// generate new call log values
+			// generate new call log values for update
 			ContentValues _callLogValues = new ContentValues();
 
-			// parse update values map
+			// parse update values map, just for call duration now, others not
+			// implement
 			try {
 				// get update call duration
 				Long _updateCallLogCallDuration = Long.parseLong(updateValues
@@ -132,14 +133,64 @@ public class CallLogManager {
 				e.printStackTrace();
 			}
 
-			Log.d(LOG_TAG,
-					"Update call log, call log id: " + callLogId
-							+ " and update duration: "
-							+ _callLogValues.getAsLong(CallLog.Calls.DURATION));
+			// Log.d(LOG_TAG,
+			// "Update call log, call log id: " + callLogId
+			// + " and update duration: "
+			// + _callLogValues.getAsLong(CallLog.Calls.DURATION));
 
 			// update calls table record with index
 			getContentResolver().update(CallLog.Calls.CONTENT_URI,
 					_callLogValues, _where, _selectionArgs);
+		}
+	}
+
+	// update call log callee name with callee phone
+	public static void updateCallLog(String calleePhone, String updateCalleeName) {
+		// // check callee phone number
+		// if (null != calleePhone && !"".equalsIgnoreCase(calleePhone.trim()))
+		// {
+		// // generate new call log values for update
+		// ContentValues _callLogValues = new ContentValues();
+		//
+		// // put callee name for update
+		// _callLogValues.put(CallLog.Calls.CACHED_NAME, updateCalleeName);
+		//
+		// // update calls table record with phone number
+		// getContentResolver().update(
+		// Uri.withAppendedPath(CallLog.Calls.CONTENT_FILTER_URI,
+		// Uri.encode(calleePhone)), _callLogValues, null,
+		// null);
+		// }
+
+		// define constant
+		final String _where = CallLog.Calls.NUMBER + "=?";
+		final String[] _selectionArgs = new String[] { calleePhone };
+
+		// check callee phone number
+		if (null != calleePhone && !"".equalsIgnoreCase(calleePhone.trim())) {
+			// generate new call log values for update
+			ContentValues _callLogValues = new ContentValues();
+
+			// put callee name for update
+			_callLogValues.put(CallLog.Calls.CACHED_NAME, updateCalleeName);
+
+			// update calls table record with phone number
+			getContentResolver().update(CallLog.Calls.CONTENT_URI,
+					_callLogValues, _where, _selectionArgs);
+		}
+	}
+
+	// delete call log with call log id
+	public static void deleteCallLog(Long callLogId) {
+		// define constant
+		final String _where = CallLog.Calls._ID + "=?";
+		final String[] _selectionArgs = new String[] { Long.toString(callLogId) };
+
+		// check call log id, which will delete
+		if (null != callLogId && callLogId >= 1) {
+			// delete calls table record with index
+			getContentResolver().delete(CallLog.Calls.CONTENT_URI, _where,
+					_selectionArgs);
 		}
 	}
 

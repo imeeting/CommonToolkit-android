@@ -2,8 +2,9 @@
 <resources>
 
     <!-- transparent color -->
-    <color name="threequarters_light_slate_gray">#b0778899</color>
-    <color name="quarter_transparent">#30ffffff</color>
+    <color name="popupwindow_mask_transparent">#20000000</color>
+    <color name="threequarters_light_slate_gray_transparent">#b0778899</color>
+    <color name="quarter_white_transparent">#30ffffff</color>
 
     <!-- pure color -->
     <color name="dark_dim_gray">#424242</color>

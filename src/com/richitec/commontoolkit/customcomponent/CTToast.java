@@ -82,24 +82,30 @@ public class CTToast {
 
 				_mContentView = (ViewGroup) ((LayoutInflater) context
 						.getSystemService(Activity.LAYOUT_INFLATER_SERVICE))
-						.inflate(R.layout.commontoolkit_toast_content_layout,
+						.inflate(
+								R.layout.commontoolkit_toast_contentview_layout,
 								null);
 			}
 		} else {
 			// init content view with default style
 			_mContentView = (ViewGroup) ((LayoutInflater) context
 					.getSystemService(Activity.LAYOUT_INFLATER_SERVICE))
-					.inflate(R.layout.commontoolkit_toast_content_layout, null);
+					.inflate(R.layout.commontoolkit_toast_contentview_layout,
+							null);
 		}
 
 		// set content view on touch listener
 		_mContentView
 				.setOnTouchListener(new CTToastDisplayPopupWindowOnTouchListener());
 
-		// init toast for storing attributes and display popup window
+		// init toast for storing attributes
 		_mStoreAttrsToast = new Toast(context);
+
+		// init display popup window and set its animation style
 		_mDisplayPopupWindow = new PopupWindow(_mContentView,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		_mDisplayPopupWindow
+				.setAnimationStyle(R.style.CommonToolkitToastAnimationFade);
 	}
 
 	public CTToast(Context context) {
@@ -180,6 +186,19 @@ public class CTToast {
 
 	public View getView() {
 		return _mStoreAttrsToast.getView();
+	}
+
+	public boolean isShowing() {
+		// define default
+		boolean _displayPopupWindowShown = false;
+
+		// check commonToolkit toast
+		if (null != _mDisplayPopupWindow) {
+			// update return result
+			_displayPopupWindowShown = _mDisplayPopupWindow.isShowing();
+		}
+
+		return _displayPopupWindowShown;
 	}
 
 	public void show() {
