@@ -2,6 +2,9 @@ package com.richitec.commontoolkit.animation;
 
 import android.graphics.Camera;
 import android.graphics.Matrix;
+import android.graphics.Point;
+import android.util.Log;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
@@ -10,7 +13,10 @@ import android.view.animation.Transformation;
  * angles. This animation also adds a translation on the Z axis (depth) to
  * improve the effect.
  */
-public class CTRotate3dAnimation extends Animation {
+public class CTRotate3DAnimation extends Animation {
+
+	private static final String LOG_TAG = CTRotate3DAnimation.class
+			.getCanonicalName();
 
 	// rotate degree ranges
 	private final float _mFromDegrees;
@@ -48,7 +54,7 @@ public class CTRotate3dAnimation extends Animation {
 	 * @param reverse
 	 *            true if the translation should be reversed, false otherwise
 	 */
-	public CTRotate3dAnimation(float fromDegrees, float toDegrees,
+	public CTRotate3DAnimation(float fromDegrees, float toDegrees,
 			float centerX, float centerY, float depthZ, boolean reverse) {
 		// init degrees, rotate point coordinate and reverse flag variables
 		_mFromDegrees = fromDegrees;
@@ -102,6 +108,55 @@ public class CTRotate3dAnimation extends Animation {
 		// preconcats and postconcats the matrix with the specified translation
 		_matrix.preTranslate(-_mCenterX, -_mCenterY);
 		_matrix.postTranslate(_mCenterX, _mCenterY);
+	}
+
+	// static 3D rotate for view with direction and center point
+	public static void static3DRotate4View(View view,
+			ThreeDimensionalRotateDirection rotateDirection, Point centerPoint) {
+		// check view and its center point
+		if (null != view && null != centerPoint) {
+			// define 3D rotation animation
+			CTRotate3DAnimation _rotate3DAnimation;
+
+			// check 3D rotate direction and init static rotate 3D animation
+			switch (rotateDirection) {
+			case HORIZONTAL_RIGHT:
+				_rotate3DAnimation = new CTRotate3DAnimation(0.0f, 180.0f,
+						centerPoint.x, centerPoint.y, 0, true);
+				break;
+
+			case VERTICAL_UP:
+				Log.d(LOG_TAG, "");
+
+				_rotate3DAnimation = null;
+				break;
+
+			case VERTICAL_DOWN:
+				Log.d(LOG_TAG, "");
+
+				_rotate3DAnimation = null;
+				break;
+
+			case HORIZONTAL_LEFT:
+			default:
+				_rotate3DAnimation = new CTRotate3DAnimation(0.0f, -180.0f,
+						centerPoint.x, centerPoint.y, 0, true);
+				break;
+			}
+
+			// set the static rotate 3D animation duration and fill after state
+			_rotate3DAnimation.setDuration(0);
+			_rotate3DAnimation.setFillAfter(true);
+
+			// start the static 3D rotation animation of the view
+			view.startAnimation(_rotate3DAnimation);
+		}
+	}
+
+	// inner class
+	// 3D rotate direction
+	public static enum ThreeDimensionalRotateDirection {
+		HORIZONTAL_LEFT, HORIZONTAL_RIGHT, VERTICAL_UP, VERTICAL_DOWN
 	}
 
 }
