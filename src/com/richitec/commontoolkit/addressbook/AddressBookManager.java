@@ -33,6 +33,7 @@ import android.util.SparseIntArray;
 
 import com.richitec.commontoolkit.CTApplication;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
+import com.richitec.commontoolkit.calllog.CallLogManager;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
 import com.richitec.internationalcode.utils.InternationalCodeHelper;
@@ -2000,6 +2001,7 @@ public class AddressBookManager {
 				_dataCursor.close();
 			}
 			// set the contact phone numbers list
+			Log.d("commontoolkit", "contact: " + _contact);
 			if (_contact != null) {
 				_contact.setPhoneNumbers(_newPhoneNumbers);
 				// Log.d("AddressBook", "setphone");
@@ -2007,6 +2009,11 @@ public class AddressBookManager {
 				if (isCreate) {
 					Log.d("AddressBook", "create");
 					updateType = TYPE_DELETE_OR_CREATE;
+				}
+				Log.d("commontoolkit", "contact: " + _contact.getDisplayName() + " phone numbers: " + _contact.getPhoneNumbers());
+				for (String phoneNumber : _contact.getPhoneNumbers()) {
+					Log.d("commontoolkit", "updateCallLog - number: " + phoneNumber);
+					CallLogManager.updateCallLog(phoneNumber, _contact.getDisplayName());
 				}
 			} else {
 				// if _contact is null, it means the contact according to the

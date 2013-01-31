@@ -50,6 +50,7 @@ public abstract class CTListCursorAdapter extends CursorAdapter {
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
+		Log.d(LOG_TAG, "cursor pos: " + cursor.getPosition() + " data size: " + _mData.size());
 		// check cursor position and append cursor data
 		if (cursor.getPosition() >= _mData.size()) {
 			appendCursorData(_mData, cursor);
