@@ -33,12 +33,11 @@ public class DisplayScreenUtils {
 		// define default status height
 		int _statusBarHeight = 0;
 
-		// define dimen class
-		Class<?> _dimenClass;
-
 		// get dimen class and set status bar height
 		try {
-			_dimenClass = Class.forName("com.android.internal.R$dimen");
+			// get dimen class
+			Class<?> _dimenClass = Class
+					.forName("com.android.internal.R$dimen");
 
 			_statusBarHeight = CTApplication
 					.getContext()
@@ -53,27 +52,21 @@ public class DisplayScreenUtils {
 							+ e.getMessage());
 
 			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (NoSuchFieldException e) {
 			Log.e(LOG_TAG,
-					"Create dimen instantiation error, exception message = "
-							+ e.getMessage());
-
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			Log.e(LOG_TAG,
-					"Create dimen instantiation error, exception message = "
+					"Get status bar height firld of dimen error, exception message = "
 							+ e.getMessage());
 
 			e.printStackTrace();
 		} catch (SecurityException e) {
 			Log.e(LOG_TAG,
-					"Get status bar height firld of dimen error, exception message = "
+					"Handle dimen with security error, exception message = "
 							+ e.getMessage());
 
 			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
 			Log.e(LOG_TAG,
-					"Get status bar height firld of dimen error, exception message = "
+					"Create dimen instantiation error, exception message = "
 							+ e.getMessage());
 
 			e.printStackTrace();

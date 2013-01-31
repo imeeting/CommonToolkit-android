@@ -1,4 +1,4 @@
-package com.richitec.commontoolkit.calllog;
+package com.richitec.commontoolkit.call;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import android.provider.CallLog;
 import android.util.Log;
 
 import com.richitec.commontoolkit.CTApplication;
-import com.richitec.commontoolkit.calllog.CallLogBean.CallType;
+import com.richitec.commontoolkit.call.CallLogBean.CallType;
 import com.richitec.commontoolkit.utils.DeviceUtils;
 
 public class CallLogManager {

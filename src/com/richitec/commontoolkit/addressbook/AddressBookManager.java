@@ -33,7 +33,7 @@ import android.util.SparseIntArray;
 
 import com.richitec.commontoolkit.CTApplication;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
-import com.richitec.commontoolkit.calllog.CallLogManager;
+import com.richitec.commontoolkit.call.CallLogManager;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
 import com.richitec.internationalcode.utils.InternationalCodeHelper;
