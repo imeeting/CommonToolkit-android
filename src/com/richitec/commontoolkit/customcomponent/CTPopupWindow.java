@@ -24,8 +24,9 @@ public abstract class CTPopupWindow extends PopupWindow {
 	private static final String LOG_TAG = CTPopupWindow.class
 			.getCanonicalName();
 
-	// commonToolkit popup window dismiss animation duration(milliseconds)
-	public final Integer DISMISSANIMATION_DURATION = 400;
+	// commonToolkit popup window dismiss and next show animation switch
+	// duration(milliseconds)
+	public final Integer DISMISS7NEXTSHOWNANIMATION_SWITCHDURATION = 400;
 
 	// android popup window animation style
 	private final int ANDROID_POPUPWINDOW_ANIMATIONSTYLE = getAnimationStyle();
@@ -198,7 +199,7 @@ public abstract class CTPopupWindow extends PopupWindow {
 					_dismissAnimation);
 		}
 
-		// dismiss and reset popup window
+		// dismiss and reset popup window using animation duration
 		new Handler().postDelayed(new Runnable() {
 
 			@Override
