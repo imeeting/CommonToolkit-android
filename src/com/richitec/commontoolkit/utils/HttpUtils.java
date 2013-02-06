@@ -399,7 +399,7 @@ public class HttpUtils {
 
 	// inner class
 	// http url prefix
-	public static enum HttpUrlPrefix {
+	public enum HttpUrlPrefix {
 		HTTP, HTTPS;
 
 		// http url prefix string
@@ -449,12 +449,12 @@ public class HttpUtils {
 	}
 
 	// http request type
-	public static enum HttpRequestType {
+	public enum HttpRequestType {
 		SYNCHRONOUS, ASYNCHRONOUS
 	}
 
 	// post request format
-	public static enum PostRequestFormat {
+	public enum PostRequestFormat {
 		URLENCODED, MULTIPARTFORMDATA
 	}
 

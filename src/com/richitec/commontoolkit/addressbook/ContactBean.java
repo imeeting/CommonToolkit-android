@@ -218,7 +218,7 @@ public class ContactBean implements Serializable {
 
 	// inner class
 	// contact dirty type
-	public static enum ContactDirtyType {
+	public enum ContactDirtyType {
 		NORMAL, NEW_ADDED, MODIFIED, DELETEED
 	}
 

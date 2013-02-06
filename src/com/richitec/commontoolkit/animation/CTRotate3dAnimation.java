@@ -155,7 +155,7 @@ public class CTRotate3DAnimation extends Animation {
 
 	// inner class
 	// 3D rotate direction
-	public static enum ThreeDimensionalRotateDirection {
+	public enum ThreeDimensionalRotateDirection {
 		HORIZONTAL_LEFT, HORIZONTAL_RIGHT, VERTICAL_UP, VERTICAL_DOWN
 	}
 

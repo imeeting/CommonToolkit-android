@@ -268,7 +268,7 @@ public class DataStorageUtils {
 	}
 
 	// inner class
-	public static enum StorageType {
+	public enum StorageType {
 		SHARED_PREFERENCES, FILE, SQLITE
 	}
 

@@ -91,7 +91,7 @@ public class CallLogBean implements Serializable {
 	}
 
 	// inner class
-	public static enum CallType {
+	public enum CallType {
 		INCOMING, OUTGOING, MISSED
 	}
 

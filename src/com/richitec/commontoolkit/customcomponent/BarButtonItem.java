@@ -162,7 +162,7 @@ public class BarButtonItem extends Button {
 
 	// inner class
 	// bar button item style
-	public static enum BarButtonItemStyle {
+	public enum BarButtonItemStyle {
 		LEFT_BACK, RIGHT_GO
 	}
 

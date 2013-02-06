@@ -1667,12 +1667,12 @@ public class AddressBookManager {
 
 	// inner class
 	// contact searched sorted type
-	public static enum ContactSortedType {
+	public enum ContactSortedType {
 		IDENTITY, PHONETICS
 	}
 
 	// contact searched name matching type
-	public static enum ContactNameMatchingType {
+	public enum ContactNameMatchingType {
 		FUZZY, ORDER
 	}
 
