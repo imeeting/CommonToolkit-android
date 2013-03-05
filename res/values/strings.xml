@@ -18,9 +18,9 @@
 
     <!-- navigation activity -->
     <string name="title_activity_navigation">NavigationActivity</string>
-    <string name="title_textView_hint">无标题</string>
-    <string name="left_btn_hint">返回</string>
-    <string name="right_btn_hint">前往</string>
+    <string name="title_textView_hint">No Title</string>
+    <string name="left_btn_hint">Back</string>
+    <string name="right_btn_hint">Go</string>
 
     <!-- tab spec indicator -->
     <string name="tabWidget_itemIcon_imageView_content_description">Common tab widget item icon image view</string>

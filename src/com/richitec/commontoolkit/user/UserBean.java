@@ -16,8 +16,7 @@ public class UserBean {
 	private boolean rememberPwd;
 
 	private Map<String, Object> store;
-	
-	
+
 	public UserBean() {
 		store = new HashMap<String, Object>();
 	}
@@ -60,13 +59,21 @@ public class UserBean {
 	public void setRememberPwd(boolean rememberPwd) {
 		this.rememberPwd = rememberPwd;
 	}
-	
+
 	public void setValue(String key, Object value) {
 		store.put(key, value);
 	}
-	
+
 	public Object getValue(String key) {
 		return store.get(key);
+	}
+
+	public Object popValue(String key) {
+		Object _value = store.get(key);
+
+		store.remove(key);
+
+		return _value;
 	}
 
 	public String toString() {
@@ -76,7 +83,7 @@ public class UserBean {
 		sb.append("userkey: ").append(userKey).append('\n');
 		sb.append("rememberPwd: ").append(rememberPwd).append('\n');
 		sb.append("map: ").append(store.toString());
-		
+
 		return sb.toString();
 	}
 
