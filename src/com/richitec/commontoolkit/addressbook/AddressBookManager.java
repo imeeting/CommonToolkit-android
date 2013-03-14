@@ -34,6 +34,7 @@ import android.util.SparseIntArray;
 import com.richitec.commontoolkit.CTApplication;
 import com.richitec.commontoolkit.addressbook.ContactBean.ContactDirtyType;
 import com.richitec.commontoolkit.call.CallLogManager;
+import com.richitec.commontoolkit.utils.DeviceUtils;
 import com.richitec.commontoolkit.utils.PinyinUtils;
 import com.richitec.commontoolkit.utils.StringUtils;
 import com.richitec.internationalcode.utils.InternationalCodeHelper;
@@ -432,11 +433,12 @@ public class AddressBookManager {
 						List<String> _fullNamesList = new ArrayList<String>();
 						List<List<String>> _namePhoneticsList = new ArrayList<List<String>>();
 
-						// check locale language
-						if (Locale.CHINESE.getLanguage().equals(
-								CTApplication.getContext().getResources()
-										.getConfiguration().locale
-										.getLanguage())) {
+						// check android system setting locale language
+						if (Locale.SIMPLIFIED_CHINESE.equals(DeviceUtils
+								.systemSettingLanguage())
+								|| Locale.TRADITIONAL_CHINESE
+										.equals(DeviceUtils
+												.systemSettingLanguage())) {
 							// display name
 							StringBuilder _displayName = new StringBuilder();
 

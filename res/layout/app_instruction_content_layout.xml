@@ -8,7 +8,7 @@
         android:id="@+id/instructionContent_imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:contentDescription="@string/instructionContent_imageView_content_description"
+        android:contentDescription="@string/ct_instructionContent_imageView_content_description"
         android:scaleType="centerInside" />
 
 </RelativeLayout>

@@ -126,13 +126,15 @@ public class CTRotate3DAnimation extends Animation {
 				break;
 
 			case VERTICAL_UP:
-				Log.d(LOG_TAG, "");
+				Log.w(LOG_TAG,
+						"CommonTookit rotate 3D animation vertival up not implemnt");
 
 				_rotate3DAnimation = null;
 				break;
 
 			case VERTICAL_DOWN:
-				Log.d(LOG_TAG, "");
+				Log.w(LOG_TAG,
+						"CommonTookit rotate 3D animation vertival down not implemnt");
 
 				_rotate3DAnimation = null;
 				break;

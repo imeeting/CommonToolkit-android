@@ -2,20 +2,20 @@ package com.richitec.commontoolkit.call;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.util.Log;
 
 import com.richitec.commontoolkit.CTApplication;
+import com.richitec.commontoolkit.R;
 import com.richitec.commontoolkit.call.CallLogBean.CallType;
-import com.richitec.commontoolkit.utils.DeviceUtils;
 
 public class CallLogManager {
 
@@ -232,9 +232,8 @@ public class CallLogManager {
 		// + ", call duration: " + _callDuration + " and call type: "
 		// + _callType);
 
-		// get system current setting language
-		Locale _systemCurrentSettingLanguage = DeviceUtils
-				.systemSettingLanguage();
+		// get application context
+		Context _appContext = CTApplication.getContext();
 
 		// check callee phone, then update callee phone and name
 		// callee phone unknown
@@ -243,20 +242,14 @@ public class CallLogManager {
 
 			// check callee name and update callee name
 			if (null == _calleeName || _calleeName.trim().equalsIgnoreCase("")) {
-				_calleeName = Locale.SIMPLIFIED_CHINESE
-						.equals(_systemCurrentSettingLanguage) ? "未知号码"
-						: Locale.TRADITIONAL_CHINESE
-								.equals(_systemCurrentSettingLanguage) ? "未知號碼"
-								: "Unknown Phone";
+				_calleeName = _appContext.getResources().getString(
+						R.string.ct_calllog_unknownPhone);
 			}
 		} else {
 			// check callee name and update callee name
 			if (null == _calleeName || _calleeName.trim().equalsIgnoreCase("")) {
-				_calleeName = Locale.SIMPLIFIED_CHINESE
-						.equals(_systemCurrentSettingLanguage) ? "未知联系人"
-						: Locale.TRADITIONAL_CHINESE
-								.equals(_systemCurrentSettingLanguage) ? "未知聯繫人"
-								: "Unknown";
+				_calleeName = _appContext.getResources().getString(
+						R.string.ct_calllog_unknownCallee);
 			}
 		}
 

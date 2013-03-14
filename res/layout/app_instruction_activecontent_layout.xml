@@ -7,7 +7,7 @@
         android:id="@+id/activeContent_imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:contentDescription="@string/instructionContent_activeContent_imageView_description"
+        android:contentDescription="@string/ct_instructionContent_activeContent_imageView_description"
         android:scaleType="centerInside" />
 
     <Button

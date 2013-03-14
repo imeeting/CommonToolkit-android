@@ -33,6 +33,47 @@ public class TelephonyManagerExtension {
 		return _telephonyManager;
 	}
 
+	// generate a system outgoing call
+	public static void genSysOutgoingCall(String dialPhone) {
+		try {
+			// get telephony interface object
+			Object _ITelephonyObject = getITelephony();
+
+			// get call method
+			Method _callMethod = _ITelephonyObject.getClass()
+					.getDeclaredMethod("call", new Class[] { String.class });
+
+			// set call method access permission
+			_callMethod.setAccessible(true);
+
+			// generate a system outgoing call
+			_callMethod.invoke(_ITelephonyObject, new Object[] { dialPhone });
+		} catch (ClassNotFoundException e) {
+			Log.e(LOG_TAG,
+					"Cann't find telephony interface class, exception message = "
+							+ e.getMessage());
+
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			Log.e(LOG_TAG,
+					"Handle telephony interface with security error, exception message = "
+							+ e.getMessage());
+
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			Log.e(LOG_TAG, "Get method of 'call' error, exception message = "
+					+ e.getMessage());
+
+			e.printStackTrace();
+		} catch (Exception e) {
+			Log.e(LOG_TAG,
+					"Invoke method of 'call' error, exception message = "
+							+ e.getMessage());
+
+			e.printStackTrace();
+		}
+	}
+
 	// reject the currently-ringing incoming call
 	public static void rejectIncomingCall() {
 		try {

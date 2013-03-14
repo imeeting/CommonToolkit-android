@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/instructionCursorLinearLayout"
-            android:contentDescription="@string/instruction_previousNavigation_imageView_content_description"
+            android:contentDescription="@string/ct_instruction_previousNavigation_imageView_content_description"
             android:src="@drawable/img_instruction_previousnav"
             android:visibility="gone" />
 
@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_toRightOf="@id/instructionCursorLinearLayout"
-            android:contentDescription="@string/instruction_nextNavigation_imageView_content_description"
+            android:contentDescription="@string/ct_instruction_nextNavigation_imageView_content_description"
             android:src="@drawable/img_instruction_nextnav"
             android:visibility="gone" />
     </RelativeLayout>

@@ -25,7 +25,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/left_btn_hint"
+                android:hint="@string/ct_leftNavigation_button_hint"
                 android:visibility="invisible" />
         </FrameLayout>
 
@@ -42,7 +42,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/right_btn_hint"
+                android:hint="@string/ct_rightNavigation_button_hint"
                 android:visibility="invisible" />
         </FrameLayout>
 
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:ellipsize="middle"
-                android:hint="@string/title_textView_hint"
+                android:hint="@string/ct_navigation_title_textView_hint"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/white" />

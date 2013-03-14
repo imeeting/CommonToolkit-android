@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.richitec.commontoolkit.CTApplication;
+import com.richitec.commontoolkit.R;
 
 public class CommonUtils {
 
@@ -47,8 +49,9 @@ public class CommonUtils {
 
 			Log.e(LOG_TAG, "Intent = " + intent + " is not available");
 
-			// // show intent is not available message
-			// Toast.makeText(_appContext, "??", Toast.LENGTH_LONG).show();
+			// show intent is not available message
+			Toast.makeText(_appContext, R.string.ct_intent_not_available,
+					Toast.LENGTH_SHORT).show();
 		}
 
 		return _ret;

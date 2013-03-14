@@ -3,10 +3,10 @@ package com.richitec.commontoolkit.addressbook;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import com.richitec.commontoolkit.utils.DeviceUtils;
+import com.richitec.commontoolkit.CTApplication;
+import com.richitec.commontoolkit.R;
 
 public class ContactBean implements Serializable {
 
@@ -113,21 +113,12 @@ public class ContactBean implements Serializable {
 	public String getFormatPhoneNumbers() {
 		StringBuilder _formatPhoneNumbers = new StringBuilder();
 
-		//
+		// check contact phone numbers and update his format phone numbers
+		// string
 		if (null == phoneNumbers || 0 == phoneNumbers.size()) {
-			// get system current setting language
-			Locale _systemCurrentSettingLanguage = DeviceUtils
-					.systemSettingLanguage();
-
-			// check locale country code
-			if (Locale.SIMPLIFIED_CHINESE.equals(_systemCurrentSettingLanguage)) {
-				_formatPhoneNumbers.append("无号码");
-			} else if (Locale.TRADITIONAL_CHINESE
-					.equals(_systemCurrentSettingLanguage)) {
-				_formatPhoneNumbers.append("無號碼");
-			} else {
-				_formatPhoneNumbers.append("No Phone");
-			}
+			_formatPhoneNumbers.append(CTApplication.getContext()
+					.getResources()
+					.getString(R.string.ct_addressBook_contactHasNoPhone));
 		} else {
 			// generate format phone numbers string
 			for (int i = 0; i < phoneNumbers.size(); i++) {

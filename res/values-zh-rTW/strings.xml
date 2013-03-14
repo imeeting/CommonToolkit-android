@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- navigation activity -->
+    <string name="ct_navigation_title_textView_hint">無標題</string>
+    <string name="ct_leftNavigation_button_hint">返回</string>
+    <string name="ct_rightNavigation_button_hint">前往</string>
+
+    <!-- others -->
+    <!-- addressBook contact -->
+    <string name="ct_addressBook_contactHasNoPhone">無號碼</string>
+
+    <!-- calllog -->
+    <string name="ct_calllog_unknownCallee">未知聯繫人</string>
+    <string name="ct_calllog_unknownPhone">未知號碼</string>
+
+    <!-- warning and error -->
+    <string name="ct_intent_not_available">您的安卓手機不支持此組件</string>
+
+</resources>
