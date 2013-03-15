@@ -72,7 +72,7 @@ public class CallLogManager {
 	// insert call log and return new added call log id
 	public static Long insertCallLog(String calleeName, String calleePhone) {
 		// define new added call log id
-		Long _ret;
+		Long _ret = null;
 
 		// new call log values
 		ContentValues _callLogValues = new ContentValues();
@@ -91,13 +91,16 @@ public class CallLogManager {
 		Uri _newAddedCallLogUri = getContentResolver().insert(
 				CallLog.Calls.CONTENT_URI, _callLogValues);
 
-		// reset return new added call log id
-		_ret = ContentUris.parseId(_newAddedCallLogUri);
+		// check new added call log uri
+		if (null != _newAddedCallLogUri) {
+			// reset return new added call log id
+			_ret = ContentUris.parseId(_newAddedCallLogUri);
 
-		// Log.d(LOG_TAG, "Insert new call log, call log id: " + _ret
-		// + ", callee number: " + calleePhone + ", call date: "
-		// + _callLogValues.getAsLong(CallLog.Calls.DATE)
-		// + ", callee name: " + calleeName);
+			// Log.d(LOG_TAG, "Insert new call log, call log id: " + _ret
+			// + ", callee number: " + calleePhone + ", call date: "
+			// + _callLogValues.getAsLong(CallLog.Calls.DATE)
+			// + ", callee name: " + calleeName);
+		}
 
 		return _ret;
 	}
@@ -105,12 +108,13 @@ public class CallLogManager {
 	// update call log with call log id
 	public static void updateCallLog(Long callLogId,
 			Map<String, String> updateValues) {
-		// define constant
-		final String _where = CallLog.Calls._ID + "=?";
-		final String[] _selectionArgs = new String[] { Long.toString(callLogId) };
-
 		// check call log id and update values map
 		if (null != callLogId && callLogId >= 1 && null != updateValues) {
+			// define constant
+			final String _where = CallLog.Calls._ID + "=?";
+			final String[] _selectionArgs = new String[] { Long
+					.toString(callLogId) };
+
 			// generate new call log values for update
 			ContentValues _callLogValues = new ContentValues();
 
