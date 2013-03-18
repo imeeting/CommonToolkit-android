@@ -27,11 +27,11 @@
 
     <!-- others -->
     <!-- addressBook contact -->
-    <string name="ct_addressBook_contactHasNoPhone">No Phone</string>
+    <string name="ct_addressBook_contactHasNoPhone">没有号码</string>
 
     <!-- calllog -->
-    <string name="ct_calllog_unknownCallee">Unknown</string>
-    <string name="ct_calllog_unknownPhone">Unknown Phone</string>
+    <string name="ct_calllog_unknownCallee">未知联系人</string>
+    <string name="ct_calllog_unknownPhone">未知号码</string>
 
     <!-- warning and error -->
     <string name="ct_intent_not_available">Intent is not available for your android phone</string>
