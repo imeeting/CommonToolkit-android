@@ -205,9 +205,11 @@ public class CallLogManager {
 				CallLog.Calls.CACHED_NAME, CallLog.Calls.NUMBER,
 				CallLog.Calls.DATE, CallLog.Calls.DURATION, CallLog.Calls.TYPE };
 
-		return CTApplication.getContext()
-				.getContentResolver().query(CallLog.Calls.CONTENT_URI,
-				_projection, null, null, CallLog.Calls.DEFAULT_SORT_ORDER);
+		return CTApplication
+				.getContext()
+				.getContentResolver()
+				.query(CallLog.Calls.CONTENT_URI, _projection, null, null,
+						CallLog.Calls.DEFAULT_SORT_ORDER);
 	}
 
 	// get call log object from query cursor
