@@ -60,7 +60,7 @@ public class AddressBookManager {
 	private static volatile AddressBookManager _singletonInstance;
 
 	private boolean inited = false;
-	
+
 	// contact sqlite query content resolver
 	private ContentResolver _mContentResolver;
 
@@ -158,15 +158,16 @@ public class AddressBookManager {
 	private void setAsInited() {
 		inited = true;
 	}
-	
+
 	/**
 	 * whether the addressbook has been loaded
+	 * 
 	 * @return
 	 */
 	public boolean isInited() {
 		return inited;
 	}
-	
+
 	public void addContactObserverhandler(Handler handler) {
 		if (_mContactsContentObserver != null) {
 			_mContactsContentObserver.addHandler(handler);
@@ -1910,20 +1911,25 @@ public class AddressBookManager {
 						// add the new contact to all contacts detail info
 						// map and list
 						_mAllContactsInfoMap.put(_dirtyContactId, _contact);
-						for (int i = 0; i < _mAllContactsInfoArray.size(); i++) {
-							// get the contact in all contacts detail info
-							// list
-							ContactBean _contactInList = _mAllContactsInfoArray
-									.get(i);
-							// replace
-							if (_dirtyContactId == _contactInList.getId()) {
-								_contactInList = _contact;
-							} else if (_dirtyContactId < _contactInList.getId()) {
-								_mAllContactsInfoArray.add(i, _contact);
-							} else if (i == _mAllContactsInfoArray.size() - 1) {
-								Log.d("AddressBook add id : ", _contact.getId()
-										+ "");
-								_mAllContactsInfoArray.add(_contact);
+						if (_mAllContactsInfoArray.isEmpty()) {
+							_mAllContactsInfoArray.add(_contact);
+						} else {
+							for (int i = 0; i < _mAllContactsInfoArray.size(); i++) {
+								// get the contact in all contacts detail info
+								// list
+								ContactBean _contactInList = _mAllContactsInfoArray
+										.get(i);
+								// replace
+								if (_dirtyContactId == _contactInList.getId()) {
+									_contactInList = _contact;
+								} else if (_dirtyContactId < _contactInList
+										.getId()) {
+									_mAllContactsInfoArray.add(i, _contact);
+								} else if (i == _mAllContactsInfoArray.size() - 1) {
+									Log.d("AddressBook add id : ",
+											_contact.getId() + "");
+									_mAllContactsInfoArray.add(_contact);
+								}
 							}
 						}
 					}
@@ -2012,10 +2018,13 @@ public class AddressBookManager {
 					Log.d("AddressBook", "create");
 					updateType = TYPE_DELETE_OR_CREATE;
 				}
-				Log.d("commontoolkit", "contact: " + _contact.getDisplayName() + " phone numbers: " + _contact.getPhoneNumbers());
+				Log.d("commontoolkit", "contact: " + _contact.getDisplayName()
+						+ " phone numbers: " + _contact.getPhoneNumbers());
 				for (String phoneNumber : _contact.getPhoneNumbers()) {
-					Log.d("commontoolkit", "updateCallLog - number: " + phoneNumber);
-					CallLogManager.updateCallLog(phoneNumber, _contact.getDisplayName());
+					Log.d("commontoolkit", "updateCallLog - number: "
+							+ phoneNumber);
+					CallLogManager.updateCallLog(phoneNumber,
+							_contact.getDisplayName());
 				}
 			} else {
 				// if _contact is null, it means the contact according to the
@@ -2049,7 +2058,7 @@ public class AddressBookManager {
 		public void addHandler(Handler handler) {
 			handlerList.add(handler);
 		}
-		
+
 		public void removeHandler(Handler handler) {
 			handlerList.remove(handler);
 		}
