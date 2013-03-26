@@ -209,6 +209,8 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 					}
 				}
 			} else {
+				// hide quick alphabet bar
+				_mAlphabetTouchFrameLayout.setVisibility(View.GONE);
 
 				Log.w(LOG_TAG,
 						"Dependent listView adapter alphabet is empty, hide quick alphabet bar");
