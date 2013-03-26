@@ -159,8 +159,10 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 			Set<Character> _dependentListViewAdapterAlphabetSet = ((CTListAdapter) dependentListViewAdapter)
 					.getAlphabet();
 			if (0 != _dependentListViewAdapterAlphabetSet.size()) {
-				// show alphabet touch frameLayout
-				_mAlphabetTouchFrameLayout.setVisibility(View.VISIBLE);
+				// show quick alphabet bar if needed
+				if (View.VISIBLE != _mAlphabetTouchFrameLayout.getVisibility()) {
+					_mAlphabetTouchFrameLayout.setVisibility(View.VISIBLE);
+				}
 
 				// init present alphabet
 				_mAlphabet = new ArrayList<Character>();
@@ -207,10 +209,9 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 					}
 				}
 			} else {
-				// hide alphabet touch frameLayout
-				_mAlphabetTouchFrameLayout.setVisibility(View.GONE);
 
-				Log.w(LOG_TAG, "Dependent listView adapter alphabet is empty");
+				Log.w(LOG_TAG,
+						"Dependent listView adapter alphabet is empty, hide quick alphabet bar");
 			}
 		} else {
 			Log.w(LOG_TAG, "Dependent listView adapter = "
