@@ -11,21 +11,43 @@ public class DisplayScreenUtils {
 	private static final String LOG_TAG = DisplayScreenUtils.class
 			.getCanonicalName();
 
+	// window manager
+	private static volatile WindowManager _windowManager;
+
+	// get window manager
+	private static WindowManager getWindowManager() {
+		// check window manager
+		if (null == _windowManager) {
+			synchronized (DisplayScreenUtils.class) {
+				if (null == _windowManager) {
+					// init window manager object
+					_windowManager = (WindowManager) CTApplication.getContext()
+							.getSystemService(Context.WINDOW_SERVICE);
+				}
+			}
+		}
+
+		return _windowManager;
+	}
+
 	// get screen width
 	public static int screenWidth() {
-		return ((WindowManager) CTApplication.getContext().getSystemService(
-				Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
+		return getWindowManager().getDefaultDisplay().getWidth();
 	}
 
 	// get screen height
 	public static int screenHeight() {
-		return ((WindowManager) CTApplication.getContext().getSystemService(
-				Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight();
+		return getWindowManager().getDefaultDisplay().getHeight();
 	}
 
-	// get screen density
+	// get screen density, dots-per-inch
 	public static int screenDensity() {
 		return CTApplication.getContext().getResources().getDisplayMetrics().densityDpi;
+	}
+
+	// get the logical density of the display screen
+	public static float screenLogicalDensity() {
+		return CTApplication.getContext().getResources().getDisplayMetrics().density;
 	}
 
 	// get status bar height

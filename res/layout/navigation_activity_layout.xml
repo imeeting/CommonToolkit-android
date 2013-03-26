@@ -56,11 +56,13 @@
             android:layout_toRightOf="@id/left_btn_frameLayout"
             android:gravity="center" >
 
-            <View
-                android:id="@+id/title_view"
+            <FrameLayout
+                android:id="@+id/title_contentView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="invisible" />
+                android:layout_gravity="center"
+                android:visibility="gone" >
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/title_textView"

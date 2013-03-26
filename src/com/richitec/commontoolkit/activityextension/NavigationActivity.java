@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -163,14 +165,15 @@ public class NavigationActivity extends Activity {
 		// remove default navigation bar left button item and add the new one
 		FrameLayout _leftBtnLayout = (FrameLayout) findViewById(R.id.left_btn_frameLayout);
 		_leftBtnLayout.removeAllViews();
-		_leftBtnLayout.addView(barButtonItem);
+		_leftBtnLayout.addView(removeViewFromParent4Setting(barButtonItem));
 	}
 
 	public void setLeftBarButtonItem(ImageBarButtonItem imageBarButtonItem) {
 		// remove default navigation bar left button item and add the new one
 		FrameLayout _leftBtnLayout = (FrameLayout) findViewById(R.id.left_btn_frameLayout);
 		_leftBtnLayout.removeAllViews();
-		_leftBtnLayout.addView(imageBarButtonItem);
+		_leftBtnLayout
+				.addView(removeViewFromParent4Setting(imageBarButtonItem));
 	}
 
 	// set right bar button item
@@ -178,30 +181,90 @@ public class NavigationActivity extends Activity {
 		// remove default navigation bar left button item and add the new one
 		FrameLayout _rightBtnLayout = (FrameLayout) findViewById(R.id.right_btn_frameLayout);
 		_rightBtnLayout.removeAllViews();
-		_rightBtnLayout.addView(barButtonItem);
+		_rightBtnLayout.addView(removeViewFromParent4Setting(barButtonItem));
 	}
 
 	public void setRightBarButtonItem(ImageBarButtonItem imageBarButtonItem) {
 		// remove default navigation bar left button item and add the new one
 		FrameLayout _rightBtnLayout = (FrameLayout) findViewById(R.id.right_btn_frameLayout);
 		_rightBtnLayout.removeAllViews();
-		_rightBtnLayout.addView(imageBarButtonItem);
+		_rightBtnLayout
+				.addView(removeViewFromParent4Setting(imageBarButtonItem));
+	}
+
+	// set title view with tag
+	public void setTitle(View titleView, String titleTag) {
+		// check title tag and set navigation activity title
+		if (null == titleTag || "".equalsIgnoreCase(titleTag.trim())) {
+			setTitle(R.string.ct_navigation_title_textView_hint);
+		} else {
+			setTitle(titleTag);
+		}
+
+		// get title content view
+		FrameLayout _titleContentView = (FrameLayout) findViewById(R.id.title_contentView);
+
+		// show title contentView if needed and hide title textView
+		if (View.VISIBLE != _titleContentView.getVisibility()) {
+			_titleContentView.setVisibility(View.VISIBLE);
+
+			((TextView) findViewById(R.id.title_textView))
+					.setVisibility(View.GONE);
+		}
+
+		// clear title contentView
+		_titleContentView.removeAllViews();
+
+		// check and add title view
+		if (null != titleView) {
+			_titleContentView.addView(removeViewFromParent4Setting(titleView));
+		} else {
+			Log.e(LOG_TAG, "Title view is null, show nothing.");
+		}
+	}
+
+	// set title view with tag
+	public void setTitle(View titleView) {
+		// use default navigation title hint as back operation button title
+		setTitle(titleView, null);
 	}
 
 	@Override
 	public void setTitle(CharSequence title) {
 		super.setTitle(title);
 
+		// get title textView
+		TextView _titleTextView = (TextView) findViewById(R.id.title_textView);
+
+		// show title textView if needed and hide title contentView
+		if (View.VISIBLE != _titleTextView.getVisibility()) {
+			_titleTextView.setVisibility(View.VISIBLE);
+
+			((FrameLayout) findViewById(R.id.title_contentView))
+					.setVisibility(View.GONE);
+		}
+
 		// set title textView text
-		((TextView) findViewById(R.id.title_textView)).setText(title);
+		_titleTextView.setText(title);
 	}
 
 	@Override
 	public void setTitle(int titleId) {
 		super.setTitle(titleId);
 
-		// set title textView text
-		((TextView) findViewById(R.id.title_textView)).setText(titleId);
+		// get title textView
+		TextView _titleTextView = (TextView) findViewById(R.id.title_textView);
+
+		// show title textView if needed and hide title contentView
+		if (View.VISIBLE != _titleTextView.getVisibility()) {
+			_titleTextView.setVisibility(View.VISIBLE);
+
+			((FrameLayout) findViewById(R.id.title_contentView))
+					.setVisibility(View.GONE);
+		}
+
+		// set title
+		_titleTextView.setText(titleId);
 	}
 
 	@Override
@@ -278,7 +341,29 @@ public class NavigationActivity extends Activity {
 		// finish self activity
 		finish();
 	}
-	//
+
+	// remove title view, left and right (image)bar button item from its parent
+	// view
+	private View removeViewFromParent4Setting(View view) {
+		// check view
+		if (null != view) {
+			// get view parent
+			ViewParent _viewParent = view.getParent();
+
+			// check view parent and remove view if needed
+			if (null != _viewParent) {
+				// remove view from its parent view
+				((ViewGroup) _viewParent).removeView(view);
+			}
+		} else {
+			Log.e(LOG_TAG,
+					"Remove view from parent for setting error, view is null");
+		}
+
+		// return view for setting
+		return view;
+	}
+
 	// @Override
 	// public void onBackPressed() {
 	// // get alive activity list
