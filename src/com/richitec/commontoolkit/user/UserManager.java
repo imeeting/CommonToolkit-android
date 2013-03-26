@@ -68,9 +68,9 @@ public class UserManager {
 		return userBean;
 	}
 
-	// remove the user
-	public void removeUser() {
-		userBean = null;
+	// reset the user
+	public void resetUser() {
+		userBean = new UserBean();
 	}
 
 }
