@@ -8,12 +8,10 @@ import android.app.Activity;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -87,7 +85,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 
 			// bind listView and alphabet
 			bindListViewAlphabet(dependentListView);
-//			enlargeAlphabetIndexerTouchRegion();
+			// enlargeAlphabetIndexerTouchRegion();
 		} else {
 			Log.e(LOG_TAG,
 					null == dependentListView ? "Dependent listView is null"
@@ -161,6 +159,9 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 			Set<Character> _dependentListViewAdapterAlphabetSet = ((CTListAdapter) dependentListViewAdapter)
 					.getAlphabet();
 			if (0 != _dependentListViewAdapterAlphabetSet.size()) {
+				// show alphabet touch frameLayout
+				_mAlphabetTouchFrameLayout.setVisibility(View.VISIBLE);
+
 				// init present alphabet
 				_mAlphabet = new ArrayList<Character>();
 				for (int i = 0; i < ALPHABET.length(); i++) {
@@ -206,6 +207,9 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 					}
 				}
 			} else {
+				// hide alphabet touch frameLayout
+				_mAlphabetTouchFrameLayout.setVisibility(View.GONE);
+
 				Log.w(LOG_TAG, "Dependent listView adapter alphabet is empty");
 			}
 		} else {
