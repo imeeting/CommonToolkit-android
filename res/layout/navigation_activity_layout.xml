@@ -77,12 +77,12 @@
         </FrameLayout>
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/navContent_relativeLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/navBar_relativeLayout"
         android:layout_centerHorizontal="true" >
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
