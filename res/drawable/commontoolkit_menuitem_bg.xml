@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true"><shape>
+            <gradient android:angle="90" android:centerColor="@color/quarter_white_transparent" android:endColor="@color/quarter_blue_transparent" android:startColor="@color/threequarters_blue_transparent" />
+        </shape></item>
+    <item android:drawable="@android:color/transparent"/>
+
+</selector>

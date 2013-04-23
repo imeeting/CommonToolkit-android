@@ -4,7 +4,10 @@
     <!-- transparent color -->
     <color name="popupwindow_mask_transparent">#20000000</color>
     <color name="threequarters_light_slate_gray_transparent">#b0778899</color>
+    <color name="seveneighths_transparent">#d0000000</color>
     <color name="quarter_white_transparent">#30ffffff</color>
+    <color name="quarter_blue_transparent">#301e90ff</color>
+    <color name="threequarters_blue_transparent">#a01e90ff</color>
 
     <!-- pure color -->
     <color name="gray">#808080</color>

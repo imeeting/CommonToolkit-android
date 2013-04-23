@@ -22,6 +22,9 @@
     <string name="ct_leftNavigation_button_hint">返回</string>
     <string name="ct_rightNavigation_button_hint">前往</string>
 
+    <!-- popup menu -->
+    <string name="ct_popupMenu_itemIcon_imageView_content_description" translatable="false">Popup menu item icon image view</string>
+
     <!-- tab spec indicator -->
     <string name="ct_tabWidget_itemIcon_imageView_content_description" translatable="false">Common tab widget item icon image view</string>
 
