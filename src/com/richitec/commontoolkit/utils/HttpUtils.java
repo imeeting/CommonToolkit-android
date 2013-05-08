@@ -50,8 +50,8 @@ public class HttpUtils {
 	private HttpClient _mDefaultHttpClient;
 
 	// connection and socket timeout
-	private int _mTimeoutConnection = 60000;
-	private int _mTimeoutSocket = 60000;
+	private int _mTimeoutConnection = 30000;
+	private int _mTimeoutSocket = 30000;
 
 	// user name parameter key
 	private static final String USERNAME_PARAMETER_KEY = "username";
