@@ -641,9 +641,19 @@ public class HttpUtils {
 
 				e.printStackTrace();
 
-				processSendingHttpRequestException(_mResponseResult,
-						_mHttpRequestListener, e);
-
+				if (null != _mHttpRequestListener) {
+					// process the exception and update request execute result
+					if (ConnectTimeoutException.class == e.getClass()) {
+						// timeout
+						_ret = RequestExecuteResult.TIMEOUT;
+					} else if (UnknownHostException.class == e.getClass()) {
+						// unknown host
+						_ret = RequestExecuteResult.UNKNOWN_HOST;
+					} else {
+						// unknown exception
+						_ret = RequestExecuteResult.UNKNOWN_EXCEPTION;
+					}
+				}
 				_mHttpRequest.abort();
 			}
 
@@ -670,7 +680,7 @@ public class HttpUtils {
 				case UNKNOWN_EXCEPTION:
 					_mHttpRequestListener.onUnknownException(_mResponseResult);
 					break;
-					
+
 				case NORMAL:
 				default:
 					_mHttpRequestListener
