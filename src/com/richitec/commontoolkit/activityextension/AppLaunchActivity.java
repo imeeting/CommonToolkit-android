@@ -89,8 +89,9 @@ public abstract class AppLaunchActivity extends Activity {
 	// application intent activity
 	public abstract Intent intentActivity();
 
-	// application did finish launching
-	public abstract void didFinishLaunching();
+	// application did finish launching, if return result is true, method
+	// intentActivity() will be called again to change your target intent
+	public abstract boolean didFinishLaunching();
 
 	public void doPostExecute() {};
 	// inner class
@@ -117,8 +118,12 @@ public abstract class AppLaunchActivity extends Activity {
 				_mInstructionImgRes7LayoutIds = _instructionImgResIds;
 				_mIntent = (Intent) params[params.length - 1];
 
-				// did finish launch
-				didFinishLaunching();
+				// check needed to update target activity intent after
+				// application did finish launching
+				if (didFinishLaunching()) {
+					// update target activity intent
+					_mIntent = intentActivity();
+				}
 
 				// reset return result
 				_ret = 0;
