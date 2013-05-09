@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -32,6 +34,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.richitec.commontoolkit.user.UserManager;
@@ -66,7 +69,8 @@ public class HttpUtils {
 		SchemeRegistry registry = new SchemeRegistry();
 		registry.register(new Scheme("http", PlainSocketFactory
 				.getSocketFactory(), 80));
-		registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+		registry.register(new Scheme("https", SSLSocketFactory
+				.getSocketFactory(), 443));
 		ClientConnectionManager cm = new ThreadSafeClientConnManager(
 				_httpParameters, registry);
 
@@ -156,18 +160,19 @@ public class HttpUtils {
 			try {
 				HttpResponse _response = getHttpClient().execute(
 						_getHttpRequest);
-				responseResult.setStatusCode(_response.getStatusLine().getStatusCode());
-				responseResult.setResponseText(getHttpResponseEntityString(_response));
+				responseResult.setStatusCode(_response.getStatusLine()
+						.getStatusCode());
+				responseResult
+						.setResponseText(getHttpResponseEntityString(_response));
 				if (_response != null) {
 					_response.getEntity().consumeContent();
 				}
 				// check http request listener and bind request response
 				// callback function
 				if (null != httpRequestListener) {
-					httpRequestListener.bindReqRespCallBackFunction(
-							responseResult);
+					httpRequestListener
+							.bindReqRespCallBackFunction(responseResult);
 				}
-
 
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
@@ -176,21 +181,12 @@ public class HttpUtils {
 
 				e.printStackTrace();
 
-<<<<<<< HEAD
-				// process needed exception and check http request listener
-				if (ConnectTimeoutException.class == e.getClass()
-						&& null != httpRequestListener) {
-					httpRequestListener.onTimeout(responseResult);
-				} else if (UnknownHostException.class == e.getClass()
-						&& null != httpRequestListener) {
-					httpRequestListener.onUnknownHost(responseResult);
-				}
-				_getHttpRequest.abort();
-=======
 				// process sending http request exception
-				processSendingHttpRequestException(_getHttpRequest,
+				processSendingHttpRequestException(responseResult,
 						httpRequestListener, e);
->>>>>>> 81f774ec180998012deaa3782158f47a4f89d655
+
+				_getHttpRequest.abort();
+
 			}
 			break;
 
@@ -268,16 +264,18 @@ public class HttpUtils {
 			try {
 				HttpResponse _response = getHttpClient().execute(
 						_postHttpRequest);
-				responseResult.setStatusCode(_response.getStatusLine().getStatusCode());
-				responseResult.setResponseText(getHttpResponseEntityString(_response));
+				responseResult.setStatusCode(_response.getStatusLine()
+						.getStatusCode());
+				responseResult
+						.setResponseText(getHttpResponseEntityString(_response));
 				if (_response != null) {
 					_response.getEntity().consumeContent();
 				}
 				// check http request listener and bind request response
 				// callback function
 				if (null != httpRequestListener) {
-					httpRequestListener.bindReqRespCallBackFunction(
-							responseResult);
+					httpRequestListener
+							.bindReqRespCallBackFunction(responseResult);
 				}
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
@@ -286,22 +284,9 @@ public class HttpUtils {
 
 				e.printStackTrace();
 
-<<<<<<< HEAD
-				// process needed exception and check http request listener
-				if (ConnectTimeoutException.class == e.getClass()
-						&& null != httpRequestListener) {
-					httpRequestListener.onTimeout(responseResult);
-				} else if (UnknownHostException.class == e.getClass()
-						&& null != httpRequestListener) {
-					httpRequestListener.onUnknownHost(responseResult);
-				}
-
-				_postHttpRequest.abort();
-=======
-				// process sending http request exception
-				processSendingHttpRequestException(_postHttpRequest,
+				processSendingHttpRequestException(responseResult,
 						httpRequestListener, e);
->>>>>>> 81f774ec180998012deaa3782158f47a4f89d655
+				_postHttpRequest.abort();
 			}
 			break;
 
@@ -409,20 +394,20 @@ public class HttpUtils {
 	// check http request listener and process some exceptions for http request
 	// sending
 	private static void processSendingHttpRequestException(
-			 httpRequest,
+			HttpResponseResult responseResult,
 			OnHttpRequestListener httpRequestListener, Exception e) {
 		// check http request listener
 		if (null != httpRequestListener) {
 			// process the exception
 			if (ConnectTimeoutException.class == e.getClass()) {
 				// timeout
-				httpRequestListener.onTimeout(httpRequest);
+				httpRequestListener.onTimeout(responseResult);
 			} else if (UnknownHostException.class == e.getClass()) {
 				// unknown host
-				httpRequestListener.onUnknownHost(httpRequest);
+				httpRequestListener.onUnknownHost(responseResult);
 			} else {
 				// unknown exception
-				httpRequestListener.onUnknownException(httpRequest);
+				httpRequestListener.onUnknownException(responseResult);
 			}
 		}
 	}
@@ -486,6 +471,10 @@ public class HttpUtils {
 	// post request format
 	public enum PostRequestFormat {
 		URLENCODED, MULTIPARTFORMDATA
+	}
+
+	enum RequestExecuteResult {
+		NORMAL, TIMEOUT, UNKNOWN_HOST, UNKNOWN_EXCEPTION
 	}
 
 	/**
@@ -604,11 +593,10 @@ public class HttpUtils {
 		}
 
 		// on unknown exception
-		public void onUnknownException(HttpRequest request) {
+		public void onUnknownException(HttpResponseResult responseResult) {
 			// call onFailed callback function for unknown exception
-			onFailed(request, null);
+			onFailed(responseResult);
 		}
-
 	}
 
 	// asynchronous http request task
@@ -653,20 +641,9 @@ public class HttpUtils {
 
 				e.printStackTrace();
 
-				// check http request listener
-				if (null != _mHttpRequestListener) {
-					// process the exception and update request execute result
-					if (ConnectTimeoutException.class == e.getClass()) {
-						// timeout
-						_ret = RequestExecuteResult.TIMEOUT;
-					} else if (UnknownHostException.class == e.getClass()) {
-						// unknown host
-						_ret = RequestExecuteResult.UNKNOWN_HOST;
-					} else {
-						// unknown exception
-						_ret = RequestExecuteResult.UNKNOWN_EXCEPTION;
-					}
-				}
+				processSendingHttpRequestException(_mResponseResult,
+						_mHttpRequestListener, e);
+
 				_mHttpRequest.abort();
 			}
 
@@ -691,9 +668,9 @@ public class HttpUtils {
 					break;
 
 				case UNKNOWN_EXCEPTION:
-					_mHttpRequestListener.onUnknownException(_mHttpRequest);
+					_mHttpRequestListener.onUnknownException(_mResponseResult);
 					break;
-
+					
 				case NORMAL:
 				default:
 					_mHttpRequestListener
@@ -718,12 +695,6 @@ public class HttpUtils {
 			}
 
 			return _ret;
-		}
-
-		// inner class
-		// request execute result
-		enum RequestExecuteResult {
-			NORMAL, TIMEOUT, UNKNOWN_HOST, UNKNOWN_EXCEPTION
 		}
 
 	}
