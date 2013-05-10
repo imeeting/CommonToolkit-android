@@ -211,25 +211,8 @@ public class VersionUtils {
 	}
 
 	// check application current version and upgrade the application with
-	// application id and upgrade mode
-	public static void upgradeApp(Context activityContext, String appId,
-			APPUPGRADEMODE upgradeMode) {
-		// upgrade application with application id from application version
-		// center
-		upgradeApp(activityContext, appId, null, upgradeMode);
-	}
-
-	// check application current version and upgrade the application with
-	// application id
-	public static void upgradeApp(Context activityContext, String appId) {
-		// auto upgrade application with application id from application version
-		// center
-		upgradeApp(activityContext, appId, null, APPUPGRADEMODE.AUTO);
-	}
-
-	// check application current version and upgrade the application with
 	// application id, application version center url and upgrade mode
-	private static void upgradeApp(Context activityContext, String appId,
+	public static void upgradeApp(Context activityContext, String appId,
 			String appVCenterUrl, APPUPGRADEMODE upgradeMode) {
 		// check activity context
 		if (activityContext instanceof Activity) {
@@ -281,6 +264,23 @@ public class VersionUtils {
 			Log.e(LOG_TAG,
 					"Unable to upgrade the application, because there is no activity context to builder upgrade alert dialog");
 		}
+	}
+
+	// check application current version and upgrade the application with
+	// application id and upgrade mode
+	public static void upgradeApp(Context activityContext, String appId,
+			APPUPGRADEMODE upgradeMode) {
+		// upgrade application with application id from application version
+		// center
+		upgradeApp(activityContext, appId, null, upgradeMode);
+	}
+
+	// check application current version and upgrade the application with
+	// application id
+	public static void upgradeApp(Context activityContext, String appId) {
+		// auto upgrade application with application id from application version
+		// center
+		upgradeApp(activityContext, appId, null, APPUPGRADEMODE.AUTO);
 	}
 
 	// inner class
