@@ -50,7 +50,7 @@ public class CommonUtils {
 			Log.e(LOG_TAG, "Intent = " + intent + " is not available");
 
 			// show intent is not available message
-			Toast.makeText(_appContext, R.string.ct_intent_not_available,
+			Toast.makeText(_appContext, R.string.ct_toast_intent_not_available,
 					Toast.LENGTH_SHORT).show();
 		}
 

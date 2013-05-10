@@ -36,7 +36,12 @@
     <string name="ct_calllog_unknownCallee">未知联系人</string>
     <string name="ct_calllog_unknownPhone">未知号码</string>
 
-    <!-- warning and error -->
-    <string name="ct_intent_not_available">Intent is not available for your android phone</string>
+    <!-- application upgrade -->
+    <string name="ct_appUpgrade6theLatestApp_alertDialog_title">升级提醒</string>
+    <string name="ct_appUpgrade_alertDialog_message">已发现新版本 ***，\n是否立即更新您的程序？\n本次更新说明：\n***</string>
+    <string name="ct_appUpgrade_alertDialog_upgradeButton_title">立即升级</string>
+    <string name="ct_appUpgrade_alertDialog_remindLaterButton_title">下次再议</string>
+    <string name="ct_theLatestApp_alertDialog_message">您的程序已是最新版本，版本号：***</string>
+    <string name="ct_theLatestApp_alertDialog_neutralButton_title">好</string>
 
 </resources>

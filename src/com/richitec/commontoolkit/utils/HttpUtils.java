@@ -369,7 +369,7 @@ public class HttpUtils {
 				pRequestType, httpRequestListener);
 	}
 
-	// get http response entity string
+	// get http response entity string using character encoding UTF-8
 	public static String getHttpResponseEntityString(HttpResponse response) {
 		String _respEntityString = "";
 

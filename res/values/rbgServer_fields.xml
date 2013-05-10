@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- application upgrade -->
+    <string name="rbgServer_getUpgradedAppLatestVersionReq_resp_version" translatable="false">version</string>
+    <string name="rbgServer_getUpgradedAppLatestVersionReq_resp_comment" translatable="false">comment</string>
+
+</resources>

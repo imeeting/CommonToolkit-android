@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- application upgrade version center url -->
+    <string name="application_upgradeVCenter_url" translatable="false">http://www.wetalking.net/appvcenter</string>
+    <string name="get_appLatestVersion_url" translatable="false">/version/***/android</string>
+    <string name="application_download_url" translatable="false">/downloadapp/***/android</string>
+
+</resources>
