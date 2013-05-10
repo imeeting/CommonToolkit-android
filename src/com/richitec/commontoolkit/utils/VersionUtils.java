@@ -370,21 +370,7 @@ public class VersionUtils {
 
 				// check the upgraded application local version if it is the
 				// latest or not
-				if (0 == _compareResult) {
-					// show application is the latest alert dialog
-					ALERTDIALOG_BUILDER
-							.setTitle(
-									R.string.ct_appUpgrade6theLatestApp_alertDialog_title)
-							.setMessage(
-									_mContext
-											.getResources()
-											.getString(
-													R.string.ct_theLatestApp_alertDialog_message)
-											.replace("***", versionName()))
-							.setNeutralButton(
-									R.string.ct_theLatestApp_alertDialog_neutralButton_title,
-									null).show();
-				} else if (_compareResult < 0) {
+				if (_compareResult < 0) {
 					// show application upgrade alert dialog
 					ALERTDIALOG_BUILDER
 							.setTitle(
@@ -404,8 +390,29 @@ public class VersionUtils {
 									R.string.ct_appUpgrade_alertDialog_remindLaterButton_title,
 									null).show();
 				} else {
-					Log.e(LOG_TAG,
-							"The upgraded application latest version is less than its local version");
+					// check application upgrade mode and show application is
+					// the latest alert dialog
+					if (APPUPGRADEMODE.MANUAL == _mAppUpgradeMode) {
+						ALERTDIALOG_BUILDER
+								.setTitle(
+										R.string.ct_appUpgrade6theLatestApp_alertDialog_title)
+								.setMessage(
+										_mContext
+												.getResources()
+												.getString(
+														R.string.ct_theLatestApp_alertDialog_message)
+												.replace("***", versionName()))
+								.setNeutralButton(
+										R.string.ct_theLatestApp_alertDialog_neutralButton_title,
+										null).show();
+					}
+
+					// local version is later than the version of application
+					// which in its version center
+					if (_compareResult > 0) {
+						Log.e(LOG_TAG,
+								"The upgraded application latest version is less than its local version");
+					}
 				}
 			} catch (VersionCompareException e) {
 				Log.e(LOG_TAG,
