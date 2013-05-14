@@ -200,7 +200,7 @@ public class ContactBean implements Serializable {
 				.append(", ");
 		_contactDescription.append("photo: ").append(photo).append(", ");
 		_contactDescription.append("is dirty: ")
-				.append(ContactDirtyType.NORMAL != dirty).append(", ");
+				.append(ContactDirtyType.NORMAL != dirty).append(" and ");
 		_contactDescription.append("extension: ").append(extension)
 				.append("\n");
 

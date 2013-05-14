@@ -28,7 +28,8 @@ public class NavigationActivity extends Activity {
 			.getCanonicalName();
 
 	// commonToolkit navigation activity onCreate param key
-	private static final String NAV_ACTIVITY_PARAM_KEY = "nav_back_btn_default_title";
+	private static final String NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY = "nav_back_btn_default_title";
+	private static final String NAV_ACTIVITY_PARAM_START4RESULT_KEY = "nav_activity_start4result";
 
 	// navigation bar relativeLayout
 	private RelativeLayout _mNavigationBar;
@@ -40,22 +41,29 @@ public class NavigationActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// get the intent parameter data
-		Bundle _data = getIntent().getExtras();
+		// get the intent extra data
+		final Bundle _data = getIntent().getExtras();
 
 		// check the data bundle
-		if (null != _data && null != _data.getString(NAV_ACTIVITY_PARAM_KEY)) {
+		if (null != _data
+				&& null != _data
+						.getString(NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY)) {
 			// init default nav bar back button item
 			_mBackBarBtnItem = new BarButtonItem(this,
-					_data.getString(NAV_ACTIVITY_PARAM_KEY),
+					_data.getString(NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY),
 					BarButtonItemStyle.LEFT_BACK,
 					backBarBtnItemNormalDrawable(),
 					backBarBtnItemPressedDrawable(), new OnClickListener() {
 
 						@Override
 						public void onClick(View v) {
-							// finish self activity
-							finish();
+							// check activity start with request code
+							if (_data
+									.getBoolean(NAV_ACTIVITY_PARAM_START4RESULT_KEY)) {
+								popActivityWithResult();
+							} else {
+								popActivity();
+							}
 						}
 
 					});
@@ -107,7 +115,9 @@ public class NavigationActivity extends Activity {
 		// navigation content linearLayout
 		if (null == params) {
 			_navContentRelativeLayout
-					.addView(removeViewFromParent4Setting(view));
+					.addView(removeViewFromParent4Setting(view),
+							new LayoutParams(LayoutParams.FILL_PARENT,
+									LayoutParams.FILL_PARENT));
 		} else {
 			_navContentRelativeLayout.addView(
 					removeViewFromParent4Setting(view), params);
@@ -274,40 +284,75 @@ public class NavigationActivity extends Activity {
 	// push activity with extra data to navigation activity stack
 	public void pushActivity(Class<? extends Activity> activityClass,
 			Map<String, ?> extraData) {
-		// define the intent
-		Intent _intent = new Intent(this, activityClass);
+		pushActivity(activityClass, extraData, null);
+	}
 
-		// set intent extra parameter data
-		_intent.putExtra(NAV_ACTIVITY_PARAM_KEY, (String) this.getTitle());
+	// push activity to navigation activity stack
+	public void pushActivity(Class<? extends Activity> activityClass) {
+		pushActivity(activityClass, null);
+	}
 
+	// push activity with extra data to navigation activity stack for result
+	public void pushActivityForResult(Class<? extends Activity> activityClass,
+			Map<String, ?> extraData, int requestCode) {
+		pushActivity(activityClass, extraData, requestCode);
+	}
+
+	// push activity to navigation activity stack for result
+	public void pushActivityForResult(Class<? extends Activity> activityClass,
+			int requestCode) {
+		pushActivityForResult(activityClass, null, requestCode);
+	}
+
+	// pop this activity from activity stack
+	public void popActivity() {
+		// finish self activity
+		finish();
+	}
+
+	// pop this activity from activity stack with result code and extra data,
+	// previous activity using method onActivityResult to process
+	public void popActivityWithResult(Integer resultCode,
+			Map<String, ?> extraData) {
+		// check and process extra data
 		if (null != extraData) {
 			for (String extraDataKey : extraData.keySet()) {
+				// check extra data key, if it equals NAV_ACTIVITY_PARAM_KEY,
+				// skip it
+				if (NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY
+						.equalsIgnoreCase(extraDataKey)) {
+					break;
+				}
+
 				// get value object
 				Object _valueObject = extraData.get(extraDataKey);
 
 				// check extra data type
 				if (_valueObject instanceof Short) {
-					_intent.putExtra(extraDataKey, (Short) _valueObject);
+					getIntent().putExtra(extraDataKey, (Short) _valueObject);
 				} else if (_valueObject instanceof Integer) {
-					_intent.putExtra(extraDataKey, (Integer) _valueObject);
+					getIntent().putExtra(extraDataKey, (Integer) _valueObject);
 				} else if (_valueObject instanceof Long) {
-					_intent.putExtra(extraDataKey, (Long) _valueObject);
+					getIntent().putExtra(extraDataKey, (Long) _valueObject);
 				} else if (_valueObject instanceof Float) {
-					_intent.putExtra(extraDataKey, (Float) _valueObject);
+					getIntent().putExtra(extraDataKey, (Float) _valueObject);
 				} else if (_valueObject instanceof Double) {
-					_intent.putExtra(extraDataKey, (Double) _valueObject);
+					getIntent().putExtra(extraDataKey, (Double) _valueObject);
 				} else if (_valueObject instanceof Character) {
-					_intent.putExtra(extraDataKey, (Character) _valueObject);
+					getIntent()
+							.putExtra(extraDataKey, (Character) _valueObject);
 				} else if (_valueObject instanceof Byte) {
-					_intent.putExtra(extraDataKey, (Byte) _valueObject);
+					getIntent().putExtra(extraDataKey, (Byte) _valueObject);
 				} else if (_valueObject instanceof Boolean) {
-					_intent.putExtra(extraDataKey, (Boolean) _valueObject);
+					getIntent().putExtra(extraDataKey, (Boolean) _valueObject);
 				} else if (_valueObject instanceof String) {
-					_intent.putExtra(extraDataKey, (String) _valueObject);
+					getIntent().putExtra(extraDataKey, (String) _valueObject);
 				} else if (_valueObject instanceof CharSequence) {
-					_intent.putExtra(extraDataKey, (CharSequence) _valueObject);
+					getIntent().putExtra(extraDataKey,
+							(CharSequence) _valueObject);
 				} else if (_valueObject instanceof Serializable) {
-					_intent.putExtra(extraDataKey, (Serializable) _valueObject);
+					getIntent().putExtra(extraDataKey,
+							(Serializable) _valueObject);
 				} else {
 					// others, not implementation
 					Log.d(LOG_TAG, "Type = "
@@ -317,19 +362,26 @@ public class NavigationActivity extends Activity {
 			}
 		}
 
-		// go to the activity
-		startActivity(_intent);
-	}
+		// check result code and set result
+		if (null == resultCode) {
+			setResult(RESULT_OK, getIntent());
+		} else {
+			setResult(resultCode, getIntent());
+		}
 
-	// push activity to navigation activity stack
-	public void pushActivity(Class<? extends Activity> activityClass) {
-		this.pushActivity(activityClass, null);
-	}
-
-	// pop this activity from activity stack
-	public void popActivity() {
 		// finish self activity
 		finish();
+	}
+
+	// pop this activity from activity stack with extra data and default result
+	// code: RESULT_OK
+	public void popActivityWithResult(Map<String, ?> extraData) {
+		popActivityWithResult(null, extraData);
+	}
+
+	// pop this activity from activity stack with default result code: RESULT_OK
+	public void popActivityWithResult() {
+		popActivityWithResult(null);
 	}
 
 	// set navigation activity navigation bar
@@ -389,6 +441,73 @@ public class NavigationActivity extends Activity {
 
 		// return view for setting
 		return view;
+	}
+
+	// push activity with extra data and request code to navigation activity
+	// stack
+	private void pushActivity(Class<? extends Activity> activityClass,
+			Map<String, ?> extraData, Integer requestCode) {
+		// define the intent
+		Intent _intent = new Intent(this, activityClass);
+
+		// set intent extra parameter data
+		_intent.putExtra(NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY,
+				(String) this.getTitle());
+
+		// process extra data
+		if (null != extraData) {
+			for (String extraDataKey : extraData.keySet()) {
+				// check extra data key, if it equals NAV_ACTIVITY_PARAM_KEY,
+				// skip it
+				if (NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY
+						.equalsIgnoreCase(extraDataKey)) {
+					break;
+				}
+
+				// get value object
+				Object _valueObject = extraData.get(extraDataKey);
+
+				// check extra data type
+				if (_valueObject instanceof Short) {
+					_intent.putExtra(extraDataKey, (Short) _valueObject);
+				} else if (_valueObject instanceof Integer) {
+					_intent.putExtra(extraDataKey, (Integer) _valueObject);
+				} else if (_valueObject instanceof Long) {
+					_intent.putExtra(extraDataKey, (Long) _valueObject);
+				} else if (_valueObject instanceof Float) {
+					_intent.putExtra(extraDataKey, (Float) _valueObject);
+				} else if (_valueObject instanceof Double) {
+					_intent.putExtra(extraDataKey, (Double) _valueObject);
+				} else if (_valueObject instanceof Character) {
+					_intent.putExtra(extraDataKey, (Character) _valueObject);
+				} else if (_valueObject instanceof Byte) {
+					_intent.putExtra(extraDataKey, (Byte) _valueObject);
+				} else if (_valueObject instanceof Boolean) {
+					_intent.putExtra(extraDataKey, (Boolean) _valueObject);
+				} else if (_valueObject instanceof String) {
+					_intent.putExtra(extraDataKey, (String) _valueObject);
+				} else if (_valueObject instanceof CharSequence) {
+					_intent.putExtra(extraDataKey, (CharSequence) _valueObject);
+				} else if (_valueObject instanceof Serializable) {
+					_intent.putExtra(extraDataKey, (Serializable) _valueObject);
+				} else {
+					// others, not implementation
+					Log.d(LOG_TAG, "Type = "
+							+ extraData.get(extraDataKey).getClass().getName()
+							+ " not implementation");
+				}
+			}
+		}
+
+		// check request code and go to the activity
+		if (null == requestCode) {
+			startActivity(_intent);
+		} else {
+			// set intent extra parameter data
+			_intent.putExtra(NAV_ACTIVITY_PARAM_START4RESULT_KEY, true);
+
+			startActivityForResult(_intent, requestCode);
+		}
 	}
 
 	// @Override

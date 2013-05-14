@@ -17,11 +17,14 @@ public class UserBean {
 
 	private Map<String, Object> store;
 
+
+	// UserBean constructor
 	public UserBean() {
 		store = new HashMap<String, Object>();
 	}
 
 	public UserBean(String name, String password, String userKey) {
+		// set name, password and user key
 		this.name = name;
 		this.password = password;
 		this.userKey = userKey;
