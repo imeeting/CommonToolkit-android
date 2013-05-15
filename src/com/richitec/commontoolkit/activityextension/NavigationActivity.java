@@ -321,7 +321,7 @@ public class NavigationActivity extends Activity {
 				// skip it
 				if (NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY
 						.equalsIgnoreCase(extraDataKey)) {
-					break;
+					continue;
 				}
 
 				// get value object
@@ -461,7 +461,7 @@ public class NavigationActivity extends Activity {
 				// skip it
 				if (NAV_ACTIVITY_PARAM_BACKBARBTNITEM_KEY
 						.equalsIgnoreCase(extraDataKey)) {
-					break;
+					continue;
 				}
 
 				// get value object
