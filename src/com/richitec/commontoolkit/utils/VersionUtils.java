@@ -332,6 +332,7 @@ public class VersionUtils {
 
 		@Override
 		public void onFinished(HttpResponseResult responseResult) {
+			Log.d("commontoolkit", "check version: " + responseResult.getResponseText());
 			// check application upgrade mode and reset application auto check
 			// and upgrade flag
 			if (APPUPGRADEMODE.MANUAL != _mAppUpgradeMode) {
