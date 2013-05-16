@@ -137,5 +137,19 @@ public class WebSocketNotifier {
 		}
 		
 	}
+	
+	public void reconnect() {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				needConnect = false;
+				sk.disconnect();
+				sk = null;
+				
+				connect();
+			}
+		}).start();
+	}
 
 }
