@@ -203,7 +203,7 @@ public class ListViewQuickAlphabetBar extends DataSetObserver {
 
 						// set other letter textView text and show it
 						TextView _otherLetterTextView = (TextView) _otherLettersLinearLayout
-								.getChildAt(i);
+								.getChildAt(i - 1);
 						_otherLetterTextView.setText(_letter);
 						_otherLetterTextView.setVisibility(View.VISIBLE);
 					}
