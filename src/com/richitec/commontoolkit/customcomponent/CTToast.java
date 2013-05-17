@@ -211,10 +211,24 @@ public class CTToast {
 						_mDisplayPopupWindow.getWidth(),
 						_mDisplayPopupWindow.getHeight());
 			} else {
+				// get activity window decor view
+				View _activityWindowDecorView = ((Activity) _mContext)
+						.getWindow().getDecorView();
+
+				// check activity window decor view and remove display popup
+				// window from it
+				int _displayPopupWindowIndexOfActivityWindowDecorView = -1;
+				if (_activityWindowDecorView instanceof ViewGroup
+						&& 0 <= (_displayPopupWindowIndexOfActivityWindowDecorView = ((ViewGroup) _activityWindowDecorView)
+								.indexOfChild(_mDisplayPopupWindow
+										.getContentView()))) {
+					((ViewGroup) _activityWindowDecorView)
+							.removeViewAt(_displayPopupWindowIndexOfActivityWindowDecorView);
+				}
+
 				// show immediately
-				_mDisplayPopupWindow.showAtLocation(((Activity) _mContext)
-						.getWindow().getDecorView(), getGravity(),
-						getXOffset(), getYOffset());
+				_mDisplayPopupWindow.showAtLocation(_activityWindowDecorView,
+						getGravity(), getXOffset(), getYOffset());
 			}
 
 			// check popup window display timer task and cancel it
