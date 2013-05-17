@@ -47,7 +47,7 @@ public class CTToast {
 	private List<Integer> _mPopupWindowDisplayTextViewDefaultPaddings;
 
 	// popup window display timer
-	private final Timer POPUPWINDOW_DISPLAY_TIMER = new Timer();
+	private Timer POPUPWINDOW_DISPLAY_TIMER = new Timer();
 
 	// popup window display timer task
 	private TimerTask _mPopupWindowDisplayTimerTask;
@@ -215,17 +215,6 @@ public class CTToast {
 				View _activityWindowDecorView = ((Activity) _mContext)
 						.getWindow().getDecorView();
 
-				// check activity window decor view and remove display popup
-				// window from it
-				int _displayPopupWindowIndexOfActivityWindowDecorView = -1;
-				if (_activityWindowDecorView instanceof ViewGroup
-						&& 0 <= (_displayPopupWindowIndexOfActivityWindowDecorView = ((ViewGroup) _activityWindowDecorView)
-								.indexOfChild(_mDisplayPopupWindow
-										.getContentView()))) {
-					((ViewGroup) _activityWindowDecorView)
-							.removeViewAt(_displayPopupWindowIndexOfActivityWindowDecorView);
-				}
-
 				// show immediately
 				_mDisplayPopupWindow.showAtLocation(_activityWindowDecorView,
 						getGravity(), getXOffset(), getYOffset());
@@ -237,26 +226,32 @@ public class CTToast {
 			}
 
 			// dismiss popup window after duration time using timer task
-			POPUPWINDOW_DISPLAY_TIMER.schedule(
-			// new timer task and reset popup window display timer task
-					_mPopupWindowDisplayTimerTask = new TimerTask() {
+			if (POPUPWINDOW_DISPLAY_TIMER != null) {
+				POPUPWINDOW_DISPLAY_TIMER.schedule(
+				// new timer task and reset popup window display timer task
+						_mPopupWindowDisplayTimerTask = new TimerTask() {
 
-						@Override
-						public void run() {
-							// dismiss display popup window
-							DISMISS_DISPLAYPOPUPWINDOW_HANDLE
-									.post(new Runnable() {
+							@Override
+							public void run() {
+								// dismiss display popup window
+								DISMISS_DISPLAYPOPUPWINDOW_HANDLE
+										.post(new Runnable() {
 
-										@Override
-										public void run() {
-											_mDisplayPopupWindow.dismiss();
-										}
-									});
+											@Override
+											public void run() {
+												try {
+													_mDisplayPopupWindow.dismiss();
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+											}
+										});
 
-							// clear popup window display timer task
-							_mPopupWindowDisplayTimerTask = null;
-						}
-					}, getDuration());
+								// clear popup window display timer task
+								_mPopupWindowDisplayTimerTask = null;
+							}
+						}, getDuration());
+			}
 		}
 	}
 
@@ -268,7 +263,6 @@ public class CTToast {
 			// check popup window display timer task, cancel and clear it
 			if (null != _mPopupWindowDisplayTimerTask) {
 				_mPopupWindowDisplayTimerTask.cancel();
-
 				_mPopupWindowDisplayTimerTask = null;
 			}
 		}
