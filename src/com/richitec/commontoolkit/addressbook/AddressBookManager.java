@@ -1608,19 +1608,21 @@ public class AddressBookManager {
 	public static String filterNumber(String number, int filterMode) {
 		switch (filterMode) {
 		case FILTER_IP_AND_CODE_PREFIX:
-			for (String prefix : PhoneNumberFilterCodePrefix) {
-				int index = number.indexOf(prefix);
-				if (index == 0 && prefix.length() < number.length()) {
-					number = number.substring(prefix.length());
-				}
-			}
+//			for (String prefix : PhoneNumberFilterCodePrefix) {
+//				int index = number.indexOf(prefix);
+//				if (index == 0 && prefix.length() < number.length()) {
+//					number = number.substring(prefix.length());
+//				}
+//			}
+			number = filterNumber(number, PhoneNumberFilterCodePrefix);
 		case FILTER_ONLY_IP_PREFIX:
-			for (String prefix : PhoneNumberFilterIPPrefix) {
-				int index = number.indexOf(prefix);
-				if (index == 0 && prefix.length() < number.length()) {
-					number = number.substring(prefix.length());
-				}
-			}
+//			for (String prefix : PhoneNumberFilterIPPrefix) {
+//				int index = number.indexOf(prefix);
+//				if (index == 0 && prefix.length() < number.length()) {
+//					number = number.substring(prefix.length());
+//				}
+//			}
+			number = filterNumber(number, PhoneNumberFilterIPPrefix);
 			break;
 		}
 
@@ -1628,6 +1630,18 @@ public class AddressBookManager {
 		return number;
 	}
 
+	public static String filterNumber(String number, String[] filterKeys) {
+		if (filterKeys != null) {
+			for (String prefix : filterKeys) {
+				int index = number.indexOf(prefix);
+				if (index == 0 && prefix.length() < number.length()) {
+					number = number.substring(prefix.length());
+				}
+			}
+		}
+		return number;
+	}
+	
 	public static void setFilterMode(int mode) {
 		filterMode = mode;
 	}
